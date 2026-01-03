@@ -354,4 +354,39 @@ class ProductController extends Controller
             'message' => ucfirst(str_replace('_', ' ', $request->field)) . ' updated successfully!'
         ]);
     }
+
+    public function destroy(Product $product)
+    {
+        // 1. Delete Main Image
+        if ($product->image && \Storage::disk('public_root')->exists($product->image)) {
+            \Storage::disk('public_root')->delete($product->image);
+        }
+
+        // 2. Delete Gallery Images
+        if ($product->images) {
+            foreach ($product->images as $image) {
+                if (\Storage::disk('public_root')->exists($image)) {
+                    \Storage::disk('public_root')->delete($image);
+                }
+            }
+        }
+
+        // 3. Delete Size Guide Image
+        if ($product->size_guide_image && \Storage::disk('public_root')->exists($product->size_guide_image)) {
+            \Storage::disk('public_root')->delete($product->size_guide_image);
+        }
+
+        // 4. Delete Color Images
+        foreach ($product->colors as $color) {
+            if ($color->image && \Storage::disk('public_root')->exists($color->image)) {
+                \Storage::disk('public_root')->delete($color->image);
+            }
+            // product_variants will be deleted via cascade on delete of color or product
+        }
+
+        // 5. Delete Product Record (Cascade will handle database relations for colors and variants)
+        $product->delete();
+
+        return redirect()->route('admin.products.index')->with('success', 'Product and all related data deleted successfully');
+    }
 }

@@ -289,7 +289,14 @@
                                 <a href="{{ route('admin.products.edit', $product->id) }}"
                                     class="text-gold-600 hover:text-gold-900 mr-3">Edit</a>
                                 <a href="{{ route('products.show', $product->slug) }}" target="_blank"
-                                    class="text-neutral-600 hover:text-neutral-900">View</a>
+                                    class="text-neutral-600 hover:text-neutral-900 mr-3">View</a>
+                                <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST"
+                                    class="inline-block"
+                                    onsubmit="return confirm('Are you sure you want to delete this product? This action cannot be undone and will delete all associated images and data.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                                </form>
                             </td>
                         </tr>
                     @empty

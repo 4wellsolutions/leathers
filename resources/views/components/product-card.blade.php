@@ -25,7 +25,7 @@
 
         @if($hasSale)
             <div
-                class="absolute top-4 left-4 bg-orange-500 text-white text-sm font-bold px-4 py-2 rounded-full uppercase tracking-wide shadow-lg animate-pulse">
+                class="absolute top-4 left-4 bg-emerald-600 text-white text-sm font-bold px-4 py-2 rounded-full uppercase tracking-wide shadow-lg animate-pulse">
                 Sale
             </div>
         @endif
@@ -49,7 +49,18 @@
 
         <div
             class="absolute inset-x-0 bottom-0 p-4 bg-white/90 backdrop-blur-sm translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex justify-between items-center">
-            @if($product->variants->count() > 0)
+            @if($product->colors->count() > 0)
+                <div class="flex items-center space-x-1">
+                    @foreach($product->colors->take(5) as $color)
+                        <div class="w-4 h-4 rounded-full border border-neutral-200 shadow-sm"
+                             style="background-color: {{ $color->color_code }};"
+                             title="{{ $color->name }}"></div>
+                    @endforeach
+                    @if($product->colors->count() > 5)
+                        <span class="text-xs text-neutral-500 font-medium">+{{ $product->colors->count() - 5 }}</span>
+                    @endif
+                </div>
+            @elseif($product->variants->count() > 0)
                 <a href="{{ route('products.show', $product->slug) }}"
                     class="text-leather-900 hover:text-gold-600 font-semibold text-sm uppercase tracking-wide">
                     Select Options

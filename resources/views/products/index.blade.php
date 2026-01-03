@@ -6,8 +6,12 @@
 @section('content')
     <div class="bg-neutral-100 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 class="text-4xl font-serif font-bold text-leather-900 mb-2">Our Collection</h1>
-            <p class="text-neutral-600">Discover our premium range of handcrafted leather goods.</p>
+            <h1 class="text-4xl font-serif font-bold text-leather-900 mb-2">
+                {{ $currentCategory ? $currentCategory->name : 'Our Collection' }}
+            </h1>
+            <p class="text-neutral-600">
+                {{ $currentCategory ? ($currentCategory->description ?? 'Discover our premium range of handcrafted leather goods.') : 'Discover our premium range of handcrafted leather goods.' }}
+            </p>
         </div>
     </div>
 
@@ -155,39 +159,39 @@
     </div>
     <!-- CollectionPage Schema -->
     <script type="application/ld+json">
-            {
-              "@@context": "https://schema.org",
-              "@@type": "CollectionPage",
-              "name": "{{ $currentCategory ? $currentCategory->name : 'All Products' }}",
-              "description": "{{ $currentCategory ? $currentCategory->description : 'Browse our collection of premium leather goods.' }}",
-              "url": "{{ url()->current() }}",
-              "breadcrumb": {
-                "@@type": "BreadcrumbList",
-                "itemListElement": [
-                  {
-                    "@@type": "ListItem",
-                    "position": 1,
-                    "name": "Home",
-                    "item": "{{ route('home') }}"
-                  },
-                  {
-                    "@@type": "ListItem",
-                    "position": 2,
-                    "name": "Shop",
-                    "item": "{{ route('products.index') }}"
-                  }
-                  @if($currentCategory)
-                      ,{
+                {
+                  "@@context": "https://schema.org",
+                  "@@type": "CollectionPage",
+                  "name": "{{ $currentCategory ? $currentCategory->name : 'All Products' }}",
+                  "description": "{{ $currentCategory ? $currentCategory->description : 'Browse our collection of premium leather goods.' }}",
+                  "url": "{{ url()->current() }}",
+                  "breadcrumb": {
+                    "@@type": "BreadcrumbList",
+                    "itemListElement": [
+                      {
                         "@@type": "ListItem",
-                        "position": 3,
-                        "name": "{{ $currentCategory->name }}",
-                        "item": "{{ route('category.show', $currentCategory->slug) }}"
+                        "position": 1,
+                        "name": "Home",
+                        "item": "{{ route('home') }}"
+                      },
+                      {
+                        "@@type": "ListItem",
+                        "position": 2,
+                        "name": "Shop",
+                        "item": "{{ route('products.index') }}"
                       }
-                  @endif
-                ]
-              }
-            }
-            </script>
+                      @if($currentCategory)
+                          ,{
+                            "@@type": "ListItem",
+                            "position": 3,
+                            "name": "{{ $currentCategory->name }}",
+                            "item": "{{ route('category.show', $currentCategory->slug) }}"
+                          }
+                      @endif
+                    ]
+                  }
+                }
+                </script>
 
     <script>
         // Price filter functionality

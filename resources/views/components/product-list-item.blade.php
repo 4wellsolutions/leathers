@@ -19,17 +19,24 @@
     $displayPrice = $salePrice ?? $basePrice;
 @endphp
 
-<div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition mb-6">
-    <div class="flex gap-6 p-5">
-
+<div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition mb-6 group">
+    <div class="flex gap-6 p-5 relative">
         <!-- Image (Balanced Size) -->
         <a href="{{ route('products.show', $product->slug) }}"
-           class="w-32 h-32 lg:w-36 lg:h-36 aspect-square rounded-xl overflow-hidden bg-neutral-100 flex-shrink-0">
-            <img
-                src="{{ $product->image_url }}"
-                alt="{{ $product->name }}"
-                class="w-full h-full object-cover"
-            >
+            class="w-32 h-32 lg:w-40 lg:h-40 aspect-square rounded-xl overflow-hidden bg-neutral-100 flex-shrink-0 relative">
+            <img src="{{ $product->image_url }}" alt="{{ $product->name }}"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+
+            {{-- Badges --}}
+            @if($hasDiscount)
+                <div
+                    class="absolute top-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide">
+                    Sale
+                </div>
+                <div class="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-full">
+                    -{{ $discountPercent }}%
+                </div>
+            @endif
         </a>
 
         <!-- Content -->
@@ -37,63 +44,69 @@
 
             <!-- Top -->
             <div>
-                <p class="text-xs uppercase tracking-widest text-neutral-400 mb-1">
+                <p class="text-xs font-semibold uppercase tracking-wider text-gold-600 mb-1">
                     {{ $product->category->name }}
                 </p>
 
-                <h3 class="text-lg font-medium text-neutral-900 leading-snug max-w-xl">
+                <h3 class="text-lg font-bold text-leather-900 leading-snug max-w-xl mb-2">
                     <a href="{{ route('products.show', $product->slug) }}"
-                       class="hover:text-neutral-700 transition">
+                        class="hover:text-gold-600 transition-colors">
                         {{ $product->name }}
                     </a>
                 </h3>
 
                 <!-- Rating -->
-                <div class="flex items-center gap-2 mt-2 text-sm text-neutral-400">
-                    <div class="flex">
+                <div class="flex items-center gap-2 mb-3 text-sm">
+                    <div class="flex text-gold-500">
                         @for($i = 1; $i <= 5; $i++)
-                            <svg
-                                class="w-4 h-4 {{ $i <= round($product->average_rating) ? 'fill-neutral-800' : 'fill-neutral-300' }}"
+                            <svg class="w-4 h-4 {{ $i <= round($product->average_rating) ? 'fill-current' : 'fill-current text-neutral-300' }}"
                                 viewBox="0 0 24 24">
                                 <path
-                                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                    d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                             </svg>
                         @endfor
                     </div>
-                    <span>{{ $product->review_count }} reviews</span>
+                    <span class="text-neutral-500">({{ $product->review_count }})</span>
                 </div>
+
+                <!-- Colors -->
+                @if($product->colors->count() > 0)
+                    <div class="flex items-center space-x-1 mb-2">
+                        @foreach($product->colors->take(5) as $color)
+                            <div class="w-4 h-4 rounded-full border border-neutral-200 shadow-sm"
+                                style="background-color: {{ $color->color_code }};" title="{{ $color->name }}"></div>
+                        @endforeach
+                        @if($product->colors->count() > 5)
+                            <span class="text-xs text-neutral-500 font-medium">+{{ $product->colors->count() - 5 }}</span>
+                        @endif
+                    </div>
+                @endif
             </div>
 
             <!-- Bottom -->
-            <div class="flex items-end justify-between mt-4">
+            <div class="flex items-end justify-between mt-2">
 
                 <!-- Price -->
                 <div>
-                    <div class="flex items-center gap-3">
-                        <span class="text-xl font-semibold text-neutral-900">
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-xl font-bold text-leather-900">
                             Rs. {{ number_format($displayPrice) }}
                         </span>
-
-                        @if($discountPercent > 0)
-                            <span class="text-sm font-medium text-emerald-700">
-                                {{ $discountPercent }}% off
+                        @if($hasDiscount)
+                            <span class="text-sm text-neutral-400 line-through">
+                                Rs. {{ number_format($basePrice) }}
                             </span>
                         @endif
                     </div>
-
-                    @if($hasDiscount)
-                        <div class="text-sm text-neutral-400 line-through">
-                            Rs. {{ number_format($basePrice) }}
-                        </div>
-                    @endif
                 </div>
 
                 <!-- Action -->
-                <a href="{{ route('products.show', $product->slug) }}"
-                   class="px-5 py-2.5 rounded-lg text-sm font-medium
-                          bg-neutral-900 text-white hover:bg-neutral-800 transition">
-                    View Product
+                @if(!$hasVariants)
+                <a href="{{ route('cart.add', $product->id) }}"
+                   class="px-5 py-2.5 rounded-full text-sm font-medium bg-leather-900 text-white hover:bg-leather-800 transition-all shadow-md hover:shadow-lg">
+                    Add to Cart
                 </a>
+                @endif
             </div>
         </div>
     </div>

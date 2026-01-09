@@ -134,40 +134,6 @@
                 </div>
             </div>
 
-            <!-- Reports Dropdown -->
-            <div>
-                <button @click="open = open === 'reports' ? null : 'reports'"
-                    class="w-full group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md text-neutral-300 hover:bg-leather-700 hover:text-white focus:outline-none">
-                    <div class="flex items-center">
-                        <svg class="mr-3 flex-shrink-0 h-6 w-6 text-neutral-400 group-hover:text-gold-500" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Reports
-                    </div>
-                    <svg :class="{'rotate-90': open === 'reports'}"
-                        class="ml-2 h-4 w-4 transform transition-transform duration-200" viewBox="0 0 20 20"
-                        fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </button>
-                <div x-show="open === 'reports' || '{{ request()->routeIs('admin.reports.*') }}'"
-                    class="space-y-1 pl-11" x-collapse>
-                    <a href="{{ route('admin.reports.inventory') }}"
-                        class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.reports.inventory') ? 'text-gold-500' : 'text-neutral-400 hover:text-white' }}">
-                        <svg class="mr-2 h-5 w-5 {{ request()->routeIs('admin.reports.inventory') ? 'text-gold-500' : 'text-neutral-500 group-hover:text-white' }}"
-                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                        </svg>
-                        Inventory Report
-                    </a>
-                </div>
-            </div>
-
             <!-- Deals Dropdown -->
             <div>
                 <button @click="open = open === 'deals' ? null : 'deals'"
@@ -358,6 +324,40 @@
                 </svg>
                 Media Library
             </a>
+
+            <!-- Reports Dropdown -->
+            <div>
+                <button @click="open = open === 'reports' ? null : 'reports'"
+                    class="w-full group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md text-neutral-300 hover:bg-leather-700 hover:text-white focus:outline-none">
+                    <div class="flex items-center">
+                        <svg class="mr-3 flex-shrink-0 h-6 w-6 text-neutral-400 group-hover:text-gold-500" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Reports
+                    </div>
+                    <svg :class="{'rotate-90': open === 'reports'}"
+                        class="ml-2 h-4 w-4 transform transition-transform duration-200" viewBox="0 0 20 20"
+                        fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <div x-show="open === 'reports' || '{{ request()->routeIs('admin.reports.*') }}'"
+                    class="space-y-1 pl-11" x-collapse>
+                    <a href="{{ route('admin.reports.inventory') }}"
+                        class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.reports.inventory') ? 'text-gold-500' : 'text-neutral-400 hover:text-white' }}">
+                        <svg class="mr-2 h-5 w-5 {{ request()->routeIs('admin.reports.inventory') ? 'text-gold-500' : 'text-neutral-500 group-hover:text-white' }}"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        Inventory Report
+                    </a>
+                </div>
+            </div>
 
             <!-- Settings Dropdown -->
             <div>

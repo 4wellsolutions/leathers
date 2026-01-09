@@ -3,22 +3,24 @@
 @section('title', 'Inventory Report')
 
 @section('content')
-<div class="max-w-7xl mx-auto">
-    <div class="mb-6">
-        <h1 class="text-3xl font-bold text-white">Inventory Report</h1>
-        <p class="mt-2 text-neutral-400">Generate detailed inventory reports with product stock information.</p>
+<div class="px-4 sm:px-6 lg:px-8">
+    <div class="sm:flex sm:items-center mb-6">
+        <div class="sm:flex-auto">
+            <h1 class="text-2xl font-semibold text-white">Inventory Report</h1>
+            <p class="mt-2 text-sm text-neutral-400">Generate detailed inventory reports with product stock information.</p>
+        </div>
     </div>
 
     <!-- Filter Form -->
-    <div class="bg-leather-800 rounded-lg shadow-xl p-6 mb-6">
-        <form method="GET" action="{{ route('admin.reports.inventory') }}" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
+    <div class="bg-leather-800 rounded-lg shadow p-6 mb-6">
+        <form method="GET" action="{{ route('admin.reports.inventory') }}">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="md:col-span-2">
                     <label for="category_id" class="block text-sm font-medium text-neutral-300 mb-2">
                         Filter by Category
                     </label>
                     <select name="category_id" id="category_id" 
-                            class="w-full px-4 py-2 bg-leather-700 border border-leather-600 rounded-lg text-white focus:ring-2 focus:ring-gold-500 focus:border-transparent">
+                            class="w-full px-3 py-2 bg-leather-700 border border-leather-600 rounded-md text-white focus:ring-gold-500 focus:border-gold-500">
                         <option value="all" {{ (!request('category_id') || request('category_id') == 'all') ? 'selected' : '' }}>All Categories</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
@@ -29,10 +31,7 @@
                 </div>
                 <div class="flex items-end">
                     <button type="submit" 
-                            class="px-6 py-2 bg-gold-500 text-white font-medium rounded-lg hover:bg-gold-600 transition duration-150">
-                        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+                            class="px-4 py-2 bg-gold-500 text-white font-medium rounded-md hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-gold-500">
                         Generate Report
                     </button>
                 </div>
@@ -42,25 +41,27 @@
 
     @if(isset($products))
         <!-- Report Results -->
-        <div class="bg-leather-800 rounded-lg shadow-xl overflow-hidden">
-            <div class="px-6 py-4 border-b border-leather-700 flex justify-between items-center">
+        <div class="bg-leather-800 rounded-lg shadow overflow-hidden">
+            <div class="px-6 py-4 border-b border-leather-700 sm:flex sm:items-center sm:justify-between">
                 <div>
-                    <h2 class="text-xl font-semibold text-white">
+                    <h2 class="text-lg font-medium text-white">
                         @if($selectedCategory)
-                            Inventory Report - {{ $selectedCategory->name }}
+                            {{ $selectedCategory->name }} - Inventory Report
                         @else
-                            Inventory Report - All Products
+                            All Products - Inventory Report
                         @endif
                     </h2>
-                    <p class="text-sm text-neutral-400 mt-1">Total Products: {{ $products->count() }}</p>
+                    <p class="mt-1 text-sm text-neutral-400">Total Products: {{ $products->count() }}</p>
                 </div>
-                <a href="{{ route('admin.reports.inventory.pdf', ['category_id' => request('category_id')]) }}" 
-                   class="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition duration-150 flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Download PDF
-                </a>
+                <div class="mt-3 sm:mt-0">
+                    <a href="{{ route('admin.reports.inventory.pdf', ['category_id' => request('category_id')]) }}" 
+                       class="inline-flex items-center px-4 py-2 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Download PDF
+                    </a>
+                </div>
             </div>
 
             @if($products->count() > 0)
@@ -87,7 +88,7 @@
                         </thead>
                         <tbody class="bg-leather-800 divide-y divide-leather-700">
                             @foreach($products as $product)
-                                <tr class="hover:bg-leather-700 transition-colors">
+                                <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <img src="{{ $product->image_url }}" 
                                              alt="{{ $product->name }}" 

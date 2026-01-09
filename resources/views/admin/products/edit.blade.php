@@ -82,14 +82,39 @@
                             Images</h2>
 
                         <div class="space-y-6">
-                            <!-- Current Main Image -->
-                            @if($product->image)
+                            <!-- All Product Images -->
+                            @if($product->image || ($product->images && count($product->images) > 0))
                                 <div>
-                                    <label class="block text-sm font-medium text-neutral-700 mb-2">Current Main Image</label>
-                                    <div
-                                        class="mt-2 w-[200px] h-[200px] border border-neutral-300 rounded-lg overflow-hidden bg-neutral-50 flex items-center justify-center">
-                                        <img src="{{ asset($product->image) }}" alt="{{ $product->name }}"
-                                            class="max-w-full max-h-full object-contain">
+                                    <label class="block text-sm font-medium text-neutral-700 mb-3">Product Images</label>
+                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-3">
+                                        <!-- Main Image with Badge -->
+                                        @if($product->image)
+                                            <div class="relative w-28 h-28 group">
+                                                <img src="{{ asset($product->image) }}" alt="{{ $product->name }}"
+                                                    class="w-full h-full object-cover rounded-xl shadow-md group-hover:shadow-2xl cursor-pointer transition-all duration-300 transform group-hover:scale-105 ring-2 ring-gold-400"
+                                                    onclick="showImagePreview('{{ asset($product->image) }}')">
+                                                <span class="absolute top-0 left-0 bg-green-600 text-white text-xs font-semibold px-2.5 py-1.5 rounded-br-lg shadow-lg z-20">Main</span>
+                                            </div>
+                                        @endif
+                                        
+                                        <!-- Gallery Images -->
+                                        @if($product->images && count($product->images) > 0)
+                                            @foreach($product->images as $image)
+                                                <div class="relative w-28 h-28 group">
+                                                    <img src="{{ asset($image) }}" alt="Gallery"
+                                                        class="w-full h-full object-cover rounded-xl shadow-md group-hover:shadow-2xl cursor-pointer transition-all duration-300 transform group-hover:scale-105 ring-2 ring-neutral-200 group-hover:ring-gold-400"
+                                                        onclick="showImagePreview('{{ asset($image) }}')">
+                                                    <button type="button" onclick="removeGalleryImage('{{ $image }}', this)"
+                                                        class="absolute top-0 right-0 bg-red-600 hover:bg-red-700 text-white rounded-full p-1.5 shadow-lg hover:shadow-xl transition-all transform hover:scale-110 z-10"
+                                                        title="Remove Image">
+                                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                                d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            @endforeach
+                                        @endif
                                     </div>
                                 </div>
                             @endif
@@ -100,11 +125,11 @@
                                     class="block text-sm font-medium text-neutral-700 mb-2">{{ $product->image ? 'Replace Main Image' : 'Main Image' }}</label>
 
                                 <!-- New Image Preview -->
-                                <div id="main-image-preview-container" class="hidden mb-3 relative inline-block">
+                                <div id="main-image-preview-container" class="hidden mb-3 relative w-24 h-24">
                                     <img id="main-image-preview" src=""
-                                        class="h-32 w-32 object-cover rounded-lg border border-neutral-200">
+                                        class="w-full h-full object-cover rounded-lg border border-neutral-200">
                                     <button type="button" id="remove-main-image-btn"
-                                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors">
+                                        class="absolute top-0 right-0 bg-red-600 hover:bg-red-700 text-white rounded-full p-1.5 shadow-lg hover:shadow-xl transition-all transform hover:scale-110 z-10">
                                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M6 18L18 6M6 6l12 12" />
@@ -112,62 +137,50 @@
                                     </button>
                                 </div>
 
-                                <div id="main-image-upload-area"
-                                    class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 border-dashed rounded-xl hover:bg-neutral-50 transition-colors cursor-pointer relative">
-                                    <div class="space-y-1 text-center">
-                                        <svg class="mx-auto h-12 w-12 text-neutral-400" stroke="currentColor" fill="none"
-                                            viewBox="0 0 48 48">
-                                            <path
-                                                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                        <div class="flex text-sm text-neutral-600 justify-center">
-                                            <label for="image"
-                                                class="relative cursor-pointer bg-white rounded-md font-medium text-gold-600 hover:text-gold-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-gold-500">
-                                                <span>Upload a file</span>
-                                                <input id="image" name="image" type="file" class="sr-only" accept="image/*">
-                                            </label>
-                                            <p class="pl-1">or drag and drop</p>
-                                        </div>
-                                        <p class="text-xs text-neutral-500">PNG, JPG, GIF up to 2MB</p>
+                                @if($product->image)
+                                    <!-- Simple file input for replacement -->
+                                    <div
+                                        class="mt-1 border-2 border-dashed border-neutral-300 rounded-xl p-6 hover:border-gold-400 hover:bg-gold-50/30 transition-all duration-300">
+                                        <input id="image" name="image" type="file"
+                                            class="block w-full text-sm text-neutral-700 file:mr-4 file:py-2.5 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-gold-500 file:to-gold-600 file:text-white hover:file:from-gold-600 hover:file:to-gold-700 file:cursor-pointer cursor-pointer file:shadow-md hover:file:shadow-lg file:transition-all"
+                                            accept="image/*">
+                                        <p class="mt-3 text-xs text-neutral-500">PNG, JPG, GIF up to 2MB</p>
                                     </div>
-                                </div>
-                            </div>
-
-                            <!-- Current Gallery Images -->
-                            @if($product->images && count($product->images) > 0)
-                                <div>
-                                    <label class="block text-sm font-medium text-neutral-700 mb-2">Current Gallery
-                                        Images</label>
-                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-2">
-                                        @foreach($product->images as $image)
-                                            <div class="relative group">
-                                                <img src="{{ asset($image) }}" alt="Gallery"
-                                                    class="h-24 w-24 object-cover rounded-lg border border-neutral-200">
-                                                <button type="button" onclick="removeGalleryImage('{{ $image }}', this)"
-                                                    class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
-                                                    title="Remove Image">
-                                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
-                                                </button>
+                                @else
+                                    <!-- Full upload area for new products -->
+                                    <div id="main-image-upload-area"
+                                        class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 border-dashed rounded-xl hover:bg-neutral-50 transition-colors cursor-pointer relative">
+                                        <div class="space-y-1 text-center">
+                                            <svg class="mx-auto h-12 w-12 text-neutral-400" stroke="currentColor" fill="none"
+                                                viewBox="0 0 48 48">
+                                                <path
+                                                    d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                            <div class="flex text-sm text-neutral-600 justify-center">
+                                                <label for="image"
+                                                    class="relative cursor-pointer bg-white rounded-md font-medium text-gold-600 hover:text-gold-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-gold-500">
+                                                    <span>Upload a file</span>
+                                                    <input id="image" name="image" type="file" class="sr-only" accept="image/*">
+                                                </label>
+                                                <p class="pl-1">or drag and drop</p>
                                             </div>
-                                        @endforeach
+                                            <p class="text-xs text-neutral-500">PNG, JPG, GIF up to 2MB</p>
+                                        </div>
                                     </div>
-                                </div>
-                            @endif
+                                @endif
+                            </div>
 
                             <!-- Gallery Images Upload -->
                             <div>
                                 <label
-                                    class="block text-sm font-medium text-neutral-700 mb-2">{{ $product->images ? 'Add More Gallery Images' : 'Gallery Images' }}</label>
+                                    class="block text-sm font-medium text-neutral-700 mb-3">{{ $product->images ? 'Add More Gallery Images' : 'Gallery Images' }}</label>
 
                                 <!-- Preview New Gallery Images -->
                                 <div id="new-gallery-previews" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4 hidden">
                                 </div>
 
-                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 border-dashed rounded-xl hover:bg-neutral-50 transition-colors cursor-pointer relative"
+                                <div class="mt-1 flex justify-center px-6 pt-6 pb-6 border-2 border-neutral-300 border-dashed rounded-xl hover:bg-gradient-to-br hover:from-gold-50 hover:to-amber-50 hover:border-gold-400 transition-all duration-300 cursor-pointer relative shadow-sm hover:shadow-md"
                                     id="gallery-drop-zone">
                                     <div class="space-y-1 text-center">
                                         <svg class="mx-auto h-12 w-12 text-neutral-400" fill="none" viewBox="0 0 24 24"
@@ -198,7 +211,7 @@
 
                 <!-- Product Variants Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden" x-data="{
-                                                colors: {{ $product->colors->map(function ($c) {
+                                                                        colors: {{ $product->colors->map(function ($c) {
         return [
             'id' => $c->id,
             'name' => $c->name,
@@ -216,33 +229,33 @@
             })
         ];
     })->toJson() }},
-                                                addColor() {
-                                                    this.colors.push({
-                                                        id: null,
-                                                        name: '',
-                                                        color_code: '#000000',
-                                                        remove_image: 0,
-                                                        image_url: null,
-                                                        sizes: []
-                                                    });
-                                                },
-                                                removeColor(index) {
-                                                    this.colors.splice(index, 1);
-                                                },
-                                                addSize(colorIndex) {
-                                                    this.colors[colorIndex].sizes.push({
-                                                        id: null,
-                                                        name: '',
-                                                        stock: 0,
-                                                        price: '',
-                                                        sale_price: '',
-                                                        sku: ''
-                                                    });
-                                                },
-                                                removeSize(colorIndex, sizeIndex) {
-                                                    this.colors[colorIndex].sizes.splice(sizeIndex, 1);
-                                                }
-                                            }">
+                                                                        addColor() {
+                                                                            this.colors.push({
+                                                                                id: null,
+                                                                                name: '',
+                                                                                color_code: '#000000',
+                                                                                remove_image: 0,
+                                                                                image_url: null,
+                                                                                sizes: []
+                                                                            });
+                                                                        },
+                                                                        removeColor(index) {
+                                                                            this.colors.splice(index, 1);
+                                                                        },
+                                                                        addSize(colorIndex) {
+                                                                            this.colors[colorIndex].sizes.push({
+                                                                                id: null,
+                                                                                name: '',
+                                                                                stock: 0,
+                                                                                price: '',
+                                                                                sale_price: '',
+                                                                                sku: ''
+                                                                            });
+                                                                        },
+                                                                        removeSize(colorIndex, sizeIndex) {
+                                                                            this.colors[colorIndex].sizes.splice(sizeIndex, 1);
+                                                                        }
+                                                                    }">
                     <div class="p-6 md:p-8 space-y-6">
                         <div class="flex items-center justify-between border-b border-neutral-100 pb-4 mb-6">
                             <h2 class="text-lg font-semibold text-leather-900">Product Variants (Colors & Sizes)</h2>
@@ -530,7 +543,44 @@
         </div>
     </form>
 
+    <!-- Image Preview Modal -->
+    <div id="imagePreviewModal"
+        class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
+        onclick="closeImagePreview()">
+        <div class="relative max-w-7xl max-h-screen">
+            <button onclick="closeImagePreview()"
+                class="absolute top-0 right-0 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 shadow-lg hover:shadow-xl transition-all transform hover:scale-110 z-10">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <img id="previewImage" src="" alt="Preview" class="max-w-full max-h-screen object-contain rounded-lg shadow-2xl"
+                onclick="event.stopPropagation()">
+        </div>
+    </div>
+
     <script>
+        function showImagePreview(imageUrl) {
+            const modal = document.getElementById('imagePreviewModal');
+            const previewImg = document.getElementById('previewImage');
+            previewImg.src = imageUrl;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImagePreview() {
+            const modal = document.getElementById('imagePreviewModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeImagePreview();
+            }
+        });
+
         // Main Image Preview Logic
         const mainImageInput = document.getElementById('image');
         const mainImagePreviewContainer = document.getElementById('main-image-preview-container');
@@ -579,13 +629,13 @@
                     const div = document.createElement('div');
                     div.className = 'relative group';
                     div.innerHTML = `
-                                                     <img src="${e.target.result}" class="h-24 w-24 object-cover rounded-lg border border-neutral-200" title="${file.name}">
-                                                     <button type="button" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity" onclick="removeNewGalleryImage('${file.name}', this)">
-                                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                    </button>
-                                                `;
+                                                                             <img src="${e.target.result}" class="h-24 w-24 object-cover rounded-lg border border-neutral-200" title="${file.name}">
+                                                                             <button type="button" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity" onclick="removeNewGalleryImage('${file.name}', this)">
+                                                                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                                                </svg>
+                                                                            </button>
+                                                                        `;
                     galleryPreviewsContainer.appendChild(div);
                     galleryPreviewsContainer.classList.remove('hidden');
                 };

@@ -15,7 +15,7 @@ class ReportController extends Controller
      */
     public function index()
     {
-        $categories = Category::orderBy('name')->get();
+        $categories = Category::orderBy('name', 'asc')->get();
 
         return view('admin.reports.index', compact('categories'));
     }
@@ -26,18 +26,23 @@ class ReportController extends Controller
     public function inventory(Request $request)
     {
         $categoryId = $request->get('category_id');
-        $categories = Category::orderBy('name')->get();
+        $categories = Category::orderBy('name', 'asc')->get();
 
-        // Build query
+        // Build query - join with categories for proper sorting
         $query = Product::with(['category', 'colors.variants'])
-            ->where('is_active', true);
+            ->join('categories', 'products.category_id', '=', 'categories.id')
+            ->select('products.*')
+            ->where('products.is_active', true);
 
         // Apply category filter if provided
         if ($categoryId && $categoryId !== 'all') {
-            $query->where('category_id', $categoryId);
+            $query->where('products.category_id', $categoryId);
         }
 
-        $products = $query->orderBy('name')->get();
+        // Sort by category name, then by product name (ascending)
+        $products = $query->orderBy('categories.name', 'asc')
+            ->orderBy('products.name', 'asc')
+            ->get();
 
         // Get selected category name for display
         $selectedCategory = null;
@@ -55,16 +60,21 @@ class ReportController extends Controller
     {
         $categoryId = $request->get('category_id');
 
-        // Build query
+        // Build query - join with categories for proper sorting
         $query = Product::with(['category', 'colors.variants'])
-            ->where('is_active', true);
+            ->join('categories', 'products.category_id', '=', 'categories.id')
+            ->select('products.*')
+            ->where('products.is_active', true);
 
         // Apply category filter if provided
         if ($categoryId && $categoryId !== 'all') {
-            $query->where('category_id', $categoryId);
+            $query->where('products.category_id', $categoryId);
         }
 
-        $products = $query->orderBy('name')->get();
+        // Sort by category name, then by product name (ascending)
+        $products = $query->orderBy('categories.name', 'asc')
+            ->orderBy('products.name', 'asc')
+            ->get();
 
         // Get selected category name for display
         $selectedCategory = null;

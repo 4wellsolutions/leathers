@@ -10,7 +10,7 @@ return new class extends Migration {
     public function up(): void
     {
         // Fix products table - remove 'storage/' prefix from image paths
-        DB::table('products')->whereNotNull('image')->each(function ($product) {
+        DB::table('products')->whereNotNull('image')->orderBy('id')->each(function ($product) {
             $image = $product->image;
 
             // Remove 'storage/' prefix if it exists
@@ -21,7 +21,7 @@ return new class extends Migration {
         });
 
         // Fix products table - remove 'storage/' prefix from images array
-        DB::table('products')->whereNotNull('images')->each(function ($product) {
+        DB::table('products')->whereNotNull('images')->orderBy('id')->each(function ($product) {
             $images = json_decode($product->images, true);
 
             if (is_array($images)) {
@@ -40,18 +40,8 @@ return new class extends Migration {
             }
         });
 
-        // Fix products table - size_guide_image
-        DB::table('products')->whereNotNull('size_guide_image')->each(function ($product) {
-            $image = $product->size_guide_image;
-
-            if (str_starts_with($image, 'storage/')) {
-                $newImage = substr($image, 8);
-                DB::table('products')->where('id', $product->id)->update(['size_guide_image' => $newImage]);
-            }
-        });
-
         // Fix product_colors table
-        DB::table('product_colors')->whereNotNull('image')->each(function ($color) {
+        DB::table('product_colors')->whereNotNull('image')->orderBy('id')->each(function ($color) {
             $image = $color->image;
 
             if (str_starts_with($image, 'storage/')) {
@@ -62,7 +52,7 @@ return new class extends Migration {
 
         // Fix blogs table - featured_image
         if (Schema::hasTable('blogs')) {
-            DB::table('blogs')->whereNotNull('featured_image')->each(function ($blog) {
+            DB::table('blogs')->whereNotNull('featured_image')->orderBy('id')->each(function ($blog) {
                 $image = $blog->featured_image;
 
                 if (str_starts_with($image, 'storage/')) {
@@ -79,7 +69,7 @@ return new class extends Migration {
     public function down(): void
     {
         // Add 'storage/' prefix back (if needed for rollback)
-        DB::table('products')->whereNotNull('image')->each(function ($product) {
+        DB::table('products')->whereNotNull('image')->orderBy('id')->each(function ($product) {
             $image = $product->image;
 
             if (!str_starts_with($image, 'storage/') && !str_starts_with($image, 'http')) {

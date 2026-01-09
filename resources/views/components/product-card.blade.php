@@ -1,7 +1,9 @@
 <div class="product-card group">
     <div class="relative aspect-square overflow-hidden bg-neutral-100 rounded-t-xl">
-        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy"
-            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+        <a href="{{ route('products.show', $product->slug) }}" class="block w-full h-full">
+            <img src="{{ $product->image_url }}" alt="{{ $product->name }}" loading="lazy"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+        </a>
 
         @php
             // Check if product has any sale variants
@@ -53,8 +55,7 @@
                 <div class="flex items-center space-x-1">
                     @foreach($product->colors->take(5) as $color)
                         <div class="w-4 h-4 rounded-full border border-neutral-200 shadow-sm"
-                             style="background-color: {{ $color->color_code }};"
-                             title="{{ $color->name }}"></div>
+                            style="background-color: {{ $color->color_code }};" title="{{ $color->name }}"></div>
                     @endforeach
                     @if($product->colors->count() > 5)
                         <span class="text-xs text-neutral-500 font-medium">+{{ $product->colors->count() - 5 }}</span>

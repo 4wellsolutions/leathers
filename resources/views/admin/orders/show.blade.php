@@ -64,9 +64,7 @@
                                             @else
                                                 <h3 class="text-sm font-semibold text-leather-900">{{ $item->product_name }}</h3>
                                             @endif
-                                            @if($item->product && $item->product->sku)
-                                                <p class="text-xs text-neutral-400 mt-0.5">SKU: {{ $item->product->sku }}</p>
-                                            @endif
+
                                         </div>
                                         <p class="text-sm font-bold text-leather-900">Rs.
                                             {{ number_format($item->subtotal, 2) }}
@@ -174,12 +172,7 @@
                 <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
                     <div class="px-6 py-4 border-b border-neutral-100 flex justify-between items-center">
                         <h2 class="text-lg font-semibold text-leather-900">Customer Info</h2>
-                        @if($order->user_id)
-                            <span
-                                class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gold-100 text-gold-800">
-                                Registered User
-                            </span>
-                        @endif
+
                     </div>
                     <div class="p-6 space-y-6">
                         <div>

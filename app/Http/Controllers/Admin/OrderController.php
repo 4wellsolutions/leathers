@@ -12,15 +12,15 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $query = \App\Models\Order::with('user');
+        $query = \App\Models\Order::query();
 
         // Search filter
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('order_number', 'like', "%{$search}%")
-                  ->orWhere('customer_name', 'like', "%{$search}%")
-                  ->orWhere('customer_email', 'like', "%{$search}%");
+                    ->orWhere('customer_name', 'like', "%{$search}%")
+                    ->orWhere('customer_email', 'like', "%{$search}%");
             });
         }
 
@@ -55,13 +55,13 @@ class OrderController extends Controller
         ];
 
         $orders = $query->latest()->paginate(15)->withQueryString();
-        
+
         return view('admin.orders.index', compact('orders', 'stats'));
     }
 
     public function show(\App\Models\Order $order)
     {
-        $order->load(['items.product', 'user']);
+        $order->load(['items.product']);
         return view('admin.orders.show', compact('order'));
     }
 

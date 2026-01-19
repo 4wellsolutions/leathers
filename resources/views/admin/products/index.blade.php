@@ -225,65 +225,95 @@
                         <tr class="hover:bg-neutral-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-12 w-12">
-                                        @if($product->image)
-                                            <img class="h-12 w-12 rounded-lg object-cover border border-neutral-200"
-                                                src="{{ asset($product->image) }}" alt="{{ $product->name }}"></ parameter>
-                                            <parameter name="StartLine">198
-                                        @else
-                                                <div
-                                                    class="h-12 w-12 rounded-lg bg-neutral-100 flex items-center justify-center border border-neutral-200">
-                                                    <svg class="h-6 w-6 text-neutral-400" fill="none" viewBox="0 0 24 24"
-                                                        stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                    </svg>
-                                                </div>
-                                            @endif
+                                    <div class="flex-shrink-0 h-14 w-14">
+                                        <img class="h-14 w-14 rounded-lg object-cover border border-neutral-200 bg-neutral-50 shadow-sm"
+                                            src="{{ $product->image_url }}" alt="{{ $product->name }}"
+                                            onerror="this.src='/images/placeholder.jpg'">
                                     </div>
                                     <div class="ml-4">
-                                        <div class="text-sm font-medium text-leather-900">{{ $product->name }}</div>
-                                        <div class="text-sm text-neutral-500">{{ Str::limit($product->slug, 30) }}</div>
+                                        <div class="text-sm font-bold text-leather-900 leading-tight">{{ $product->name }}</div>
+                                        <div class="text-[11px] text-neutral-400 mt-0.5 font-mono">
+                                            {{ Str::limit($product->slug, 35) }}</div>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-leather-900">{{ $product->category->name }}</div>
+                                <span
+                                    class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-neutral-100 text-neutral-700 border border-neutral-200">
+                                    {{ $product->category->name }}
+                                </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-leather-900">Rs. {{ number_format($product->price) }}</div>
+                                <div class="text-sm font-bold text-leather-900">Rs. {{ number_format($product->price) }}</div>
                                 @if($product->sale_price)
-                                    <div class="text-xs text-green-600">Sale: Rs. {{ number_format($product->sale_price) }}</div>
+                                    <div
+                                        class="text-[11px] font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-100 mt-1 inline-block">
+                                        Sale: Rs. {{ number_format($product->sale_price) }}
+                                    </div>
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <button
-                                    onclick="toggleStatus({{ $product->id }}, 'is_active', {{ $product->is_active ? 0 : 1 }})"
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $product->is_active ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-red-100 text-red-800 hover:bg-red-200' }} transition-colors cursor-pointer border-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-leather-500">
-                                    <svg class="mr-1 h-2 w-2 {{ $product->is_active ? 'text-green-400' : 'text-red-400' }}"
-                                        fill="currentColor" viewBox="0 0 8 8">
-                                        <circle cx="4" cy="4" r="3" />
-                                    </svg>
-                                    {{ $product->is_active ? 'Active' : 'Inactive' }}
-                                </button>
+                                <div class="flex flex-col space-y-2">
+                                    <button
+                                        onclick="toggleStatus({{ $product->id }}, 'is_active', {{ $product->is_active ? 0 : 1 }})"
+                                        class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $product->is_active ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-red-100 text-red-800 hover:bg-red-200' }} transition-all cursor-pointer border-none focus:outline-none">
+                                        <svg class="mr-1.5 h-2 w-2 {{ $product->is_active ? 'text-green-500' : 'text-red-500' }}"
+                                            fill="currentColor" viewBox="0 0 8 8">
+                                            <circle cx="4" cy="4" r="3" />
+                                        </svg>
+                                        {{ $product->is_active ? 'Visible' : 'Hidden' }}
+                                    </button>
 
-                                <button onclick="toggleStatus({{ $product->id }}, 'featured', {{ $product->featured ? 0 : 1 }})"
-                                    class="ml-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $product->featured ? 'bg-gold-100 text-gold-800 hover:bg-gold-200' : 'bg-neutral-100 text-neutral-800 hover:bg-neutral-200' }} transition-colors cursor-pointer border-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-leather-500">
-                                    {{ $product->featured ? '⭐ Featured' : '☆ Feature' }}
-                                </button>
+                                    <button
+                                        onclick="toggleStatus({{ $product->id }}, 'featured', {{ $product->featured ? 0 : 1 }})"
+                                        class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $product->featured ? 'bg-gold-500 text-white shadow-sm' : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200' }} transition-all cursor-pointer border-none focus:outline-none">
+                                        @if($product->featured)
+                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                            </svg>
+                                        @endif
+                                        {{ $product->featured ? 'Featured' : 'Regular' }}
+                                    </button>
+                                </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="{{ route('admin.products.edit', $product->id) }}"
-                                    class="text-gold-600 hover:text-gold-900 mr-3">Edit</a>
-                                <a href="{{ route('products.show', $product->slug) }}" target="_blank"
-                                    class="text-neutral-600 hover:text-neutral-900 mr-3">View</a>
-                                <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST"
-                                    class="inline-block"
-                                    onsubmit="return confirm('Are you sure you want to delete this product? This action cannot be undone and will delete all associated images and data.');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
-                                </form>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <div class="flex items-center justify-end space-x-2">
+                                    <a href="{{ route('products.show', $product->slug) }}" target="_blank"
+                                        class="inline-flex items-center px-3 py-1.5 bg-white border border-neutral-200 rounded-lg text-xs font-bold text-neutral-600 hover:bg-neutral-50 hover:text-leather-900 shadow-sm transition-all group">
+                                        <svg class="w-3.5 h-3.5 mr-1.5 text-neutral-400 group-hover:text-leather-600"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        View
+                                    </a>
+                                    <a href="{{ route('admin.products.edit', $product->id) }}"
+                                        class="inline-flex items-center px-3 py-1.5 bg-white border border-leather-200 rounded-lg text-xs font-bold text-leather-600 hover:bg-leather-50 shadow-sm transition-all group">
+                                        <svg class="w-3.5 h-3.5 mr-1.5 text-leather-400 group-hover:text-leather-600"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                        Edit
+                                    </a>
+                                    <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST"
+                                        class="inline-block" onsubmit="return confirm('Delete this product permanently?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="inline-flex items-center px-3 py-1.5 bg-white border border-red-200 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50 shadow-sm transition-all group">
+                                            <svg class="w-3.5 h-3.5 mr-1.5 text-red-400 group-hover:text-red-600" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty

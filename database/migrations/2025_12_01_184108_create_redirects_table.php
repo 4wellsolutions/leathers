@@ -12,12 +12,14 @@ return new class extends Migration {
     {
         Schema::create('redirects', function (Blueprint $table) {
             $table->id();
-            $table->string('old_url')->unique();
-            $table->string('new_url');
+            $table->string('from_url');
+            $table->string('to_url');
             $table->integer('status_code')->default(301)->comment('301 Permanent, 302 Temporary');
             $table->boolean('is_active')->default(true);
             $table->integer('hit_count')->default(0);
             $table->timestamps();
+
+            $table->index('from_url');
         });
     }
 

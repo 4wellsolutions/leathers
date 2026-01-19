@@ -21,6 +21,16 @@
                     class="px-4 py-2 text-sm font-medium text-neutral-600 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 transition-colors">
                     Cancel
                 </a>
+                <a href="{{ route('products.show', $product->slug) }}" target="_blank"
+                    class="px-4 py-2 text-sm font-medium text-gold-600 bg-white border border-gold-300 rounded-lg hover:bg-gold-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 shadow-sm transition-all transform hover:-translate-y-0.5 flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    View Product
+                </a>
                 <button type="submit"
                     class="px-4 py-2 text-sm font-medium text-white bg-leather-900 border border-transparent rounded-lg hover:bg-leather-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 shadow-sm transition-all transform hover:-translate-y-0.5">
                     Update Product
@@ -93,10 +103,11 @@
                                                 <img src="{{ asset($product->image) }}" alt="{{ $product->name }}"
                                                     class="w-full h-full object-cover rounded-xl shadow-md group-hover:shadow-2xl cursor-pointer transition-all duration-300 transform group-hover:scale-105 ring-2 ring-gold-400"
                                                     onclick="showImagePreview('{{ asset($product->image) }}')">
-                                                <span class="absolute top-0 left-0 bg-green-600 text-white text-xs font-semibold px-2.5 py-1.5 rounded-br-lg shadow-lg z-20">Main</span>
+                                                <span
+                                                    class="absolute top-0 left-0 bg-green-600 text-white text-xs font-semibold px-2.5 py-1.5 rounded-br-lg shadow-lg z-20">Main</span>
                                             </div>
                                         @endif
-                                        
+
                                         <!-- Gallery Images -->
                                         @if($product->images && count($product->images) > 0)
                                             @foreach($product->images as $image)
@@ -211,7 +222,7 @@
 
                 <!-- Product Variants Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden" x-data="{
-                                                                        colors: {{ $product->colors->map(function ($c) {
+                                                                            colors: {{ $product->colors->map(function ($c) {
         return [
             'id' => $c->id,
             'name' => $c->name,
@@ -229,33 +240,33 @@
             })
         ];
     })->toJson() }},
-                                                                        addColor() {
-                                                                            this.colors.push({
-                                                                                id: null,
-                                                                                name: '',
-                                                                                color_code: '#000000',
-                                                                                remove_image: 0,
-                                                                                image_url: null,
-                                                                                sizes: []
-                                                                            });
-                                                                        },
-                                                                        removeColor(index) {
-                                                                            this.colors.splice(index, 1);
-                                                                        },
-                                                                        addSize(colorIndex) {
-                                                                            this.colors[colorIndex].sizes.push({
-                                                                                id: null,
-                                                                                name: '',
-                                                                                stock: 0,
-                                                                                price: '',
-                                                                                sale_price: '',
-                                                                                sku: ''
-                                                                            });
-                                                                        },
-                                                                        removeSize(colorIndex, sizeIndex) {
-                                                                            this.colors[colorIndex].sizes.splice(sizeIndex, 1);
-                                                                        }
-                                                                    }">
+                                                                            addColor() {
+                                                                                this.colors.push({
+                                                                                    id: null,
+                                                                                    name: '',
+                                                                                    color_code: '#000000',
+                                                                                    remove_image: 0,
+                                                                                    image_url: null,
+                                                                                    sizes: []
+                                                                                });
+                                                                            },
+                                                                            removeColor(index) {
+                                                                                this.colors.splice(index, 1);
+                                                                            },
+                                                                            addSize(colorIndex) {
+                                                                                this.colors[colorIndex].sizes.push({
+                                                                                    id: null,
+                                                                                    name: '',
+                                                                                    stock: 0,
+                                                                                    price: '',
+                                                                                    sale_price: '',
+                                                                                    sku: ''
+                                                                                });
+                                                                            },
+                                                                            removeSize(colorIndex, sizeIndex) {
+                                                                                this.colors[colorIndex].sizes.splice(sizeIndex, 1);
+                                                                            }
+                                                                        }">
                     <div class="p-6 md:p-8 space-y-6">
                         <div class="flex items-center justify-between border-b border-neutral-100 pb-4 mb-6">
                             <h2 class="text-lg font-semibold text-leather-900">Product Variants (Colors & Sizes)</h2>
@@ -629,13 +640,13 @@
                     const div = document.createElement('div');
                     div.className = 'relative group';
                     div.innerHTML = `
-                                                                             <img src="${e.target.result}" class="h-24 w-24 object-cover rounded-lg border border-neutral-200" title="${file.name}">
-                                                                             <button type="button" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity" onclick="removeNewGalleryImage('${file.name}', this)">
-                                                                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                                                </svg>
-                                                                            </button>
-                                                                        `;
+                                                                                 <img src="${e.target.result}" class="h-24 w-24 object-cover rounded-lg border border-neutral-200" title="${file.name}">
+                                                                                 <button type="button" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity" onclick="removeNewGalleryImage('${file.name}', this)">
+                                                                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                                                    </svg>
+                                                                                </button>
+                                                                            `;
                     galleryPreviewsContainer.appendChild(div);
                     galleryPreviewsContainer.classList.remove('hidden');
                 };

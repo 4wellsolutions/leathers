@@ -86,6 +86,13 @@ class OrderController extends Controller
             \App\Jobs\SendOrderDeliveredEmail::dispatch($order);
         }
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Order status updated successfully'
+            ]);
+        }
+
         return back()->with('success', 'Order status updated successfully');
     }
 
@@ -113,8 +120,21 @@ class OrderController extends Controller
                     break;
             }
 
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Email notification has been queued for sending.'
+                ]);
+            }
+
             return back()->with('success', 'Email has been queued for resending.');
         } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to send email: ' . $e->getMessage()
+                ], 500);
+            }
             return back()->with('error', 'Failed to send email: ' . $e->getMessage());
         }
     }

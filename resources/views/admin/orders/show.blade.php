@@ -133,7 +133,8 @@
                         <h2 class="text-lg font-semibold text-leather-900">Update Order Status</h2>
                     </div>
                     <div class="p-6">
-                        <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST">
+                        <form action="{{ route('admin.orders.update-status', $order->id) }}" method="POST"
+                            class="ajax-form">
                             @csrf
                             @method('PATCH')
                             <div class="space-y-4">
@@ -159,7 +160,17 @@
                                 </div>
                                 <button type="submit"
                                     class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-leather-900 hover:bg-leather-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 transition-all uppercase tracking-wider">
-                                    Update Status
+                                    <span class="text">Update Status</span>
+                                    <span class="loading hidden">
+                                        <svg class="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        Updating...
+                                    </span>
                                 </button>
                                 <p class="text-[10px] text-center text-neutral-400">Updating status will send an automated
                                     email to the customer.</p>
@@ -174,7 +185,7 @@
                         <h2 class="text-lg font-semibold text-leather-900">Resend Email Notifications</h2>
                     </div>
                     <div class="p-6">
-                        <form action="{{ route('admin.orders.resend-email', $order->id) }}" method="POST">
+                        <form action="{{ route('admin.orders.resend-email', $order->id) }}" method="POST" class="ajax-form">
                             @csrf
                             <div class="space-y-4">
                                 <div>
@@ -188,7 +199,17 @@
                                 </div>
                                 <button type="submit"
                                     class="w-full flex justify-center py-3 px-4 border border-leather-900 rounded-lg shadow-sm text-sm font-bold text-leather-900 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 transition-all uppercase tracking-wider">
-                                    Resend Notification
+                                    <span class="text">Resend Notification</span>
+                                    <span class="loading hidden">
+                                        <svg class="animate-spin h-5 w-5 mr-3 text-leather-900" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        Sending...
+                                    </span>
                                 </button>
                                 <p class="text-[10px] text-center text-neutral-400 italic">Use this if the customer didn't
                                     receive their initial email.</p>

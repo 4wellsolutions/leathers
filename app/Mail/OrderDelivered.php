@@ -28,11 +28,8 @@ class OrderDelivered extends Mailable implements ShouldQueue
      */
     public function envelope(): Envelope
     {
-        $templateData = $this->getTemplateData();
-        $rendered = EmailTemplateService::render('order_delivered', $templateData);
-        
         return new Envelope(
-            subject: $rendered['subject'],
+            subject: 'Order Delivered - ' . $this->order->order_number,
         );
     }
 
@@ -41,26 +38,9 @@ class OrderDelivered extends Mailable implements ShouldQueue
      */
     public function content(): Content
     {
-        $templateData = $this->getTemplateData();
-        $rendered = EmailTemplateService::render('order_delivered', $templateData);
-        
         return new Content(
-            htmlString: $rendered['body'],
+            view: 'emails.orders.delivered',
         );
-    }
-
-    /**
-     * Get template data
-     */
-    private function getTemplateData(): array
-    {
-        return [
-            'customer_name' => $this->order->customer_name,
-            'order_number' => $this->order->order_number,
-            'order_items_with_review_html' => EmailTemplateService::generateOrderItemsWithReviewHtml($this->order->items),
-            'store_url' => route('home'),
-            'current_year' => date('Y'),
-        ];
     }
 
     /**

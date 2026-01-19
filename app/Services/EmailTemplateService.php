@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\EmailTemplate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class EmailTemplateService
 {
@@ -45,7 +46,7 @@ class EmailTemplateService
             if (is_array($value)) {
                 continue;
             }
-            
+
             // Replace {{variable}} with actual value
             $content = str_replace('{{' . $key . '}}', $value, $content);
         }
@@ -67,18 +68,31 @@ class EmailTemplateService
      */
     public static function generateOrderItemsHtml($items): string
     {
-        $html = '';
+        $html = '<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 25px; border-collapse: collapse;">';
         foreach ($items as $item) {
-            $productImage = $item->product->image ?? asset('images/placeholder.png');
-            $html .= '<div class="product-item">';
-            $html .= '<div style="display: flex; gap: 16px; margin-bottom: 12px;">';
-            $html .= '<img src="' . asset($productImage) . '" alt="' . htmlspecialchars($item->product_name) . '" style="width: 80px; height: 80px; object-fit: contain; border: 1px solid #e5e7eb; border-radius: 8px;">';
-            $html .= '<div style="flex: 1;">';
-            $html .= '<h4 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #1a1a1a;">' . htmlspecialchars($item->product_name) . '</h4>';
-            $html .= '<div style="color: #6b7280; font-size: 14px;">Quantity: ' . $item->quantity . '</div>';
-            $html .= '<div style="color: #d4af37; font-size: 16px; font-weight: 600; margin-top: 8px;">Rs. ' . number_format($item->price) . '</div>';
-            $html .= '</div></div></div>';
+            $productImage = $item->product->image ?? 'images/placeholder.png';
+            $imageUrl = Str::startsWith($productImage, 'http') ? $productImage : url($productImage);
+
+            $html .= '<tr>';
+            $html .= '<td style="padding: 15px 0; border-bottom: 1px solid #F8F5F2;">';
+            $html .= '<table width="100%" cellpadding="0" cellspacing="0">';
+            $html .= '<tr>';
+            $html .= '<td width="70" valign="top">';
+            $html .= '<img src="' . $imageUrl . '" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 1px solid #EAE2D8;">';
+            $html .= '</td>';
+            $html .= '<td valign="top" style="padding-left: 15px;">';
+            $html .= '<div style="font-size: 15px; font-weight: 600; color: #2D1B14; margin-bottom: 3px;">' . htmlspecialchars($item->product_name) . '</div>';
+            if ($item->variant_name) {
+                $html .= '<div style="font-size: 12px; color: #8A7366; margin-bottom: 4px;">' . htmlspecialchars($item->variant_name) . '</div>';
+            }
+            $html .= '<div style="font-size: 13px; color: #5C4A42;">Qty: ' . $item->quantity . '</div>';
+            $html .= '</td>';
+            $html .= '<td valign="top" style="text-align: right; font-size: 15px; font-weight: 600; color: #2D1B14;">';
+            $html .= 'Rs. ' . number_format($item->price * $item->quantity);
+            $html .= '</td>';
+            $html .= '</tr></table></td></tr>';
         }
+        $html .= '</table>';
         return $html;
     }
 
@@ -87,20 +101,27 @@ class EmailTemplateService
      */
     public static function generateOrderItemsWithReviewHtml($items): string
     {
-        $html = '';
+        $html = '<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 25px; border-collapse: collapse;">';
         foreach ($items as $item) {
-            $productImage = $item->product->image ?? asset('images/placeholder.png');
+            $productImage = $item->product->image ?? 'images/placeholder.png';
+            $imageUrl = Str::startsWith($productImage, 'http') ? $productImage : url($productImage);
             $reviewUrl = $item->product ? route('products.show', $item->product->slug) . '#reviews' : '#';
-            
-            $html .= '<div class="product-item">';
-            $html .= '<div style="display: flex; gap: 16px; margin-bottom: 16px;">';
-            $html .= '<img src="' . asset($productImage) . '" alt="' . htmlspecialchars($item->product_name) . '" style="width: 80px; height: 80px; object-fit: contain; border: 1px solid #e5e7eb; border-radius: 8px;">';
-            $html .= '<div style="flex: 1;">';
-            $html .= '<h4 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600; color: #1a1a1a;">' . htmlspecialchars($item->product_name) . '</h4>';
-            $html .= '<div style="color: #6b7280; font-size: 14px; margin-bottom: 12px;">Quantity: ' . $item->quantity . '</div>';
-            $html .= '<a href="' . $reviewUrl . '" style="display: inline-block; padding: 10px 24px; background: #d4af37; color: #1a1a1a; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">⭐ Write a Review</a>';
-            $html .= '</div></div></div>';
+
+            $html .= '<tr>';
+            $html .= '<td style="padding: 15px 0; border-bottom: 1px solid rgba(45, 27, 20, 0.05);">';
+            $html .= '<table width="100%" cellpadding="0" cellspacing="0">';
+            $html .= '<tr>';
+            $html .= '<td width="70" valign="top">';
+            $html .= '<img src="' . $imageUrl . '" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover;">';
+            $html .= '</td>';
+            $html .= '<td valign="top" style="padding-left: 15px;">';
+            $html .= '<div style="font-size: 14px; font-weight: 600; color: #2D1B14; margin-bottom: 2px;">' . htmlspecialchars($item->product_name) . '</div>';
+            $html .= '<div style="font-size: 12px; color: #8A7366; margin-bottom: 8px;">' . $item->quantity . ' Order(s) Received</div>';
+            $html .= '<a href="' . $reviewUrl . '" style="display: inline-block; padding: 7px 18px; background: #C5A359; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">⭐ Write Review</a>';
+            $html .= '</td>';
+            $html .= '</tr></table></td></tr>';
         }
+        $html .= '</table>';
         return $html;
     }
 

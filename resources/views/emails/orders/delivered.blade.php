@@ -1,105 +1,86 @@
-@extends('layouts.email-base')
+@extends('emails.layouts.master')
 
-@section('title', 'Order Delivered - Leathers.pk')
+@section('title', 'Order Delivered - ' . $order->order_number)
 
 @section('content')
-    <h1 class="email-title">🎊 Your Order Has Been Delivered!</h1>
-    
-    <p class="email-text">
-        Hi <strong>{{ $order->customer_name }}</strong>,
-    </p>
-    
-    <p class="email-text">
-        Wonderful news! Your order has been successfully delivered. We hope you're absolutely thrilled with your new premium leather goods from Leathers.pk!
-    </p>
-    
-    <div class="info-box" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-left-color: #22c55e;">
-        <div class="info-box-title" style="color: #166534;">✓ DELIVERED SUCCESSFULLY</div>
-        <div class="info-box-value" style="color: #166534;">{{ $order->order_number }}</div>
+    <div style="text-align: center;">
+        <h1 class="h1">✨ It's Home!</h1>
+        <p class="p">Hello {{ $order->customer_name }}, <br> We're delighted to confirm that your premium leather selection
+            has been successfully delivered. We hope it exceeds every expectation of quality and craftsmanship.</p>
     </div>
-    
-    <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); padding: 32px; border-radius: 12px; margin: 32px 0; text-align: center; color: white;">
-        <div style="font-size: 24px; font-weight: 700; color: #d4af37; margin-bottom: 12px;">
-            ⭐ Love Your Products?
-        </div>
-        <div style="font-size: 16px; color: #e5e7eb; margin-bottom: 24px; line-height: 1.6;">
-            Share your experience and help other customers discover the quality they deserve. Your review means the world to us!
+
+    <!-- Delivered Status -->
+    <div class="info-card" style="background-color: #F0FDF4; border-left-color: #28a745; text-align: center;">
+        <div class="info-title">Status</div>
+        <div class="info-value" style="color: #166534; font-size: 18px;">Delivered Successfully</div>
+        <div class="info-value" style="color: #666; font-size: 13px; margin-top: 5px;">Order #{{ $order->order_number }}
         </div>
     </div>
-    
-    <h3 class="email-title" style="font-size: 20px; text-align: center;">Rate Your Products</h3>
-    <p class="email-text" style="text-align: center; color: #6b7280; margin-bottom: 32px;">
-        Click the button below each product to leave a review
-    </p>
-    
-    <div class="product-items">
-        @foreach($order->items as $item)
-        <div class="product-item">
-            <img src="{{ asset($item->product->image ?? 'images/placeholder.png') }}" 
-                 alt="{{ $item->product_name }}" 
-                 class="product-image">
-            <div class="product-details">
-                <span class="product-name">{{ $item->product_name }}</span>
-                <div class="product-meta">Quantity: {{ $item->quantity }}</div>
-                <div class="product-meta">Price: <span class="product-price">Rs. {{ number_format($item->price) }}</span></div>
-                
-                <div style="margin-top: 16px;">
-                    @if($item->product)
-                    <a href="{{ route('products.show', $item->product->slug) }}#reviews" 
-                       class="btn btn-gold" 
-                       style="padding: 10px 24px; font-size: 14px; display: inline-block;">
-                        ⭐ Write a Review
-                    </a>
-                    @endif
-                </div>
-            </div>
+
+    <div
+        style="background: linear-gradient(135deg, #2D1B14 0%, #4A2C21 100%); padding: 40px 30px; border-radius: 16px; margin: 40px 0; text-align: center; color: #FDFCFB;">
+        <div style="font-size: 24px; font-weight: 700; color: #C5A359; margin-bottom: 12px; letter-spacing: 1px;">
+            SHARE YOUR THOUGHTS
         </div>
-        @endforeach
-    </div>
-    
-    <div style="background-color: #fef3c7; border-left: 4px solid #d4af37; padding: 20px; margin: 32px 0; border-radius: 8px;">
-        <div style="font-size: 14px; font-weight: 600; color: #92400e; margin-bottom: 8px;">
-            🎁 EXCLUSIVE OFFER
-        </div>
-        <div style="font-size: 15px; color: #78350f; line-height: 1.6;">
-            Leave a review and get <strong>10% OFF</strong> your next purchase! Check your email for your exclusive discount code after submitting your review.
-        </div>
-    </div>
-    
-    <div class="divider"></div>
-    
-    <h3 class="email-title" style="font-size: 20px;">Care Instructions</h3>
-    <div style="background-color: #fafafa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-        <p class="email-text" style="margin-bottom: 12px;">
-            <strong>💧 Keep your leather looking pristine:</strong>
+        <p class="p" style="color: rgba(253, 252, 251, 0.8); font-size: 15px; margin-bottom: 25px; line-height: 1.7;">
+            Our artisans pour their soul into every stitch. Your feedback is the bridge between our workshop and your
+            satisfaction.
         </p>
-        <ul style="color: #6b7280; font-size: 15px; line-height: 1.8; margin-left: 20px;">
-            <li>Clean with a soft, damp cloth regularly</li>
-            <li>Apply leather conditioner every 3-6 months</li>
-            <li>Avoid exposure to direct sunlight and heat</li>
-            <li>Store in a cool, dry place when not in use</li>
+
+        <table width="100%" cellpadding="0" cellspacing="0">
+            @foreach($order->items as $item)
+                <tr>
+                    <td style="padding: 15px 0; border-bottom: 1px solid rgba(253, 252, 251, 0.1);">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td width="60">
+                                    <img src="{{ Str::startsWith($item->product->image, 'http') ? $item->product->image : url($item->product->image) }}"
+                                        style="width: 50px; height: 50px; border-radius: 4px; object-fit: cover;"
+                                        alt="{{ $item->product_name }}">
+                                </td>
+                                <td style="text-align: left; padding-left: 15px;">
+                                    <div style="font-size: 14px; font-weight: 600; color: #FDFCFB;">{{ $item->product_name }}
+                                    </div>
+                                </td>
+                                <td style="text-align: right;">
+                                    @if($item->product)
+                                        <a href="{{ route('products.show', $item->product->slug) }}#reviews"
+                                            style="background-color: #C5A359; color: #2D1B14; text-decoration: none; padding: 8px 15px; border-radius: 4px; font-size: 12px; font-weight: 700; text-transform: uppercase;">Review</a>
+                                    @endif
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            @endforeach
+        </table>
+    </div>
+
+    <div class="divider"></div>
+
+    <h2 style="font-size: 18px; font-weight: 700; color: #2D1B14; margin-bottom: 20px;">Leather Longevity</h2>
+    <div style="background-color: #F8F5F2; padding: 30px; border-radius: 12px; border-left: 4px solid #C5A359;">
+        <div class="info-title" style="margin-bottom: 15px;">Care Guidelines</div>
+        <ul style="margin: 0; padding-left: 20px; color: #5C4A42; font-size: 14px; line-height: 2;">
+            <li>Gently wipe with a soft, dry cloth after use.</li>
+            <li>Condition every 4 months to maintain suppleness.</li>
+            <li>Avoid prolonged exposure to moisture or high heat.</li>
+            <li>Store in the provided dust bag when not in use.</li>
         </ul>
     </div>
-    
+
     <div class="divider"></div>
-    
-    <div style="text-align: center; margin: 40px 0;">
-        <h3 class="email-title" style="font-size: 20px;">Any Issues?</h3>
-        <p class="email-text">
-            We're committed to your satisfaction. If there's anything wrong with your order, please contact us within 7 days.
-        </p>
-        <a href="mailto:hello@leathers.pk" class="btn btn-outline" style="margin-top: 16px; display: inline-block;">
-            Contact Support
-        </a>
+
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #2D1B14; margin-bottom: 10px;">Need Assistance?</h3>
+        <p class="p" style="font-size: 14px;">If your order is anything less than perfect, our concierge team is here to
+            help.</p>
+        <a href="mailto:hello@leathers.pk"
+            style="color: #C5A359; font-weight: 600; text-decoration: none; font-size: 14px; border-bottom: 1px dashed #C5A359;">Contact
+            Our Concierge</a>
     </div>
-    
-    <div style="background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); padding: 32px; border-radius: 12px; margin: 32px 0; text-align: center;">
-        <div style="font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 12px;">
-            Thank you for choosing Leathers.pk!
-        </div>
-        <div style="font-size: 15px; color: #6b7280; margin-bottom: 24px;">
-            Your support means everything to us. We can't wait to serve you again!
-        </div>
-        <a href="{{ route('home') }}" class="btn btn-gold">Shop Again</a>
+
+    <div class="btn-container">
+        <a href="{{ route('home') }}" class="btn">DISCOVER NEW ARRIVALS</a>
     </div>
 @endsection

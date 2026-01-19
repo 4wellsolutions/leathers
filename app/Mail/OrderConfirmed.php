@@ -28,11 +28,8 @@ class OrderConfirmed extends Mailable implements ShouldQueue
      */
     public function envelope(): Envelope
     {
-        $templateData = $this->getTemplateData();
-        $rendered = EmailTemplateService::render('order_confirmed', $templateData);
-        
         return new Envelope(
-            subject: $rendered['subject'],
+            subject: 'Order Confirmed - ' . $this->order->order_number,
         );
     }
 
@@ -41,32 +38,9 @@ class OrderConfirmed extends Mailable implements ShouldQueue
      */
     public function content(): Content
     {
-        $templateData = $this->getTemplateData();
-        $rendered = EmailTemplateService::render('order_confirmed', $templateData);
-        
         return new Content(
-            htmlString: $rendered['body'],
+            view: 'emails.orders.confirmed',
         );
-    }
-
-    /**
-     * Get template data
-     */
-    private function getTemplateData(): array
-    {
-        return [
-            'customer_name' => $this->order->customer_name,
-            'order_number' => $this->order->order_number,
-            'estimated_delivery' => now()->addDays(5)->format('F d') . ' - ' . now()->addDays(7)->format('F d, Y'),
-            'order_items_html' => EmailTemplateService::generateOrderItemsHtml($this->order->items),
-            'subtotal' => number_format($this->order->subtotal),
-            'shipping_cost' => number_format($this->order->shipping_cost),
-            'total' => number_format($this->order->total),
-            'shipping_address' => $this->order->shipping_address . ', ' . $this->order->city . ', ' . $this->order->postal_code,
-            'customer_phone' => $this->order->customer_phone,
-            'store_url' => route('home'),
-            'current_year' => date('Y'),
-        ];
     }
 
     /**

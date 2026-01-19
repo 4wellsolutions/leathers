@@ -88,4 +88,34 @@ class OrderController extends Controller
 
         return back()->with('success', 'Order status updated successfully');
     }
+
+    public function resendEmail(Request $request, \App\Models\Order $order)
+    {
+        $request->validate([
+            'type' => 'required|in:placed,confirmed,shipped,delivered',
+        ]);
+
+        $order->load('items.product');
+
+        try {
+            switch ($request->type) {
+                case 'placed':
+                    \App\Jobs\SendOrderPlacedEmail::dispatch($order);
+                    break;
+                case 'confirmed':
+                    \App\Jobs\SendOrderConfirmedEmail::dispatch($order);
+                    break;
+                case 'shipped':
+                    \App\Jobs\SendOrderShippedEmail::dispatch($order);
+                    break;
+                case 'delivered':
+                    \App\Jobs\SendOrderDeliveredEmail::dispatch($order);
+                    break;
+            }
+
+            return back()->with('success', 'Email has been queued for resending.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to send email: ' . $e->getMessage());
+        }
+    }
 }

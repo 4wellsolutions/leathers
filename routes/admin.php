@@ -49,6 +49,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
 
     // Orders
+    Route::post('orders/{order}/resend-email', [\App\Http\Controllers\Admin\OrderController::class, 'resendEmail'])->name('orders.resend-email');
     Route::patch('orders/{order}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
     Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class);
 

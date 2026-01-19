@@ -168,6 +168,35 @@
                     </div>
                 </div>
 
+                <!-- Manual Email Resend -->
+                <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-neutral-100">
+                        <h2 class="text-lg font-semibold text-leather-900">Resend Email Notifications</h2>
+                    </div>
+                    <div class="p-6">
+                        <form action="{{ route('admin.orders.resend-email', $order->id) }}" method="POST">
+                            @csrf
+                            <div class="space-y-4">
+                                <div>
+                                    <select name="type" required
+                                        class="block w-full rounded-lg border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 sm:text-sm py-3 px-4 transition-all">
+                                        <option value="placed">New Order Email (Placed)</option>
+                                        <option value="confirmed">Order Processing Email (Confirmed)</option>
+                                        <option value="shipped">Order Dispatched Email (Shipped)</option>
+                                        <option value="delivered">Order Delivered Email (Delivered)</option>
+                                    </select>
+                                </div>
+                                <button type="submit"
+                                    class="w-full flex justify-center py-3 px-4 border border-leather-900 rounded-lg shadow-sm text-sm font-bold text-leather-900 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 transition-all uppercase tracking-wider">
+                                    Resend Notification
+                                </button>
+                                <p class="text-[10px] text-center text-neutral-400 italic">Use this if the customer didn't
+                                    receive their initial email.</p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
                 <!-- Customer Details -->
                 <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
                     <div class="px-6 py-4 border-b border-neutral-100 flex justify-between items-center">

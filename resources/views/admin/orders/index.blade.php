@@ -198,11 +198,11 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-neutral-200">
                     @forelse($orders as $order)
-                        <tr class="hover:bg-neutral-50 transition-colors">
+                        <tr class="hover:bg-neutral-50 transition-colors cursor-pointer" onclick="window.location='{{ route('admin.orders.show', $order->id) }}'">
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="{{ route('admin.orders.show', $order->id) }}" class="text-sm font-medium text-gold-600 hover:text-gold-900">
+                                <span class="text-sm font-medium text-gold-600 hover:text-gold-900">
                                     {{ $order->order_number }}
-                                </a>
+                                </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-leather-900">{{ $order->customer_name }}</div>
@@ -231,7 +231,9 @@
                                 <div class="text-xs text-neutral-400">{{ $order->created_at->format('h:i A') }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="{{ route('admin.orders.show', $order->id) }}" class="text-gold-600 hover:text-gold-900">View Details</a>
+                                <a href="{{ route('admin.orders.show', $order->id) }}" class="inline-flex items-center px-3 py-1 border border-gold-500 text-gold-600 rounded-md hover:bg-gold-500 hover:text-white transition-all">
+                                    View
+                                </a>
                             </td>
                         </tr>
                     @empty

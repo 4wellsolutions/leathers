@@ -208,15 +208,6 @@
                                         <p class="text-sm text-neutral-500 mb-1">Subtotal (incl. tax)</p>
                                         <p class="text-2xl font-serif font-bold text-leather-900 mb-1" id="mini-cart-total">
                                             Rs. {{ number_format($total) }}</p>
-                                        <p
-                                            class="text-[10px] text-green-600 font-bold uppercase tracking-wide flex items-center">
-                                            <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd"
-                                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                    clip-rule="evenodd" />
-                                            </svg>
-                                            Free Shipping
-                                        </p>
                                     </div>
                                     <div class="flex gap-3">
                                         <a href="{{ route('cart.index') }}"
@@ -363,10 +354,6 @@
                                         <p class="text-xs text-neutral-500 mb-0.5">Subtotal (incl. tax)</p>
                                         <p class="text-xl font-serif font-bold text-leather-900 mb-0.5"
                                             id="mini-cart-total-mobile">Rs. {{ number_format($total) }}</p>
-                                        <p
-                                            class="text-[10px] text-green-600 font-bold uppercase tracking-wide flex items-center">
-                                            Free Shipping
-                                        </p>
                                     </div>
                                     <div class="flex gap-2">
                                         <a href="{{ route('cart.index') }}"

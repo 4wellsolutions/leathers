@@ -38,46 +38,44 @@
                             </label>
 
                             <!-- Login -->
-                        <label class="relative cursor-pointer">
-                            <input type="radio" name="checkout_method" value="login" x-model="selected"
-                                @change="scrollToForm('login-form')"
-                                class="peer sr-only">
-                            <div
-                                class="border-2 border-neutral-200 rounded-lg p-3 peer-checked:border-gold-500 peer-checked:bg-gold-50 transition-all hover:shadow-md">
-                                <div class="flex items-center gap-3">
-                                    <svg class="w-6 h-6 flex-shrink-0 text-neutral-400 peer-checked:text-gold-600"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                                    </svg>
-                                    <div class="text-left">
-                                        <h3 class="font-bold text-leather-900 text-sm leading-tight">Login</h3>
-                                        <p class="text-xs text-neutral-600">Existing</p>
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="checkout_method" value="login" x-model="selected"
+                                    @change="scrollToForm('login-form')" class="peer sr-only">
+                                <div
+                                    class="border-2 border-neutral-200 rounded-lg p-3 peer-checked:border-gold-500 peer-checked:bg-gold-50 transition-all hover:shadow-md">
+                                    <div class="flex items-center gap-3">
+                                        <svg class="w-6 h-6 flex-shrink-0 text-neutral-400 peer-checked:text-gold-600"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                                        </svg>
+                                        <div class="text-left">
+                                            <h3 class="font-bold text-leather-900 text-sm leading-tight">Login</h3>
+                                            <p class="text-xs text-neutral-600">Existing</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </label>
+                            </label>
 
                             <!-- Register -->
-                        <label class="relative cursor-pointer">
-                            <input type="radio" name="checkout_method" value="register" x-model="selected"
-                                @change="scrollToForm('register-form')"
-                                class="peer sr-only">
-                            <div
-                                class="border-2 border-neutral-200 rounded-lg p-3 peer-checked:border-gold-500 peer-checked:bg-gold-50 transition-all hover:shadow-md">
-                                <div class="flex items-center gap-3">
-                                    <svg class="w-6 h-6 flex-shrink-0 text-neutral-400 peer-checked:text-gold-600"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                                    </svg>
-                                    <div class="text-left">
-                                        <h3 class="font-bold text-leather-900 text-sm leading-tight">Register</h3>
-                                        <p class="text-xs text-neutral-600">New</p>
+                            <label class="relative cursor-pointer">
+                                <input type="radio" name="checkout_method" value="register" x-model="selected"
+                                    @change="scrollToForm('register-form')" class="peer sr-only">
+                                <div
+                                    class="border-2 border-neutral-200 rounded-lg p-3 peer-checked:border-gold-500 peer-checked:bg-gold-50 transition-all hover:shadow-md">
+                                    <div class="flex items-center gap-3">
+                                        <svg class="w-6 h-6 flex-shrink-0 text-neutral-400 peer-checked:text-gold-600"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                        </svg>
+                                        <div class="text-left">
+                                            <h3 class="font-bold text-leather-900 text-sm leading-tight">Register</h3>
+                                            <p class="text-xs text-neutral-600">New</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </label>
+                            </label>
                         </div>
 
                         <!-- Login Form -->
@@ -372,55 +370,66 @@
 
             <!-- Order Summary -->
             <div class="w-full lg:w-96 flex-shrink-0">
-                <div class="bg-white rounded-xl shadow-lg p-6 sticky top-24">
-                    <h2 class="text-lg font-serif font-bold text-leather-900 mb-6 border-b border-neutral-200 pb-4">Your
-                        Order</h2>
+                <div class="bg-white rounded-xl shadow-lg p-6 lg:sticky lg:top-24 border border-neutral-100">
+                    <h2
+                        class="text-lg font-serif font-bold text-leather-900 mb-6 border-b border-neutral-200 pb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        Your Order
+                    </h2>
 
-                    <div class="space-y-4 mb-6 max-h-64 overflow-y-auto pr-2">
+                    <div class="space-y-4 mb-6 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
                         @foreach($cart as $details)
-                            <div class="flex items-start space-x-4">
-                                <img src="{{ $details['image'] }}" alt="{{ $details['name'] }}"
-                                    class="w-16 h-16 object-contain bg-neutral-100 rounded-md">
-                                <div class="flex-grow">
-                                    <h4 class="text-sm font-bold text-leather-900">{{ $details['name'] }}</h4>
+                            <div class="flex items-center space-x-4 p-2 rounded-lg hover:bg-neutral-50 transition-colors">
+                                <div
+                                    class="w-16 h-16 flex-shrink-0 bg-neutral-100 rounded-md overflow-hidden border border-neutral-200">
+                                    <img src="{{ $details['image'] }}" alt="{{ $details['name'] }}"
+                                        class="w-full h-full object-contain p-1">
+                                </div>
+                                <div class="flex-grow min-w-0">
+                                    <h4 class="text-sm font-bold text-leather-900 truncate">{{ $details['name'] }}</h4>
                                     <p class="text-xs text-neutral-500">Qty: {{ $details['quantity'] }}</p>
-                                    <p class="text-sm font-semibold text-leather-900">Rs.
+                                    <p class="text-sm font-semibold text-gold-600">Rs.
                                         {{ number_format($details['price'] * $details['quantity']) }}
                                     </p>
-
                                 </div>
                             </div>
                         @endforeach
                     </div>
 
-                    <div class="bg-gray-50 rounded-xl p-6 border border-neutral-200">
-                        <div class="flex justify-between items-center mb-3">
+                    <div class="bg-neutral-50 rounded-xl p-5 border border-neutral-200 space-y-3">
+                        <div class="flex justify-between items-center text-sm">
                             <span class="text-neutral-600 font-medium">Subtotal</span>
-                            <span class="text-leather-900 font-semibold text-lg">Rs. {{ number_format($subtotal) }}</span>
+                            <span class="text-leather-900 font-bold">Rs. {{ number_format($subtotal) }}</span>
                         </div>
 
-                        <div class="flex justify-between items-center mb-4 pb-4 border-b border-neutral-200">
+                        <div class="flex justify-between items-center text-sm pb-3 border-b border-neutral-200">
                             <span class="text-neutral-600 font-medium">Shipping</span>
                             @if($shippingCost == 0)
-                                <span class="text-green-600 font-bold bg-green-100 px-2 py-0.5 rounded text-sm">FREE
+                                <span
+                                    class="text-green-600 font-bold bg-green-100 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider">FREE
                                     DELIVERY</span>
                             @else
-                                <span class="text-leather-900 font-semibold">Rs. {{ number_format($shippingCost) }}</span>
+                                <span class="text-leather-900 font-bold">Rs. {{ number_format($shippingCost) }}</span>
                             @endif
                         </div>
 
-                        <div class="flex justify-between items-end">
-                            <span class="text-lg font-bold text-leather-900">Total</span>
+                        <div class="flex justify-between items-end pt-1">
+                            <span class="text-base font-bold text-leather-900">Total</span>
                             <div class="text-right">
-                                <span class="text-3xl font-serif font-bold text-gold-600">Rs.
+                                <span class="text-2xl font-serif font-bold text-gold-600 leading-none">Rs.
                                     {{ number_format($total) }}</span>
-                                <p class="text-xs text-neutral-500 mt-1">Inclusive of all taxes</p>
+                                <p class="text-[10px] text-neutral-400 mt-1 uppercase tracking-tighter">VAT & Taxes Included
+                                </p>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Desktop Submit Button -->
                     <button type="button" onclick="submitCheckout()"
-                        class="mt-6 w-full btn-primary py-4 text-lg shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all text-center flex justify-center items-center group">
+                        class="hidden lg:flex mt-6 w-full btn-primary py-4 text-lg shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all justify-center items-center group bg-leather-900">
                         <span>Place Order</span>
                         <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
@@ -428,6 +437,26 @@
                                 d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
                     </button>
+
+                    <!-- Mobile Sticky Bottom Bar (Visible only on small screens) -->
+                    <div
+                        class="lg:hidden fixed bottom-14 left-0 right-0 bg-white border-t border-neutral-200 p-4 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] z-40">
+                        <div class="flex items-center justify-between gap-4">
+                            <div>
+                                <p class="text-[10px] text-neutral-500 uppercase font-bold tracking-widest">Payable Total
+                                </p>
+                                <p class="text-xl font-bold text-gold-600 leading-none">Rs. {{ number_format($total) }}</p>
+                            </div>
+                            <button type="button" onclick="submitCheckout()"
+                                class="flex-1 btn-primary py-4 text-sm font-bold shadow-lg bg-gold-500 text-leather-900 hover:bg-gold-600 border-none transition-all flex justify-center items-center rounded-xl">
+                                <span>Place My Order</span>
+                                <svg class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

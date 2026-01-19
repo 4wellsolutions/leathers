@@ -9,7 +9,6 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Order;
-use App\Services\EmailTemplateService;
 
 class OrderPlaced extends Mailable implements ShouldQueue
 {
@@ -28,11 +27,8 @@ class OrderPlaced extends Mailable implements ShouldQueue
      */
     public function envelope(): Envelope
     {
-        $templateData = $this->getTemplateData();
-        $rendered = EmailTemplateService::render('order_placed', $templateData);
-        
         return new Envelope(
-            subject: $rendered['subject'],
+            subject: 'Order Confirmation - ' . $this->order->order_number,
         );
     }
 
@@ -41,31 +37,9 @@ class OrderPlaced extends Mailable implements ShouldQueue
      */
     public function content(): Content
     {
-        $templateData = $this->getTemplateData();
-        $rendered = EmailTemplateService::render('order_placed', $templateData);
-        
         return new Content(
-            htmlString: $rendered['body'],
+            view: 'emails.order-placed',
         );
-    }
-
-    /**
-     * Get template data
-     */
-    private function getTemplateData(): array
-    {
-        return [
-            'customer_name' => $this->order->customer_name,
-            'order_number' => $this->order->order_number,
-            'order_date' => $this->order->created_at->format('F d, Y'),
-            'order_items_html' => EmailTemplateService::generateOrderItemsHtml($this->order->items),
-            'subtotal' => number_format($this->order->subtotal),
-            'shipping_cost' => number_format($this->order->shipping_cost),
-            'total' => number_format($this->order->total),
-            'shipping_address' => $this->order->shipping_address . ', ' . $this->order->city . ', ' . $this->order->postal_code,
-            'store_url' => route('home'),
-            'current_year' => date('Y'),
-        ];
     }
 
     /**

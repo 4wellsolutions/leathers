@@ -213,9 +213,6 @@
                             class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Price
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Stock
-                        </th>
-                        <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Status
                         </th>
                         <th scope="col"
@@ -257,16 +254,6 @@
                                 <div class="text-sm font-medium text-leather-900">Rs. {{ number_format($product->price) }}</div>
                                 @if($product->sale_price)
                                     <div class="text-xs text-green-600">Sale: Rs. {{ number_format($product->sale_price) }}</div>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @if($product->stock < 10)
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                        {{ $product->stock }} units
-                                    </span>
-                                @else
-                                    <span class="text-sm text-neutral-900">{{ $product->stock }} units</span>
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">

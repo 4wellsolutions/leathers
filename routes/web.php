@@ -79,7 +79,19 @@ Route::get('/test-email', function () {
             ->send(new \App\Mail\OrderPlaced($order));
         return "Test email sent successfully to " . $order->customer_email;
     } catch (\Exception $e) {
-        return "Failed to send email: " . $e->getMessage();
+        dd([
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString(),
+            'smtp_settings' => [
+                'mailer' => config('mail.default'),
+                'host' => config('mail.mailers.smtp.host'),
+                'port' => config('mail.mailers.smtp.port'),
+                'encryption' => config('mail.mailers.smtp.encryption'),
+                'username' => config('mail.mailers.smtp.username'),
+            ]
+        ]);
     }
 });
 

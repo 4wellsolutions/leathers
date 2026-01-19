@@ -69,30 +69,39 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard')->middleware('auth');
 
 // Email Test Route
-Route::get('/test-email', function () {
-    $order = \App\Models\Order::latest()->first();
-    if (!$order)
-        return "No orders found to test with.";
+// Email Test Routes
+Route::prefix('test-emails')->group(function () {
+    Route::get('/placed', function () {
+        $order = \App\Models\Order::latest()->first();
+        if (!$order)
+            return "No orders found.";
+        \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderPlaced($order));
+        return "Placed email sent.";
+    });
 
-    try {
-        \Illuminate\Support\Facades\Mail::to($order->customer_email)
-            ->send(new \App\Mail\OrderPlaced($order));
-        return "Test email sent successfully to " . $order->customer_email;
-    } catch (\Exception $e) {
-        dd([
-            'message' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'trace' => $e->getTraceAsString(),
-            'smtp_settings' => [
-                'mailer' => config('mail.default'),
-                'host' => config('mail.mailers.smtp.host'),
-                'port' => config('mail.mailers.smtp.port'),
-                'encryption' => config('mail.mailers.smtp.encryption'),
-                'username' => config('mail.mailers.smtp.username'),
-            ]
-        ]);
-    }
+    Route::get('/confirmed', function () {
+        $order = \App\Models\Order::latest()->first();
+        if (!$order)
+            return "No orders found.";
+        \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderConfirmed($order));
+        return "Confirmed email sent.";
+    });
+
+    Route::get('/shipped', function () {
+        $order = \App\Models\Order::latest()->first();
+        if (!$order)
+            return "No orders found.";
+        \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderShipped($order));
+        return "Shipped email sent.";
+    });
+
+    Route::get('/delivered', function () {
+        $order = \App\Models\Order::latest()->first();
+        if (!$order)
+            return "No orders found.";
+        \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderDelivered($order));
+        return "Delivered email sent.";
+    });
 });
 
 // Admin Routes

@@ -197,7 +197,7 @@
         <div class="container">
             <!-- Header -->
             <div class="header" style="padding: 0; background: none;">
-                <img src="{{ asset('images/email-header.png') }}" alt="LEATHERS.PK"
+                <img src="{{ $message->embed(public_path('images/email-header.png')) }}" alt="LEATHERS.PK"
                     style="width: 100%; height: auto; display: block; border-top-left-radius: 16px; border-top-right-radius: 16px;">
             </div>
 

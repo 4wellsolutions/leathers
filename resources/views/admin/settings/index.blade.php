@@ -77,8 +77,15 @@
                                 <div class="flex-shrink-0">
                                     @if(isset($settings['site_logo']))
                                         <div class="p-3 bg-neutral-100 rounded-lg border border-neutral-200 inline-block">
-                                            <img src="{{ asset($settings['site_logo']) }}" alt="Current Logo"
-                                                class="h-16 object-contain">
+                                            @php
+                                                $logoPath = $settings['site_logo'];
+                                                if (str_starts_with($logoPath, 'storage/images/')) {
+                                                    $logoPath = str_replace('storage/images/', '', $logoPath);
+                                                } elseif (str_starts_with($logoPath, 'storage/')) {
+                                                    $logoPath = str_replace('storage/', '', $logoPath);
+                                                }
+                                            @endphp
+                                            <img src="{{ asset($logoPath) }}" alt="Current Logo" class="h-16 object-contain">
                                         </div>
                                     @else
                                         <div

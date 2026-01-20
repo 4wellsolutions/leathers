@@ -199,9 +199,9 @@
                                                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                         </svg>
                                     </div>
-                                    value="{{ $settings['contact_email'] ?? 'info@leathers.pk' }}"
-                                    class="focus:ring-gold-500 focus:border-gold-500 block w-full pl-12 sm:text-sm
-                                    border-gray-300 rounded-lg h-11">
+                                    <input type="email" name="contact_email"
+                                        value="{{ $settings['contact_email'] ?? 'info@leathers.pk' }}"
+                                        class="focus:ring-gold-500 focus:border-gold-500 block w-full pl-14 sm:text-sm border-gray-300 rounded-lg h-11">
                                 </div>
                             </div>
 
@@ -217,7 +217,7 @@
                                     </div>
                                     <input type="text" name="contact_phone"
                                         value="{{ $settings['contact_phone'] ?? '+92 300 1234567' }}"
-                                        class="focus:ring-gold-500 focus:border-gold-500 block w-full pl-12 sm:text-sm border-gray-300 rounded-lg h-11">
+                                        class="focus:ring-gold-500 focus:border-gold-500 block w-full pl-14 sm:text-sm border-gray-300 rounded-lg h-11">
                                 </div>
                             </div>
 
@@ -232,7 +232,7 @@
                                     </div>
                                     <input type="text" name="social_whatsapp"
                                         value="{{ $settings['social_whatsapp'] ?? '' }}"
-                                        class="focus:ring-gold-500 focus:border-gold-500 block w-full pl-12 sm:text-sm border-gray-300 rounded-lg h-11"
+                                        class="focus:ring-gold-500 focus:border-gold-500 block w-full pl-14 sm:text-sm border-gray-300 rounded-lg h-11"
                                         placeholder="+923001234567">
                                 </div>
                             </div>

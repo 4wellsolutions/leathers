@@ -21,8 +21,11 @@ class RedirectController extends Controller
 
     public function store(Request $request)
     {
+        $fromCol = Redirect::getFromColumn();
+        $toCol = Redirect::getToColumn();
+
         $validated = $request->validate([
-            'from_url' => 'required|string|unique:redirects,from_url',
+            'from_url' => "required|string|unique:redirects,{$fromCol}",
             'to_url' => 'required|string',
             'status_code' => 'required|in:301,302',
             'is_active' => 'boolean',
@@ -30,7 +33,17 @@ class RedirectController extends Controller
 
         $validated['is_active'] = $request->has('is_active');
 
-        Redirect::create($validated);
+        // Map input keys to actual db columns if needed, but mutators handle it if we use model properties
+        // However, Redirect::create($validated) uses mass assignment. 
+        // We can manually map them to be safe.
+        $data = [
+            $fromCol => $validated['from_url'],
+            $toCol => $validated['to_url'],
+            'status_code' => $validated['status_code'],
+            'is_active' => $validated['is_active']
+        ];
+
+        Redirect::create($data);
 
         return redirect()->route('admin.redirects.index')->with('success', 'Redirect created successfully.');
     }
@@ -42,8 +55,11 @@ class RedirectController extends Controller
 
     public function update(Request $request, Redirect $redirect)
     {
+        $fromCol = Redirect::getFromColumn();
+        $toCol = Redirect::getToColumn();
+
         $validated = $request->validate([
-            'from_url' => 'required|string|unique:redirects,from_url,' . $redirect->id,
+            'from_url' => "required|string|unique:redirects,{$fromCol}," . $redirect->id,
             'to_url' => 'required|string',
             'status_code' => 'required|in:301,302',
             'is_active' => 'boolean',
@@ -51,7 +67,14 @@ class RedirectController extends Controller
 
         $validated['is_active'] = $request->has('is_active');
 
-        $redirect->update($validated);
+        $data = [
+            $fromCol => $validated['from_url'],
+            $toCol => $validated['to_url'],
+            'status_code' => $validated['status_code'],
+            'is_active' => $validated['is_active']
+        ];
+
+        $redirect->update($data);
 
         return redirect()->route('admin.redirects.index')->with('success', 'Redirect updated successfully.');
     }

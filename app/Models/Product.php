@@ -29,7 +29,6 @@ class Product extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'sale_price' => 'decimal:2',
-        'images' => 'array',
         'stock' => 'integer',
         'featured' => 'boolean',
         'is_active' => 'boolean',
@@ -75,6 +74,23 @@ class Product extends Model
             return [];
         }
 
+        // Handle if images is a string (shouldn't happen but defensive coding)
+        $images = $this->images;
+        if (is_string($images)) {
+            // Try to decode as JSON first
+            $decoded = json_decode($images, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $images = $decoded;
+            } else {
+                // If not JSON, treat as single image
+                $images = [$images];
+            }
+        }
+
+        if (!is_array($images)) {
+            return [];
+        }
+
         return array_map(function ($image) {
             if (str_starts_with($image, 'http')) {
                 return $image;
@@ -87,7 +103,7 @@ class Product extends Model
 
             // Images are now stored directly in public folder
             return asset($cleanPath);
-        }, $this->images);
+        }, $images);
     }
 
     public function deal()

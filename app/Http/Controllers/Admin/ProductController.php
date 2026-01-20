@@ -84,7 +84,6 @@ class ProductController extends Controller
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
-            'images.*' => 'nullable|image|max:2048',
             'daraz_url' => 'nullable|url',
         ]);
 
@@ -102,19 +101,6 @@ class ProductController extends Controller
             $filename = 'products/' . $validated['slug'] . '.' . $extension;
             $file->storeAs('', $filename, 'public_root');
             $validated['image'] = $filename;
-        }
-
-        if ($request->hasFile('images')) {
-            $images = [];
-            $counter = 1;
-            foreach ($request->file('images') as $imageFile) {
-                $extension = $imageFile->getClientOriginalExtension();
-                $filename = 'products/' . $validated['slug'] . '-' . $counter . '.' . $extension;
-                $imageFile->storeAs('', $filename, 'public_root');
-                $images[] = $filename;
-                $counter++;
-            }
-            $validated['images'] = $images;
         }
 
         $product = Product::create($validated);
@@ -156,11 +142,8 @@ class ProductController extends Controller
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
-            'images.*' => 'nullable|image|max:2048',
             'daraz_url' => 'nullable|url',
             'size_guide_image' => 'nullable|image|max:2048',
-            'removed_images' => 'nullable|array',
-            'removed_images.*' => 'string',
         ]);
 
         // Set defaults for variant-based pricing
@@ -204,38 +187,6 @@ class ProductController extends Controller
             $validated['size_guide_image'] = null;
         }
 
-        // Handle gallery images
-        $currentImages = $product->images ?? [];
-
-        // Remove deleted images
-        if ($request->filled('removed_images')) {
-            foreach ($request->removed_images as $removedImage) {
-                if (($key = array_search($removedImage, $currentImages)) !== false) {
-                    unset($currentImages[$key]);
-                    if (\Storage::disk('public_root')->exists($removedImage)) {
-                        \Storage::disk('public_root')->delete($removedImage);
-                    }
-                }
-            }
-            $currentImages = array_values($currentImages); // Re-index
-        }
-
-        // Add new images
-        if ($request->hasFile('images')) {
-            $slug = $validated['slug'] ?? $product->slug;
-            $existingCount = count($currentImages);
-            $counter = $existingCount + 1;
-            foreach ($request->file('images') as $imageFile) {
-                $extension = $imageFile->getClientOriginalExtension();
-                $filename = 'products/' . $slug . '-' . $counter . '.' . $extension;
-                $imageFile->storeAs('', $filename, 'public_root');
-                $currentImages[] = $filename;
-                $counter++;
-            }
-        }
-
-        $validated['images'] = $currentImages;
-
         $product->update($validated);
 
         $this->saveVariants($product, $request);
@@ -245,7 +196,7 @@ class ProductController extends Controller
                 'success' => true,
                 'message' => 'Product updated successfully!',
                 'data' => $product->fresh(),
-                'redirect' => route('admin.products.index')
+                'reload' => true
             ]);
         }
 
@@ -274,36 +225,68 @@ class ProductController extends Controller
                     $file->storeAs('', $filename, 'public_root');
                     $colorAttributes['image'] = $filename;
                 } elseif (!empty($colorData['remove_image']) && $colorData['remove_image'] == '1') {
-                    // Logic to remove image will be handled in update block if ID exists
                     $colorAttributes['image'] = null;
                 }
 
                 // Create or Update Color
-                // If ID exists, update. Else create.
                 if (!empty($colorData['id'])) {
                     $color = \App\Models\ProductColor::find($colorData['id']);
                     if ($color) {
-                        // Delete old image if new one uploaded OR if strictly removed
+                        // Handle Single Color Ionc/Main Image Replacement (Existing logic)
                         if ((isset($colorAttributes['image']) || (!empty($colorData['remove_image']) && $colorData['remove_image'] == '1')) && $color->image) {
                             if (\Storage::disk('public_root')->exists($color->image)) {
                                 \Storage::disk('public_root')->delete($color->image);
                             }
                         }
                         $color->update($colorAttributes);
+                        $submittedColorIds[] = $color->id;
                     }
                 } else {
                     $color = $product->colors()->create($colorAttributes);
+                    $submittedColorIds[] = $color->id;
                 }
 
                 if ($color) {
-                    $submittedColorIds[] = $color->id;
+                    // Handle Color Images
+                    // Start with existing images from the form (not removed ones)
+                    $currentColorImages = [];
+                    if (isset($colorData['existing_images']) && is_array($colorData['existing_images'])) {
+                        $currentColorImages = $colorData['existing_images'];
+                    }
+
+                    // 1. Remove deleted images (already handled by not including them in existing_images)
+                    // But we still need to delete the files from storage
+                    if (isset($colorData['removed_images']) && is_array($colorData['removed_images'])) {
+                        foreach ($colorData['removed_images'] as $removedImage) {
+                            if (\Storage::disk('public_root')->exists($removedImage)) {
+                                \Storage::disk('public_root')->delete($removedImage);
+                            }
+                        }
+                    }
+
+                    // 2. Add new color images
+                    if ($request->hasFile("colors.{$colorIndex}.images")) {
+                        $counter = count($currentColorImages) + 1;
+                        foreach ($request->file("colors.{$colorIndex}.images") as $imageFile) {
+                            $extension = $imageFile->getClientOriginalExtension();
+                            // Naming: product-slug-color-name-count.ext
+                            $colorSlugForImages = \Str::slug($product->slug . '-' . $color->name);
+                            $filename = 'products/colors/' . $colorSlugForImages . '-' . $counter . '-' . uniqid() . '.' . $extension;
+                            $imageFile->storeAs('', $filename, 'public_root');
+                            $currentColorImages[] = $filename;
+                            $counter++;
+                        }
+                    }
+
+                    $color->update(['images' => $currentColorImages]);
+                    // ---------------------------------------------
 
                     // Handle Sizes (Variants)
                     $submittedVariantIds = [];
                     if (isset($colorData['sizes']) && is_array($colorData['sizes'])) {
-                        foreach ($colorData['sizes'] as $sizeData) {
+                        foreach ($colorData['sizes'] as $sizeIndex => $sizeData) {
                             $variantAttributes = [
-                                'product_id' => $product->id, // Redundant but kept as per schema
+                                'product_id' => $product->id,
                                 'name' => $colorData['name'] . ' - ' . $sizeData['name'],
                                 'size' => $sizeData['name'],
                                 'stock' => $sizeData['stock'] ?? 0,
@@ -312,6 +295,8 @@ class ProductController extends Controller
                                 'sku' => $sizeData['sku'] ?? null,
                             ];
 
+                            // Determine Variant Object for Logic
+                            $variant = null;
                             if (!empty($sizeData['id'])) {
                                 $variant = \App\Models\ProductVariant::find($sizeData['id']);
                                 if ($variant) {
@@ -322,9 +307,13 @@ class ProductController extends Controller
                                 $variant = $color->variants()->create($variantAttributes);
                                 $submittedVariantIds[] = $variant->id;
                             }
+
+                            if ($variant) {
+                                // Variant Image Logic Removed
+                            }
                         }
                     }
-                    // Delete removed sizes for this color
+                    // Delete removed sizes
                     $color->variants()->whereNotIn('id', $submittedVariantIds)->delete();
                 }
             }
@@ -334,7 +323,7 @@ class ProductController extends Controller
                 if ($color->image) {
                     \Storage::disk('public_root')->delete($color->image);
                 }
-                $color->delete(); // Cascades to variants
+                $color->delete();
             });
         }
     }

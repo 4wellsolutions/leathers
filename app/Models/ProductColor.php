@@ -14,6 +14,11 @@ class ProductColor extends Model
         'name',
         'color_code',
         'image',
+        'images'
+    ];
+
+    protected $casts = [
+        'images' => 'array',
     ];
 
     public function product()
@@ -24,6 +29,20 @@ class ProductColor extends Model
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);
+    }
+
+    public function getImagesUrlsAttribute()
+    {
+        if (!$this->images) {
+            return [];
+        }
+
+        return array_map(function ($image) {
+            if (str_starts_with($image, 'http')) {
+                return $image;
+            }
+            return asset($image);
+        }, $this->images);
     }
 
     public function getImageUrlAttribute()

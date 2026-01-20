@@ -31,28 +31,16 @@
                     @endif
                 </div>
 
+
                 <!-- Thumbnails Slider -->
-                <div class="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
-                    <button onclick="updateMainImage('{{ $product->image_url }}')"
-                        class="flex-shrink-0 w-20 h-20 bg-neutral-100 rounded-lg overflow-hidden border-2 border-gold-500">
-                        <img src="{{ $product->image_url }}" class="w-full h-full object-contain p-1">
-                    </button>
-                    @if($product->images_urls)
-                        @foreach($product->images_urls as $imageUrl)
-                            <button onclick="updateMainImage('{{ $imageUrl }}')"
-                                class="flex-shrink-0 w-20 h-20 bg-neutral-100 rounded-lg overflow-hidden border-2 border-transparent hover:border-gold-500">
-                                <img src="{{ $imageUrl }}" class="w-full h-full object-contain p-1">
-                            </button>
-                        @endforeach
-                    @endif
-                    @foreach($product->variants as $variant)
-                        @if($variant->image)
-                            <button onclick="updateMainImage('{{ asset($variant->image) }}')"
-                                class="flex-shrink-0 w-20 h-20 bg-neutral-100 rounded-lg overflow-hidden border-2 border-transparent hover:border-gold-500">
-                                <img src="{{ asset($variant->image) }}" class="w-full h-full object-contain p-2">
-                            </button>
-                        @endif
-                    @endforeach
+                <div x-show="currentGallery && currentGallery.length > 0"
+                    class="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
+                    <template x-for="(img, index) in currentGallery" :key="index">
+                        <button @click="updateMainImage(img)"
+                            class="flex-shrink-0 w-20 h-20 bg-neutral-100 rounded-lg overflow-hidden border-2 border-transparent hover:border-gold-500 transition-all">
+                            <img :src="img" class="w-full h-full object-contain p-1">
+                        </button>
+                    </template>
                 </div>
             </div>
 
@@ -393,12 +381,17 @@
             Alpine.data('productSelector', () => ({
                 colors: @json($product->colors->load('variants')->map(function ($c) {
                     $c->image_url = $c->image ? asset($c->image) : null;
+                    $c->images = $c->images_urls; // Add color images
+                    $c->variants->transform(function ($v) {
+                        return $v;
+                    });
                     return $c;
                 })),
                 selectedColor: null,
                 selectedVariantId: null,
                 availableSizes: [],
                 currentStock: 0,
+                currentGallery: [],
 
                 init() {
                     // Auto-select first color if available
@@ -410,6 +403,15 @@
                             this.updateInfo();
                         }
                     } else {
+                        // No colors - check for old-style product gallery images
+                        const productImages = @json($product->images_urls ?? []);
+                        if (productImages && productImages.length > 0) {
+                            // Old product with gallery images
+                            this.currentGallery = productImages;
+                        } else {
+                            // Fallback to main image only
+                            this.currentGallery = ['{{ $product->image_url }}'];
+                        }
                         this.currentStock = {{ $product->stock ?? 0 }};
                         this.updateInfo();
                     }
@@ -417,18 +419,27 @@
 
                 selectColor(color) {
                     this.selectedColor = color;
-                    this.availableSizes = color.variants;
+                    this.availableSizes = color.variants || [];
 
-                    // Auto-select first size when color changes
+                    // Auto-select first size if available
                     if (this.availableSizes.length > 0) {
                         this.selectedVariantId = this.availableSizes[0].id;
                     } else {
                         this.selectedVariantId = null;
                     }
 
-                    // Update Main Image to Color Image
-                    if (color.image_url) {
-                        updateMainImage(color.image_url);
+                    // Update Gallery - always start with main product image
+                    const mainImage = '{{ $product->image_url }}';
+
+                    if (color.images && Array.isArray(color.images) && color.images.length > 0) {
+                        // Show main image + color specific images
+                        this.currentGallery = [mainImage, ...color.images];
+                        // Set first color image as main display
+                        updateMainImage(color.images[0]);
+                    } else {
+                        // No color images - just show main image
+                        this.currentGallery = [mainImage];
+                        updateMainImage(mainImage);
                     }
 
                     this.updateInfo();
@@ -445,6 +456,7 @@
                             stock = variant.stock;
                             price = variant.price || {{ $product->price }};
                             salePrice = variant.sale_price || null;
+                            // Gallery is now controlled by color, not variant
                         }
                     }
 
@@ -483,77 +495,77 @@
 
     <!-- Product Schema -->
     <script type="application/ld+json">
-            {
-              "@@context": "https://schema.org/",
-              "@@type": "Product",
-              "name": "{{ $product->name }}",
-              "image": [
-                "{{ $product->image_url }}"
-                @if($product->images_urls)
-                    @foreach($product->images_urls as $imageUrl)
-                        ,"{{ $imageUrl }}"
-                    @endforeach
-                @endif
-               ],
-              "description": "{{ $product->description }}",
-              "sku": "{{ $product->id }}",
-              "brand": {
-                "@@type": "Brand",
-                "name": "Leathers.pk"
-              },
-              "aggregateRating": {
-                "@@type": "AggregateRating",
-                "ratingValue": "{{ $product->average_rating }}",
-                "reviewCount": "{{ $product->review_count }}"
-              },
-              "review": [
-                @foreach($product->reviews as $review)
-                    {
-                      "@@type": "Review",
-                      "author": {
-                        "@@type": "Person",
-                        "name": "{{ $review->user->name ?? 'Guest' }}"
-                      },
-                      "datePublished": "{{ $review->created_at->format('Y-m-d') }}",
-                      "reviewBody": "{{ $review->comment }}",
-                      "reviewRating": {
-                        "@@type": "Rating",
-                        "ratingValue": "{{ $review->rating }}"
-                      }
-                    }{{ !$loop->last ? ',' : '' }}
-                @endforeach
-              ],
-              "offers": {
-                "@@type": "Offer",
-                "url": "{{ route('products.show', $product->slug) }}",
-                "priceCurrency": "PKR",
-                "price": "{{ $product->sale_price ?? $product->price }}",
-                "availability": "{{ $product->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
-                "itemCondition": "https://schema.org/NewCondition"
-              }
-            }
-            </script>
+                                    {
+                                      "@@context": "https://schema.org/",
+                                      "@@type": "Product",
+                                      "name": "{{ $product->name }}",
+                                      "image": [
+                                        "{{ $product->image_url }}"
+                                        @if($product->images_urls)
+                                            @foreach($product->images_urls as $imageUrl)
+                                                ,"{{ $imageUrl }}"
+                                            @endforeach
+                                        @endif
+                                       ],
+                                      "description": "{{ $product->description }}",
+                                      "sku": "{{ $product->id }}",
+                                      "brand": {
+                                        "@@type": "Brand",
+                                        "name": "Leathers.pk"
+                                      },
+                                      "aggregateRating": {
+                                        "@@type": "AggregateRating",
+                                        "ratingValue": "{{ $product->average_rating }}",
+                                        "reviewCount": "{{ $product->review_count }}"
+                                      },
+                                      "review": [
+                                        @foreach($product->reviews as $review)
+                                            {
+                                              "@@type": "Review",
+                                              "author": {
+                                                "@@type": "Person",
+                                                "name": "{{ $review->user->name ?? 'Guest' }}"
+                                              },
+                                              "datePublished": "{{ $review->created_at->format('Y-m-d') }}",
+                                              "reviewBody": "{{ $review->comment }}",
+                                              "reviewRating": {
+                                                "@@type": "Rating",
+                                                "ratingValue": "{{ $review->rating }}"
+                                              }
+                                            }{{ !$loop->last ? ',' : '' }}
+                                        @endforeach
+                                      ],
+                                      "offers": {
+                                        "@@type": "Offer",
+                                        "url": "{{ route('products.show', $product->slug) }}",
+                                        "priceCurrency": "PKR",
+                                        "price": "{{ $product->sale_price ?? $product->price }}",
+                                        "availability": "{{ $product->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
+                                        "itemCondition": "https://schema.org/NewCondition"
+                                      }
+                                    }
+                                    </script>
 
     <!-- Breadcrumb Schema -->
     <script type="application/ld+json">
-            {
-              "@@context": "https://schema.org",
-              "@@type": "BreadcrumbList",
-              "itemListElement": [{
-                "@@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": "{{ route('home') }}"
-              },{
-                "@@type": "ListItem",
-                "position": 2,
-                "name": "{{ $product->category->name }}",
-                "item": "{{ route('category.show', $product->category->slug) }}"
-              },{
-                "@@type": "ListItem",
-                "position": 3,
-                "name": "{{ $product->name }}"
-              }]
-            }
-            </script>
+                                    {
+                                      "@@context": "https://schema.org",
+                                      "@@type": "BreadcrumbList",
+                                      "itemListElement": [{
+                                        "@@type": "ListItem",
+                                        "position": 1,
+                                        "name": "Home",
+                                        "item": "{{ route('home') }}"
+                                      },{
+                                        "@@type": "ListItem",
+                                        "position": 2,
+                                        "name": "{{ $product->category->name }}",
+                                        "item": "{{ route('category.show', $product->category->slug) }}"
+                                      },{
+                                        "@@type": "ListItem",
+                                        "position": 3,
+                                        "name": "{{ $product->name }}"
+                                      }]
+                                    }
+                                    </script>
 @endsection

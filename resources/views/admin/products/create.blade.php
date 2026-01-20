@@ -126,72 +126,71 @@
                                 @enderror
                             </div>
 
-                            <!-- Gallery Images -->
-                            <div>
-                                <label class="block text-sm font-medium text-neutral-700 mb-2">Gallery Images</label>
 
-                                <div id="gallery-preview" class="hidden grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4"></div>
-
-                                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-neutral-300 border-dashed rounded-xl hover:bg-neutral-50 transition-colors cursor-pointer relative"
-                                    id="gallery-drop-zone">
-                                    <div class="space-y-1 text-center">
-                                        <svg class="mx-auto h-12 w-12 text-neutral-400" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                        <div class="flex text-sm text-neutral-600 justify-center">
-                                            <label for="gallery_trigger"
-                                                class="relative cursor-pointer bg-white rounded-md font-medium text-gold-600 hover:text-gold-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-gold-500">
-                                                <span>Upload files</span>
-                                                <!-- Hidden trigger -->
-                                                <input id="gallery_trigger" type="file" class="sr-only" multiple
-                                                    accept="image/*">
-                                                <!-- Real input -->
-                                                <input id="images" name="images[]" type="file" class="hidden" multiple
-                                                    accept="image/*">
-                                            </label>
-                                            <p class="pl-1">or drag and drop</p>
-                                        </div>
-                                        <p class="text-xs text-neutral-500">Multiple images supported</p>
-                                    </div>
-                                </div>
-                                @error('images')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Product Variants Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden" x-data="{
-                                        colors: [],
-                                        addColor() {
-                                            this.colors.push({
-                                                id: null,
-                                                name: '',
-                                                color_code: '#000000',
-                                                sizes: []
-                                            });
-                                        },
-                                        removeColor(index) {
-                                            this.colors.splice(index, 1);
-                                        },
-                                        addSize(colorIndex) {
-                                            this.colors[colorIndex].sizes.push({
-                                                id: null,
-                                                name: '',
-                                                stock: 0,
-                                                price: '',
-                                                sale_price: '',
-                                                sku: ''
-                                            });
-                                        },
-                                        removeSize(colorIndex, sizeIndex) {
-                                            this.colors[colorIndex].sizes.splice(sizeIndex, 1);
-                                        }
-                                    }">
+                                                            colors: [],
+                                                            addColor() {
+                                                                this.colors.push({
+                                                                    id: null,
+                                                                    name: '',
+                                                                    color_code: '#000000',
+                                                                    images: [],
+                                                                    removed_images: [],
+                                                                    new_images: [],
+                                                                    sizes: []
+                                                                });
+                                                            },
+                                                            removeColor(index) {
+                                                                this.colors.splice(index, 1);
+                                                            },
+                                                            addSize(colorIndex) {
+                                                                this.colors[colorIndex].sizes.push({
+                                                                    id: null,
+                                                                    name: '',
+                                                                    stock: 0,
+                                                                    price: '',
+                                                                    sale_price: '',
+                                                                    sku: ''
+                                                                });
+                                                            },
+                                                            handleFileSelect(event, colorIndex) {
+                                                                const files = event.target.files;
+                                                                if (!files.length) return;
+
+                                                                if (!this.colors[colorIndex].new_images) {
+                                                                    this.colors[colorIndex].new_images = [];
+                                                                }
+
+                                                                Array.from(files).forEach(file => {
+                                                                    const reader = new FileReader();
+                                                                    reader.onload = (e) => {
+                                                                        this.colors[colorIndex].new_images.push(e.target.result);
+                                                                    };
+                                                                    reader.readAsDataURL(file);
+                                                                });
+                                                            },
+                                                            removeVariantImage(colorIndex, imageIndex, isExisting = true) {
+                                                                if (isExisting) {
+                                                                    const imageUrl = this.colors[colorIndex].images[imageIndex];
+                                                                    if (!this.colors[colorIndex].removed_images) {
+                                                                        this.colors[colorIndex].removed_images = [];
+                                                                    }
+                                                                    this.colors[colorIndex].removed_images.push(imageUrl);
+                                                                }
+                                                                this.colors[colorIndex].images.splice(imageIndex, 1);
+                                                            },
+                                                            removeNewVariantImage(colorIndex, imageIndex) {
+                                                                this.colors[colorIndex].new_images.splice(imageIndex, 1);
+                                                            },
+                                                            removeSize(colorIndex, sizeIndex) {
+                                                                this.colors[colorIndex].sizes.splice(sizeIndex, 1);
+                                                            }
+                                                        }">
                     <div class="p-6 md:p-8 space-y-6">
                         <div class="flex items-center justify-between border-b border-neutral-100 pb-4 mb-6">
                             <h2 class="text-lg font-semibold text-leather-900">Product Variants (Colors & Sizes)</h2>
@@ -245,6 +244,45 @@
                                                 Image</label>
                                             <input type="file" :name="'colors[' + index + '][image]'" accept="image/*"
                                                 class="block w-full text-sm text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gold-50 file:text-gold-700 hover:file:bg-gold-100">
+                                        </div>
+                                    </div>
+
+                                    <!-- Variant Images per Color -->
+                                    <div class="mt-4 pt-4 border-t border-neutral-200">
+                                        <label class="block text-xs font-semibold text-neutral-700 mb-2">Variant Images (Max
+                                            4)</label>
+                                        <div class="flex flex-wrap gap-3">
+                                            <!-- New Image Previews -->
+                                            <template x-for="(img, imgIndex) in color.new_images" :key="'new-' + imgIndex">
+                                                <div class="relative w-20 h-20 group">
+                                                    <img :src="img"
+                                                        class="w-full h-full object-cover rounded-lg border-2 border-gold-200 shadow-sm">
+                                                    <div
+                                                        class="absolute top-1 right-1 bg-gold-500 text-white text-xs px-1.5 py-0.5 rounded-full font-semibold">
+                                                        New</div>
+                                                    <button type="button" @click="removeNewVariantImage(index, imgIndex)"
+                                                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 hover:scale-110 transition-all">
+                                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                                                            stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </template>
+
+                                            <!-- Upload Button -->
+                                            <label
+                                                class="w-16 h-16 flex items-center justify-center border-2 border-dashed border-neutral-300 rounded-lg hover:border-gold-400 cursor-pointer bg-neutral-50 hover:bg-white transition-colors">
+                                                <svg class="w-6 h-6 text-neutral-400" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 4v16m8-8H4" />
+                                                </svg>
+                                                <input type="file" multiple accept="image/*"
+                                                    :name="'colors[' + index + '][images][]'"
+                                                    @change="handleFileSelect($event, index)" class="hidden">
+                                            </label>
                                         </div>
                                     </div>
 
@@ -520,13 +558,13 @@
                     const div = document.createElement('div');
                     div.className = 'relative group';
                     div.innerHTML = `
-                                             <img src="${e.target.result}" class="h-24 w-24 object-cover rounded-lg border border-neutral-200" title="${file.name}">
-                                             <button type="button" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity" onclick="removeGalleryImage('${file.name}', this)">
-                                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        `;
+                                                                 <img src="${e.target.result}" class="h-24 w-24 object-cover rounded-lg border border-neutral-200" title="${file.name}">
+                                                                 <button type="button" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity" onclick="removeGalleryImage('${file.name}', this)">
+                                                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                                    </svg>
+                                                                </button>
+                                                            `;
                     galleryPreviewsContainer.appendChild(div);
                     galleryPreviewsContainer.classList.remove('hidden');
                 };

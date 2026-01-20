@@ -15,8 +15,12 @@ class ProductVariant extends Model
         'sale_price',
         'stock',
         'size',
-        'image',
+        'image', // Keeping for backward compatibility if needed, or remove if unused
         'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     public function product()

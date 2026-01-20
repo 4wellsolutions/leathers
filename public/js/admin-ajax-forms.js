@@ -91,6 +91,14 @@ class AjaxFormHandler {
         // Show success toast
         showToast(data.message || 'Saved successfully!', 'success');
 
+        // Reload page if specified
+        if (data.reload) {
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+            return;
+        }
+
         // Redirect if specified
         if (data.redirect) {
             setTimeout(() => {

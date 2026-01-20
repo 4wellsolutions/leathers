@@ -38,6 +38,28 @@
             </div>
         </div>
 
+        <!-- Success Message -->
+        @if (session('success'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
+                class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 rounded-lg shadow-sm">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
+                    </div>
+                    <button @click="show = false" class="text-green-500 hover:text-green-700 transition-colors">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        @endif
+
+        <!-- Main Grid Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <!-- Left Column: Main Content (8 cols) -->
             <div class="lg:col-span-8 space-y-8">
@@ -108,27 +130,6 @@
                                             </div>
                                         @endif
 
-                                        <!-- Gallery Images -->
-                                        @if($product->images && count($product->images) > 0)
-                                            @foreach($product->images as $index => $image)
-                                                @php
-                                                    $imageUrl = $product->images_urls[$index] ?? asset($image);
-                                                @endphp
-                                                <div class="relative w-28 h-28 group">
-                                                    <img src="{{ $imageUrl }}" alt="Gallery"
-                                                        class="w-full h-full object-cover rounded-xl shadow-md group-hover:shadow-2xl cursor-pointer transition-all duration-300 transform group-hover:scale-105 ring-2 ring-neutral-200 group-hover:ring-gold-400"
-                                                        onclick="showImagePreview('{{ $imageUrl }}')">
-                                                    <button type="button" onclick="removeGalleryImage('{{ $image }}', this)"
-                                                        class="absolute top-0 right-0 bg-red-600 hover:bg-red-700 text-white rounded-full p-1.5 shadow-lg hover:shadow-xl transition-all transform hover:scale-110 z-10"
-                                                        title="Remove Image">
-                                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                                d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            @endforeach
-                                        @endif
                                     </div>
                                 </div>
                             @endif
@@ -185,52 +186,23 @@
                                 @endif
                             </div>
 
-                            <!-- Gallery Images Upload -->
-                            <div>
-                                <label
-                                    class="block text-sm font-medium text-neutral-700 mb-3">{{ $product->images ? 'Add More Gallery Images' : 'Gallery Images' }}</label>
 
-                                <!-- Preview New Gallery Images -->
-                                <div id="new-gallery-previews" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4 hidden">
-                                </div>
-
-                                <div class="mt-1 flex justify-center px-6 pt-6 pb-6 border-2 border-neutral-300 border-dashed rounded-xl hover:bg-gradient-to-br hover:from-gold-50 hover:to-amber-50 hover:border-gold-400 transition-all duration-300 cursor-pointer relative shadow-sm hover:shadow-md"
-                                    id="gallery-drop-zone">
-                                    <div class="space-y-1 text-center">
-                                        <svg class="mx-auto h-12 w-12 text-neutral-400" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                        <div class="flex text-sm text-neutral-600 justify-center">
-                                            <label for="gallery_trigger"
-                                                class="relative cursor-pointer bg-white rounded-md font-medium text-gold-600 hover:text-gold-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-gold-500">
-                                                <span>Upload files</span>
-                                                <!-- Hidden trigger input -->
-                                                <input id="gallery_trigger" type="file" class="sr-only" multiple
-                                                    accept="image/*">
-                                                <!-- Actual input for submission -->
-                                                <input id="images" name="images[]" type="file" class="hidden" multiple
-                                                    accept="image/*">
-                                            </label>
-                                            <p class="pl-1">or drag and drop</p>
-                                        </div>
-                                        <p class="text-xs text-neutral-500">Upload multiple images</p>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Product Variants Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden" x-data="{
-                                                                            colors: {{ $product->colors->map(function ($c) {
+                                                                                                            colors: {{ $product->colors->map(function ($c) {
         return [
             'id' => $c->id,
             'name' => $c->name,
             'color_code' => $c->color_code,
             'image_url' => $c->getImageUrlAttribute(),
+            'images' => $c->images ?? [], // Raw paths for form submission
+            'images_display' => $c->getImagesUrlsAttribute(), // URLs for display only
+            'removed_images' => [], // Init
+            'new_images' => [],  // Init
             'sizes' => $c->variants->map(function ($v) {
                 return [
                     'id' => $v->id,
@@ -243,33 +215,75 @@
             })
         ];
     })->toJson() }},
-                                                                            addColor() {
-                                                                                this.colors.push({
-                                                                                    id: null,
-                                                                                    name: '',
-                                                                                    color_code: '#000000',
-                                                                                    remove_image: 0,
-                                                                                    image_url: null,
-                                                                                    sizes: []
-                                                                                });
-                                                                            },
-                                                                            removeColor(index) {
-                                                                                this.colors.splice(index, 1);
-                                                                            },
-                                                                            addSize(colorIndex) {
-                                                                                this.colors[colorIndex].sizes.push({
-                                                                                    id: null,
-                                                                                    name: '',
-                                                                                    stock: 0,
-                                                                                    price: '',
-                                                                                    sale_price: '',
-                                                                                    sku: ''
-                                                                                });
-                                                                            },
-                                                                            removeSize(colorIndex, sizeIndex) {
-                                                                                this.colors[colorIndex].sizes.splice(sizeIndex, 1);
-                                                                            }
-                                                                        }">
+                                                                                                            addColor() {
+                                                                                                                this.colors.push({
+                                                                                                                    id: null,
+                                                                                                                    name: '',
+                                                                                                                    color_code: '#000000',
+                                                                                                                    remove_image: 0,
+                                                                                                                    image_url: null,
+                                                                                                                    images: [],
+                                                                                                                    removed_images: [],
+                                                                                                                    new_images: [],
+                                                                                                                    sizes: []
+                                                                                                                });
+                                                                                                            },
+                                                                                                            removeColor(index) {
+                                                                                                                this.colors.splice(index, 1);
+                                                                                                            },
+                                                                                                            addSize(colorIndex) {
+                                                                                                                this.colors[colorIndex].sizes.push({
+                                                                                                                    id: null,
+                                                                                                                    name: '',
+                                                                                                                    stock: 0,
+                                                                                                                    price: '',
+                                                                                                                    sale_price: '',
+                                                                                                                    sku: '',
+                                                                                                                stock: 0,
+                                                                                                                price: '',
+                                                                                                                sale_price: '',
+                                                                                                                sku: ''
+                                                                                                            });
+                                                                                                            },
+                                                                                                            removeSize(colorIndex, sizeIndex) {
+                                                                                                                this.colors[colorIndex].sizes.splice(sizeIndex, 1);
+                                                                                                            },
+
+                                                                                                        handleFileSelect(event, colorIndex) {
+                                                                                                            const files = event.target.files;
+                                                                                                            if (!files.length) return;
+
+                                                                                                            // Initialize new_images if undefined
+                                                                                                            if (!this.colors[colorIndex].new_images) {
+                                                                                                                this.colors[colorIndex].new_images = [];
+                                                                                                            }
+
+                                                                                                            Array.from(files).forEach(file => {
+                                                                                                                const reader = new FileReader();
+                                                                                                                reader.onload = (e) => {
+                                                                                                                    this.colors[colorIndex].new_images.push(e.target.result);
+                                                                                                                };
+                                                                                                                reader.readAsDataURL(file);
+                                                                                                            });
+                                                                                                        },
+                                                                                                        removeVariantImage(colorIndex, imageIndex, isExisting = true) {
+                                                                                                            if (isExisting) {
+                                                                                                                // Get the path (not URL) for removal tracking
+                                                                                                                const imagePath = this.colors[colorIndex].images[imageIndex];
+                                                                                                                if (!this.colors[colorIndex].removed_images) {
+                                                                                                                    this.colors[colorIndex].removed_images = [];
+                                                                                                                }
+                                                                                                                this.colors[colorIndex].removed_images.push(imagePath);
+                                                                                                                
+                                                                                                                // Remove from both arrays
+                                                                                                                this.colors[colorIndex].images.splice(imageIndex, 1);
+                                                                                                                this.colors[colorIndex].images_display.splice(imageIndex, 1);
+                                                                                                            }
+                                                                                                        },
+                                                                                                        removeNewVariantImage(colorIndex, imageIndex) {
+                                                                                                            this.colors[colorIndex].new_images.splice(imageIndex, 1);
+                                                                                                        }
+                                                                                                    }">
                     <div class="p-6 md:p-8 space-y-6">
                         <div class="flex items-center justify-between border-b border-neutral-100 pb-4 mb-6">
                             <h2 class="text-lg font-semibold text-leather-900">Product Variants (Colors & Sizes)</h2>
@@ -285,164 +299,261 @@
 
                         <div class="space-y-8">
                             <template x-for="(color, index) in colors" :key="index">
-                                <div class="bg-neutral-50 rounded-lg p-6 border border-neutral-200 relative">
+                                <div
+                                    class="bg-gradient-to-br from-white to-neutral-50 rounded-xl p-8 border-2 border-neutral-200 hover:border-gold-300 transition-all duration-300 shadow-sm hover:shadow-md relative">
+                                    <!-- Delete Button -->
                                     <button type="button" @click="removeColor(index)"
-                                        class="absolute top-4 right-4 text-neutral-400 hover:text-red-600">
+                                        class="absolute top-4 right-4 p-2 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all">
                                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
                                     </button>
 
+                                    <!-- Color Badge -->
+                                    <div class="flex items-center gap-3 mb-6">
+                                        <div class="w-10 h-10 rounded-lg shadow-md border-2 border-white"
+                                            :style="'background-color: ' + color.color_code"></div>
+                                        <div>
+                                            <h3 class="text-lg font-bold text-leather-900"
+                                                x-text="color.name || 'New Color'"></h3>
+                                            <p class="text-xs text-neutral-500" x-text="color.color_code"></p>
+                                        </div>
+                                    </div>
+
                                     <!-- Hidden ID Input -->
                                     <input type="hidden" :name="'colors[' + index + '][id]'" x-model="color.id">
 
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                                        <div>
-                                            <label
-                                                class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">Color
-                                                Name</label>
-                                            <input type="text" :name="'colors[' + index + '][name]'" x-model="color.name"
-                                                class="block w-full rounded-md border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 sm:text-sm"
-                                                placeholder="e.g. Midnight Blue">
-                                        </div>
-                                        <div>
-                                            <label
-                                                class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">Color
-                                                Code</label>
-                                            <div class="flex items-center space-x-2">
-                                                <input type="color" :name="'colors[' + index + '][color_code]'"
-                                                    x-model="color.color_code"
-                                                    class="h-9 w-9 p-0 border-0 rounded overflow-hidden cursor-pointer">
-                                                <input type="text" :name="'colors[' + index + '][color_code]'"
-                                                    x-model="color.color_code"
-                                                    class="block w-full rounded-md border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 sm:text-sm"
-                                                    placeholder="#000000">
+                                    <!-- Color Details Grid -->
+                                    <div class="bg-white rounded-lg p-6 mb-6 border border-neutral-100">
+                                        <h4 class="text-sm font-semibold text-neutral-700 mb-4 flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-gold-600" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                                            </svg>
+                                            Color Information
+                                        </h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-xs font-semibold text-neutral-600 mb-2">Color Name
+                                                    <span class="text-red-500">*</span></label>
+                                                <input type="text" :name="'colors[' + index + '][name]'"
+                                                    x-model="color.name"
+                                                    class="block w-full rounded-lg border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm py-2.5 px-3"
+                                                    placeholder="e.g. Midnight Blue" required>
                                             </div>
-                                        </div>
-                                        <div>
-                                            <label
-                                                class="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-2">Color
-                                                Image</label>
-                                            <div class="flex flex-col space-y-2">
-                                                <!-- Existing Image View -->
-                                                <template x-if="color.image_url">
-                                                    <div class="relative inline-block w-fit">
-                                                        <img :src="color.image_url"
-                                                            class="h-12 w-12 object-cover rounded border border-neutral-200">
-                                                        <button type="button"
-                                                            @click="color.image_url = null; color.remove_image = 1"
-                                                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5 shadow-md hover:bg-red-600">
-                                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24"
-                                                                stroke="currentColor">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                            </svg>
-                                                        </button>
-                                                    </div>
-                                                </template>
-
-                                                <input type="hidden" :name="'colors[' + index + '][remove_image]'"
-                                                    :value="color.remove_image">
-
-                                                <input type="file" :name="'colors[' + index + '][image]'" accept="image/*"
-                                                    class="block w-full text-sm text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gold-50 file:text-gold-700 hover:file:bg-gold-100">
+                                            <div>
+                                                <label class="block text-xs font-semibold text-neutral-600 mb-2">Color
+                                                    Code</label>
+                                                <div class="flex items-center gap-2">
+                                                    <input type="color" :name="'colors[' + index + '][color_code]'"
+                                                        x-model="color.color_code"
+                                                        class="h-10 w-10 p-0 border-2 border-neutral-200 rounded-lg overflow-hidden cursor-pointer shadow-sm">
+                                                    <input type="text" :name="'colors[' + index + '][color_code]'"
+                                                        x-model="color.color_code"
+                                                        class="block w-full rounded-lg border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm py-2.5 px-3"
+                                                        placeholder="#000000">
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Nested Sizes -->
-                                    <div class="bg-white rounded-md border border-neutral-200 p-4">
-                                        <div class="flex items-center justify-between mb-4">
-                                            <h4 class="text-sm font-medium text-leather-900">Sizes & Inventory</h4>
-                                            <button type="button" @click="addSize(index)"
-                                                class="text-xs text-gold-600 hover:text-gold-700 font-medium">+ Add
-                                                Size</button>
-                                        </div>
-
-                                        <div class="space-y-4">
-                                            <template x-for="(size, sIndex) in color.sizes" :key="sIndex">
-                                                <div
-                                                    class="bg-white p-4 rounded-lg border-2 border-neutral-200 hover:border-gold-300 transition-colors flex gap-4">
-                                                    <!-- Hidden ID Input -->
-                                                    <input type="hidden"
-                                                        :name="'colors[' + index + '][sizes][' + sIndex + '][id]'"
-                                                        x-model="size.id">
-
-                                                    <div class="flex-1">
-                                                        <div
-                                                            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
-                                                            <div>
-                                                                <label
-                                                                    class="block text-xs font-semibold text-neutral-700 mb-1.5">Size
-                                                                    Name <span class="text-red-500">*</span></label>
-                                                                <input type="text"
-                                                                    :name="'colors[' + index + '][sizes][' + sIndex + '][name]'"
-                                                                    x-model="size.name"
-                                                                    class="block w-full rounded-md border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 sm:text-sm"
-                                                                    placeholder="S, M, L, XL" required>
-                                                            </div>
-                                                            <div>
-                                                                <label
-                                                                    class="block text-xs font-semibold text-neutral-700 mb-1.5">Stock
-                                                                    <span class="text-red-500">*</span></label>
-                                                                <input type="number"
-                                                                    :name="'colors[' + index + '][sizes][' + sIndex + '][stock]'"
-                                                                    x-model="size.stock"
-                                                                    class="block w-full rounded-md border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 sm:text-sm"
-                                                                    placeholder="10" min="0" required>
-                                                            </div>
-                                                            <div>
-                                                                <label
-                                                                    class="block text-xs font-semibold text-neutral-700 mb-1.5">Price
-                                                                    (Rs.)</label>
-                                                                <input type="number" step="0.01"
-                                                                    :name="'colors[' + index + '][sizes][' + sIndex + '][price]'"
-                                                                    x-model="size.price"
-                                                                    class="block w-full rounded-md border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 sm:text-sm"
-                                                                    placeholder="Override base price" min="0">
-                                                            </div>
-                                                            <div>
-                                                                <label
-                                                                    class="block text-xs font-semibold text-neutral-700 mb-1.5">Sale
-                                                                    Price (Rs.)</label>
-                                                                <input type="number" step="0.01"
-                                                                    :name="'colors[' + index + '][sizes][' + sIndex + '][sale_price]'"
-                                                                    x-model="size.sale_price"
-                                                                    class="block w-full rounded-md border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 sm:text-sm"
-                                                                    placeholder="Discounted price" min="0">
-                                                            </div>
-                                                        </div>
-                                                        <div>
-                                                            <label
-                                                                class="block text-xs font-semibold text-neutral-700 mb-1.5">SKU
-                                                                <span
-                                                                    class="text-neutral-400 font-normal">(Optional)</span></label>
-                                                            <input type="text"
-                                                                :name="'colors[' + index + '][sizes][' + sIndex + '][sku]'"
-                                                                x-model="size.sku"
-                                                                class="block w-full rounded-md border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 sm:text-sm"
-                                                                placeholder="e.g., BELT-BLK-M">
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Trash Icon on the Right -->
-                                                    <button type="button" @click="removeSize(index, sIndex)"
-                                                        class="text-neutral-400 hover:text-red-600 transition-colors flex-shrink-0 h-fit"
-                                                        title="Remove Size">
-                                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                    <!-- Variant Images Section -->
+                                    <div class="bg-white rounded-lg p-6 border border-neutral-100">
+                                        <h4 class="text-sm font-semibold text-neutral-700 mb-4 flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-gold-600" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            Variant Images
+                                            <span class="text-xs font-normal text-neutral-500">(Max 4)</span>
+                                        </h4>
+                                        <div class="flex flex-wrap gap-3">
+                                            <!-- Existing Images -->
+                                            <template x-for="(img, imgIndex) in color.images_display" :key="'existing-' + imgIndex">
+                                                <div class="relative w-20 h-20 group">
+                                                    <img :src="img"
+                                                        class="w-full h-full object-cover rounded-lg border-2 border-neutral-200 shadow-sm group-hover:shadow-md transition-all">
+                                                    <button type="button" @click="removeVariantImage(index, imgIndex, true)"
+                                                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 hover:scale-110 transition-all">
+                                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24"
                                                             stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                                         </svg>
                                                     </button>
                                                 </div>
                                             </template>
 
+                                            <!-- Hidden inputs for existing images (only non-deleted ones) -->
+                                            <template x-for="(img, imgIndex) in color.images" :key="'hidden-' + imgIndex">
+                                                <input type="hidden" :name="'colors[' + index + '][existing_images][]'"
+                                                    :value="img">
+                                            </template>
+
+                                            <!-- New Image Previews -->
+                                            <template x-for="(img, imgIndex) in color.new_images" :key="'new-' + imgIndex">
+                                                <div class="relative w-20 h-20 group">
+                                                    <img :src="img"
+                                                        class="w-full h-full object-cover rounded-lg border-2 border-gold-200 shadow-sm">
+                                                    <div
+                                                        class="absolute top-1 right-1 bg-gold-500 text-white text-xs px-1.5 py-0.5 rounded-full font-semibold">
+                                                        New</div>
+                                                    <button type="button" @click="removeNewVariantImage(index, imgIndex)"
+                                                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 hover:scale-110 transition-all">
+                                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24"
+                                                            stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </template>
+
+                                            <!-- Upload Button -->
+                                            <label
+                                                class="w-20 h-20 flex flex-col items-center justify-center border-2 border-dashed border-neutral-300 rounded-lg hover:border-gold-400 hover:bg-gold-50 cursor-pointer bg-white transition-all group">
+                                                <svg class="w-6 h-6 text-neutral-400 group-hover:text-gold-600 transition-colors"
+                                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 4v16m8-8H4" />
+                                                </svg>
+                                                <span
+                                                    class="text-xs text-neutral-500 mt-1 group-hover:text-gold-600">Add</span>
+                                                <input type="file" multiple accept="image/*"
+                                                    :name="'colors[' + index + '][images][]'"
+                                                    @change="handleFileSelect($event, index)" class="hidden">
+                                            </label>
+                                        </div>
+
+                                        <!-- Hidden Inputs for Removed Images -->
+                                        <template x-for="(remImg, remIndex) in color.removed_images" :key="remIndex">
+                                            <input type="hidden" :name="'colors[' + index + '][removed_images][]'"
+                                                :value="remImg">
+                                        </template>
+                                    </div>
+
+                                    <!-- Nested Sizes -->
+                                    <div class="bg-white rounded-lg border border-neutral-100 p-6">
+                                        <div class="flex items-center justify-between mb-5">
+                                            <h4 class="text-sm font-semibold text-neutral-700 flex items-center gap-2">
+                                                <svg class="w-4 h-4 text-gold-600" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                                </svg>
+                                                Sizes & Inventory
+                                            </h4>
+                                            <button type="button" @click="addSize(index)"
+                                                class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gold-700 bg-gold-50 hover:bg-gold-100 rounded-lg transition-all">
+                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 4v16m8-8H4" />
+                                                </svg>
+                                                Add Size
+                                            </button>
+                                        </div>
+
+                                        <div class="space-y-3">
+                                            <template x-for="(size, sIndex) in color.sizes" :key="sIndex">
+                                                <div
+                                                    class="bg-neutral-50 p-5 rounded-lg border border-neutral-200 hover:border-gold-200 transition-all">
+                                                    <!-- Hidden ID Input -->
+                                                    <input type="hidden"
+                                                        :name="'colors[' + index + '][sizes][' + sIndex + '][id]'"
+                                                        x-model="size.id">
+
+                                                    <div class="flex gap-4">
+                                                        <div class="flex-1">
+                                                            <div
+                                                                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+                                                                <div>
+                                                                    <label
+                                                                        class="block text-xs font-semibold text-neutral-600 mb-1.5">
+                                                                        Size Name <span class="text-red-500">*</span>
+                                                                    </label>
+                                                                    <input type="text"
+                                                                        :name="'colors[' + index + '][sizes][' + sIndex + '][name]'"
+                                                                        x-model="size.name"
+                                                                        class="block w-full rounded-lg border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm py-2 px-3"
+                                                                        placeholder="S, M, L, XL" required>
+                                                                </div>
+                                                                <div>
+                                                                    <label
+                                                                        class="block text-xs font-semibold text-neutral-600 mb-1.5">
+                                                                        Stock <span class="text-red-500">*</span>
+                                                                    </label>
+                                                                    <input type="number"
+                                                                        :name="'colors[' + index + '][sizes][' + sIndex + '][stock]'"
+                                                                        x-model="size.stock"
+                                                                        class="block w-full rounded-lg border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm py-2 px-3"
+                                                                        placeholder="10" min="0" required>
+                                                                </div>
+                                                                <div>
+                                                                    <label
+                                                                        class="block text-xs font-semibold text-neutral-600 mb-1.5">
+                                                                        Price (Rs.)
+                                                                    </label>
+                                                                    <input type="number" step="0.01"
+                                                                        :name="'colors[' + index + '][sizes][' + sIndex + '][price]'"
+                                                                        x-model="size.price"
+                                                                        class="block w-full rounded-lg border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm py-2 px-3"
+                                                                        placeholder="Override base price" min="0">
+                                                                </div>
+                                                                <div>
+                                                                    <label
+                                                                        class="block text-xs font-semibold text-neutral-600 mb-1.5">
+                                                                        Sale Price (Rs.)
+                                                                    </label>
+                                                                    <input type="number" step="0.01"
+                                                                        :name="'colors[' + index + '][sizes][' + sIndex + '][sale_price]'"
+                                                                        x-model="size.sale_price"
+                                                                        class="block w-full rounded-lg border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm py-2 px-3"
+                                                                        placeholder="Discounted price" min="0">
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <label
+                                                                    class="block text-xs font-semibold text-neutral-600 mb-1.5">
+                                                                    SKU <span
+                                                                        class="text-neutral-400 font-normal">(Optional)</span>
+                                                                </label>
+                                                                <input type="text"
+                                                                    :name="'colors[' + index + '][sizes][' + sIndex + '][sku]'"
+                                                                    x-model="size.sku"
+                                                                    class="block w-full rounded-lg border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm py-2 px-3"
+                                                                    placeholder="e.g., BELT-BLK-M">
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Delete Button -->
+                                                        <button type="button" @click="removeSize(index, sIndex)"
+                                                            class="p-2 h-fit text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                                                            title="Remove Size">
+                                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+                                                                stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </template>
+
                                             <div x-show="color.sizes.length === 0"
-                                                class="text-center py-4 text-sm text-neutral-400 italic">
-                                                No sizes added yet.
+                                                class="text-center py-8 border-2 border-dashed border-neutral-200 rounded-lg">
+                                                <svg class="w-12 h-12 mx-auto text-neutral-300 mb-3" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                                </svg>
+                                                <p class="text-sm text-neutral-500 mb-2">No sizes added yet</p>
+                                                <button type="button" @click="addSize(index)"
+                                                    class="text-gold-600 font-medium hover:text-gold-700 text-sm">Add your
+                                                    first size</button>
                                             </div>
                                         </div>
                                     </div>
@@ -450,11 +561,21 @@
                             </template>
 
                             <div x-show="colors.length === 0"
-                                class="text-center py-8 border-2 border-dashed border-neutral-200 rounded-lg">
-                                <p class="text-neutral-500">No color variants added.</p>
+                                class="text-center py-12 border-2 border-dashed border-neutral-200 rounded-xl bg-neutral-50">
+                                <svg class="w-16 h-16 mx-auto text-neutral-300 mb-4" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                                </svg>
+                                <p class="text-neutral-500 mb-3">No color variants added</p>
                                 <button type="button" @click="addColor()"
-                                    class="text-gold-600 font-medium hover:text-gold-700 mt-2">Add your first color
-                                    variant</button>
+                                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gold-700 bg-gold-50 hover:bg-gold-100 rounded-lg transition-all">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Add your first color variant
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -643,13 +764,13 @@
                     const div = document.createElement('div');
                     div.className = 'relative group';
                     div.innerHTML = `
-                                                                                 <img src="${e.target.result}" class="h-24 w-24 object-cover rounded-lg border border-neutral-200" title="${file.name}">
-                                                                                 <button type="button" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity" onclick="removeNewGalleryImage('${file.name}', this)">
-                                                                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                                                    </svg>
-                                                                                </button>
-                                                                            `;
+                                                                                                                 <img src="${e.target.result}" class="h-24 w-24 object-cover rounded-lg border border-neutral-200" title="${file.name}">
+                                                                                                                 <button type="button" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity" onclick="removeNewGalleryImage('${file.name}', this)">
+                                                                                                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                                                                                    </svg>
+                                                                                                                </button>
+                                                                                                            `;
                     galleryPreviewsContainer.appendChild(div);
                     galleryPreviewsContainer.classList.remove('hidden');
                 };

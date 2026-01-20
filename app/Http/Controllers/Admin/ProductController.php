@@ -249,7 +249,8 @@ class ProductController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully');
+        return redirect()->route('admin.products.edit', $product)->with('success', 'Product updated successfully');
+
     }
 
     private function saveVariants($product, $request)

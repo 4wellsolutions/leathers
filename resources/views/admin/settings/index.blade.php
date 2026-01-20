@@ -79,13 +79,23 @@
                                         <div class="p-3 bg-neutral-100 rounded-lg border border-neutral-200 inline-block">
                                             @php
                                                 $logoPath = $settings['site_logo'];
-                                                if (str_starts_with($logoPath, 'storage/images/')) {
-                                                    $logoPath = str_replace('storage/images/', '', $logoPath);
-                                                } elseif (str_starts_with($logoPath, 'storage/')) {
-                                                    $logoPath = str_replace('storage/', '', $logoPath);
+                                                $logoDisplay = asset($logoPath);
+                                                // If URL contains storage/images, try to strip it if possible to find public file
+                                                if (str_contains($logoPath, 'storage/images/')) {
+                                                    $cleanName = str_replace('storage/images/', '', $logoPath);
+                                                    $logoDisplay = asset($cleanName);
+                                                } elseif (str_contains($logoPath, 'storage/')) {
+                                                    $cleanName = str_replace('storage/', '', $logoPath);
+                                                    $logoDisplay = asset($cleanName);
+                                                }
+                                                // check if file actually exists
+                                                if (!str_starts_with($logoPath, 'http')) {
+                                                    if (file_exists(public_path(basename($logoPath)))) {
+                                                        $logoDisplay = asset(basename($logoPath));
+                                                    }
                                                 }
                                             @endphp
-                                            <img src="{{ asset($logoPath) }}" alt="Current Logo" class="h-16 object-contain">
+                                            <img src="{{ $logoDisplay }}" alt="Current Logo" class="h-16 object-contain">
                                         </div>
                                     @else
                                         <div

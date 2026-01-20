@@ -19,8 +19,11 @@ class SettingsController extends Controller
             $settings[$setting->key] = $setting->value;
         }
 
-        // Check if logo exists at public/logo.png
-        if (File::exists(public_path('logo.png'))) {
+        // Check if logo exists from settings
+        if (isset($settings['site_logo']) && File::exists(public_path($settings['site_logo']))) {
+            $settings['site_logo'] = asset($settings['site_logo']);
+        } elseif (File::exists(public_path('logo.png'))) {
+            // Fallback for backward compatibility
             $settings['site_logo'] = asset('logo.png');
         }
 
@@ -30,7 +33,7 @@ class SettingsController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'favicon' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,ico|max:2048',
             'notification_emails' => [
                 'nullable',
@@ -50,20 +53,28 @@ class SettingsController extends Controller
             ],
         ]);
 
-        // Handle logo upload - store at public/logo.png
+        // Handle logo upload
         if ($request->hasFile('logo')) {
             $logoFile = $request->file('logo');
+            $extension = $logoFile->getClientOriginalExtension();
+            $filename = 'site-logo.' . $extension;
 
-            // Delete old logo if exists
-            if (File::exists(public_path('logo.png'))) {
+            // Delete old logo if it's different or just to be clean
+            // We should check what the current logo is to delete it if the name is different
+            $currentLogo = Setting::where('key', 'site_logo')->value('value');
+            if ($currentLogo && File::exists(public_path($currentLogo))) {
+                File::delete(public_path($currentLogo));
+            }
+            // Also delete the hardcoded legacy one if it exists to avoid confusion
+            if (File::exists(public_path('logo.png')) && $filename !== 'logo.png') {
                 File::delete(public_path('logo.png'));
             }
 
-            // Move the file to public/logo.png
-            $logoFile->move(public_path(), 'logo.png');
+            // Move the file to public/site-logo.ext
+            $logoFile->move(public_path(), $filename);
 
             // Store the path in settings
-            Setting::set('site_logo', 'logo.png');
+            Setting::set('site_logo', $filename);
         }
 
         // Handle favicon upload

@@ -23,7 +23,7 @@
                 <div class="flex-1 flex items-center justify-center md:justify-start md:flex-none md:w-auto">
                     <a href="{{ route('home') }}" class="flex items-center">
                         @if(\App\Models\Setting::get('site_logo'))
-                            <img src="{{ \App\Models\Setting::get('site_logo') }}"
+                            <img src="{{ asset(\App\Models\Setting::get('site_logo')) }}"
                                 alt="{{ \App\Models\Setting::get('site_name', 'Leathers.pk') }}" class="h-12 md:h-14">
                         @else
                             <span class="font-serif text-2xl md:text-3xl font-bold text-gold-400 tracking-wider">

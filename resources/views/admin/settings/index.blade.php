@@ -54,7 +54,7 @@
                         <label class="block text-gray-700 text-sm font-bold mb-2">Site Logo</label>
                         @if(isset($settings['site_logo']))
                             <div class="mb-2">
-                                <img src="{{ $settings['site_logo'] }}" alt="Current Logo" class="h-16 mb-2">
+                                <img src="{{ asset($settings['site_logo']) }}" alt="Current Logo" class="h-16 mb-2">
                             </div>
                         @endif
                         <input type="file" name="logo" accept="image/*"
@@ -205,21 +205,21 @@
                 </div>
 
                 <!--Social Media --
-                <div class="mb-8">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Social Media</h2>
+                    <div class="mb-8">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Social Media</h2>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Facebook URL</label>
-                        <input type="url" name="facebook_url" value="{{ $settings['facebook_url'] ?? '' }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Facebook URL</label>
+                            <input type="url" name="facebook_url" value="{{ $settings['facebook_url'] ?? '' }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Instagram URL</label>
+                            <input type="url" name="instagram_url" value="{{ $settings['instagram_url'] ?? '' }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Instagram URL</label>
-                        <input type="url" name="instagram_url" value="{{ $settings['instagram_url'] ?? '' }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                    </div>
-                </div>
-
-                <!-- Custom Scripts -->
+                    <!-- Custom Scripts -->
                 <div class="mb-8">
                     <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Custom Scripts</h2>
 

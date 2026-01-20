@@ -19,13 +19,11 @@ class SettingsController extends Controller
             $settings[$setting->key] = $setting->value;
         }
 
-        // Check if logo exists from settings
-        if (isset($settings['site_logo']) && File::exists(public_path($settings['site_logo']))) {
-            $settings['site_logo'] = asset($settings['site_logo']);
-        } elseif (File::exists(public_path('logo.png'))) {
-            // Fallback for backward compatibility
-            $settings['site_logo'] = asset('logo.png');
+        // Check if logo exists from settings, otherwise fallback to logo.png
+        if (!isset($settings['site_logo']) && File::exists(public_path('logo.png'))) {
+            $settings['site_logo'] = 'logo.png';
         }
+
 
         return view('admin.settings.index', compact('settings'));
     }

@@ -17,7 +17,8 @@
             <span class="text-leather-900 font-medium">{{ $product->name }}</span>
         </nav>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20" x-data="productSelector()">
             <!-- Product Gallery -->
             <div class="space-y-4">
                 <div class="bg-neutral-100 rounded-xl overflow-hidden aspect-w-1 aspect-h-1 relative group">
@@ -78,8 +79,7 @@
                     <span id="price-badge" class="text-sm font-bold text-white bg-red-600 px-2 py-1 rounded hidden"></span>
                 </div>
 
-                <form action="{{ route('cart.add', $product->id) }}" method="GET" id="add-to-cart-form"
-                    x-data="productSelector()">
+                <form action="{{ route('cart.add', $product->id) }}" method="GET" id="add-to-cart-form">
                     @csrf
 
                     <!-- Variants Selection -->
@@ -428,18 +428,13 @@
                         this.selectedVariantId = null;
                     }
 
-                    // Update Gallery - always start with main product image
-                    const mainImage = '{{ $product->image_url }}';
-
+                    // Update Gallery - show only variant images (not main image)
                     if (color.images && Array.isArray(color.images) && color.images.length > 0) {
-                        // Show main image + color specific images
-                        this.currentGallery = [mainImage, ...color.images];
-                        // Set first color image as main display
-                        updateMainImage(color.images[0]);
+                        // Show only color specific images in slider
+                        this.currentGallery = color.images;
                     } else {
-                        // No color images - just show main image
-                        this.currentGallery = [mainImage];
-                        updateMainImage(mainImage);
+                        // No color images - empty slider
+                        this.currentGallery = [];
                     }
 
                     this.updateInfo();
@@ -495,77 +490,77 @@
 
     <!-- Product Schema -->
     <script type="application/ld+json">
-                                    {
-                                      "@@context": "https://schema.org/",
-                                      "@@type": "Product",
-                                      "name": "{{ $product->name }}",
-                                      "image": [
-                                        "{{ $product->image_url }}"
-                                        @if($product->images_urls)
-                                            @foreach($product->images_urls as $imageUrl)
-                                                ,"{{ $imageUrl }}"
-                                            @endforeach
-                                        @endif
-                                       ],
-                                      "description": "{{ $product->description }}",
-                                      "sku": "{{ $product->id }}",
-                                      "brand": {
-                                        "@@type": "Brand",
-                                        "name": "Leathers.pk"
-                                      },
-                                      "aggregateRating": {
-                                        "@@type": "AggregateRating",
-                                        "ratingValue": "{{ $product->average_rating }}",
-                                        "reviewCount": "{{ $product->review_count }}"
-                                      },
-                                      "review": [
-                                        @foreach($product->reviews as $review)
-                                            {
-                                              "@@type": "Review",
-                                              "author": {
-                                                "@@type": "Person",
-                                                "name": "{{ $review->user->name ?? 'Guest' }}"
-                                              },
-                                              "datePublished": "{{ $review->created_at->format('Y-m-d') }}",
-                                              "reviewBody": "{{ $review->comment }}",
-                                              "reviewRating": {
-                                                "@@type": "Rating",
-                                                "ratingValue": "{{ $review->rating }}"
-                                              }
-                                            }{{ !$loop->last ? ',' : '' }}
-                                        @endforeach
-                                      ],
-                                      "offers": {
-                                        "@@type": "Offer",
-                                        "url": "{{ route('products.show', $product->slug) }}",
-                                        "priceCurrency": "PKR",
-                                        "price": "{{ $product->sale_price ?? $product->price }}",
-                                        "availability": "{{ $product->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
-                                        "itemCondition": "https://schema.org/NewCondition"
-                                      }
-                                    }
-                                    </script>
+                                                {
+                                                  "@@context": "https://schema.org/",
+                                                  "@@type": "Product",
+                                                  "name": "{{ $product->name }}",
+                                                  "image": [
+                                                    "{{ $product->image_url }}"
+                                                    @if($product->images_urls)
+                                                        @foreach($product->images_urls as $imageUrl)
+                                                            ,"{{ $imageUrl }}"
+                                                        @endforeach
+                                                    @endif
+                                                   ],
+                                                  "description": "{{ $product->description }}",
+                                                  "sku": "{{ $product->id }}",
+                                                  "brand": {
+                                                    "@@type": "Brand",
+                                                    "name": "Leathers.pk"
+                                                  },
+                                                  "aggregateRating": {
+                                                    "@@type": "AggregateRating",
+                                                    "ratingValue": "{{ $product->average_rating }}",
+                                                    "reviewCount": "{{ $product->review_count }}"
+                                                  },
+                                                  "review": [
+                                                    @foreach($product->reviews as $review)
+                                                        {
+                                                          "@@type": "Review",
+                                                          "author": {
+                                                            "@@type": "Person",
+                                                            "name": "{{ $review->user->name ?? 'Guest' }}"
+                                                          },
+                                                          "datePublished": "{{ $review->created_at->format('Y-m-d') }}",
+                                                          "reviewBody": "{{ $review->comment }}",
+                                                          "reviewRating": {
+                                                            "@@type": "Rating",
+                                                            "ratingValue": "{{ $review->rating }}"
+                                                          }
+                                                        }{{ !$loop->last ? ',' : '' }}
+                                                    @endforeach
+                                                  ],
+                                                  "offers": {
+                                                    "@@type": "Offer",
+                                                    "url": "{{ route('products.show', $product->slug) }}",
+                                                    "priceCurrency": "PKR",
+                                                    "price": "{{ $product->sale_price ?? $product->price }}",
+                                                    "availability": "{{ $product->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
+                                                    "itemCondition": "https://schema.org/NewCondition"
+                                                  }
+                                                }
+                                                </script>
 
     <!-- Breadcrumb Schema -->
     <script type="application/ld+json">
-                                    {
-                                      "@@context": "https://schema.org",
-                                      "@@type": "BreadcrumbList",
-                                      "itemListElement": [{
-                                        "@@type": "ListItem",
-                                        "position": 1,
-                                        "name": "Home",
-                                        "item": "{{ route('home') }}"
-                                      },{
-                                        "@@type": "ListItem",
-                                        "position": 2,
-                                        "name": "{{ $product->category->name }}",
-                                        "item": "{{ route('category.show', $product->category->slug) }}"
-                                      },{
-                                        "@@type": "ListItem",
-                                        "position": 3,
-                                        "name": "{{ $product->name }}"
-                                      }]
-                                    }
-                                    </script>
+                                                {
+                                                  "@@context": "https://schema.org",
+                                                  "@@type": "BreadcrumbList",
+                                                  "itemListElement": [{
+                                                    "@@type": "ListItem",
+                                                    "position": 1,
+                                                    "name": "Home",
+                                                    "item": "{{ route('home') }}"
+                                                  },{
+                                                    "@@type": "ListItem",
+                                                    "position": 2,
+                                                    "name": "{{ $product->category->name }}",
+                                                    "item": "{{ route('category.show', $product->category->slug) }}"
+                                                  },{
+                                                    "@@type": "ListItem",
+                                                    "position": 3,
+                                                    "name": "{{ $product->name }}"
+                                                  }]
+                                                }
+                                                </script>
 @endsection

@@ -100,9 +100,9 @@
                                         <!-- Main Image with Badge -->
                                         @if($product->image)
                                             <div class="relative w-28 h-28 group">
-                                                <img src="{{ asset($product->image) }}" alt="{{ $product->name }}"
+                                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}"
                                                     class="w-full h-full object-cover rounded-xl shadow-md group-hover:shadow-2xl cursor-pointer transition-all duration-300 transform group-hover:scale-105 ring-2 ring-gold-400"
-                                                    onclick="showImagePreview('{{ asset($product->image) }}')">
+                                                    onclick="showImagePreview('{{ $product->image_url }}')">
                                                 <span
                                                     class="absolute top-0 left-0 bg-green-600 text-white text-xs font-semibold px-2.5 py-1.5 rounded-br-lg shadow-lg z-20">Main</span>
                                             </div>
@@ -110,11 +110,14 @@
 
                                         <!-- Gallery Images -->
                                         @if($product->images && count($product->images) > 0)
-                                            @foreach($product->images as $image)
+                                            @foreach($product->images as $index => $image)
+                                                @php
+                                                    $imageUrl = $product->images_urls[$index] ?? asset($image);
+                                                @endphp
                                                 <div class="relative w-28 h-28 group">
-                                                    <img src="{{ asset($image) }}" alt="Gallery"
+                                                    <img src="{{ $imageUrl }}" alt="Gallery"
                                                         class="w-full h-full object-cover rounded-xl shadow-md group-hover:shadow-2xl cursor-pointer transition-all duration-300 transform group-hover:scale-105 ring-2 ring-neutral-200 group-hover:ring-gold-400"
-                                                        onclick="showImagePreview('{{ asset($image) }}')">
+                                                        onclick="showImagePreview('{{ $imageUrl }}')">
                                                     <button type="button" onclick="removeGalleryImage('{{ $image }}', this)"
                                                         class="absolute top-0 right-0 bg-red-600 hover:bg-red-700 text-white rounded-full p-1.5 shadow-lg hover:shadow-xl transition-all transform hover:scale-110 z-10"
                                                         title="Remove Image">
@@ -227,7 +230,7 @@
             'id' => $c->id,
             'name' => $c->name,
             'color_code' => $c->color_code,
-            'image_url' => $c->image ? asset($c->image) : null,
+            'image_url' => $c->getImageUrlAttribute(),
             'sizes' => $c->variants->map(function ($v) {
                 return [
                     'id' => $v->id,

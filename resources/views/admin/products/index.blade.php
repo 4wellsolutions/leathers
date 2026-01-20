@@ -227,13 +227,13 @@
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0 h-14 w-14">
                                         <img class="h-14 w-14 rounded-lg object-cover border border-neutral-200 bg-neutral-50 shadow-sm"
-                                            src="{{ $product->image_url }}" alt="{{ $product->name }}"
-                                            onerror="this.src='/images/placeholder.jpg'">
+                                            src="{{ $product->image_url }}" alt="{{ $product->name }}">
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-bold text-leather-900 leading-tight">{{ $product->name }}</div>
                                         <div class="text-[11px] text-neutral-400 mt-0.5 font-mono">
-                                            {{ Str::limit($product->slug, 35) }}</div>
+                                            {{ Str::limit($product->slug, 35) }}
+                                        </div>
                                     </div>
                                 </div>
                             </td>

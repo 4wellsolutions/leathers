@@ -23,13 +23,13 @@ class CheckRedirects
         // Use cache to prevent DB hit on every request
         // Cache key includes 'redirect_' and the path
         $redirect = Cache::remember("redirect_{$path}", 3600, function () use ($path) {
-            return Redirect::where('old_url', $path)
+            return Redirect::where('from_url', $path)
                 ->where('is_active', true)
                 ->first();
         });
 
         if ($redirect) {
-            return redirect($redirect->new_url, $redirect->status_code);
+            return redirect($redirect->to_url, $redirect->status_code);
         }
 
         return $next($request);

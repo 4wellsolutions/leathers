@@ -57,13 +57,12 @@ class SettingsController extends Controller
             $extension = $logoFile->getClientOriginalExtension();
             $filename = 'site-logo.' . $extension;
 
-            // Delete old logo if it's different or just to be clean
-            // We should check what the current logo is to delete it if the name is different
+            // Delete old logo if it exists to keep folder clean
             $currentLogo = Setting::where('key', 'site_logo')->value('value');
             if ($currentLogo && File::exists(public_path($currentLogo))) {
                 File::delete(public_path($currentLogo));
             }
-            // Also delete the hardcoded legacy one if it exists to avoid confusion
+            // Also clean up legacy logo.png if we are replacing it with something else
             if (File::exists(public_path('logo.png')) && $filename !== 'logo.png') {
                 File::delete(public_path('logo.png'));
             }
@@ -131,7 +130,7 @@ class SettingsController extends Controller
             }
         }
 
-        return redirect()->route('admin.settings')
+        return redirect()->route('admin.settings.index')
             ->with('success', 'Settings updated successfully!');
     }
 }

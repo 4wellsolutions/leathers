@@ -22,8 +22,8 @@ class RedirectController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'old_url' => 'required|string|unique:redirects,old_url',
-            'new_url' => 'required|string',
+            'from_url' => 'required|string|unique:redirects,from_url',
+            'to_url' => 'required|string',
             'status_code' => 'required|in:301,302',
             'is_active' => 'boolean',
         ]);
@@ -43,8 +43,8 @@ class RedirectController extends Controller
     public function update(Request $request, Redirect $redirect)
     {
         $validated = $request->validate([
-            'old_url' => 'required|string|unique:redirects,old_url,' . $redirect->id,
-            'new_url' => 'required|string',
+            'from_url' => 'required|string|unique:redirects,from_url,' . $redirect->id,
+            'to_url' => 'required|string',
             'status_code' => 'required|in:301,302',
             'is_active' => 'boolean',
         ]);

@@ -26,6 +26,14 @@ class PageSeeder extends Seeder
                 'meta_description' => 'Read our terms and conditions for using Leathers.pk.',
                 'is_active' => true,
             ],
+            [
+                'title' => 'About Us',
+                'slug' => 'about-us',
+                'content' => '<h1>About Leathers.pk</h1><p>Welcome to Leathers.pk, your premier destination for handcrafted leather goods in Pakistan. Our journey began with a simple passion for the timeless elegance and durability of genuine leather.</p><h2>Our Mission</h2><p>Our mission is to provide modern gentlemen with premium leather products that combine traditional craftsmanship with contemporary design. We believe that every piece of leather tells a story, and we are here to help you craft yours.</p><h2>Quality Craftsmanship</h2><p>Each of our products is meticulously handcrafted by skilled artisans who take pride in their work. We source only the finest genuine leather from top tanneries to ensure that our goods not only look beautiful but also last a lifetime.</p><h2>Our Commitment</h2><p>We are committed to exceptional quality, customer satisfaction, and building a brand that stands for integrity and style.</p>',
+                'meta_title' => 'About Us - Leathers.pk',
+                'meta_description' => 'Learn more about Leathers.pk, our mission, and our passion for handcrafted leather goods.',
+                'is_active' => true,
+            ],
         ];
 
         foreach ($pages as $page) {

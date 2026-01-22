@@ -77,8 +77,7 @@
                             class="text-neutral-300 hover:text-gold-400 transition-colors duration-300 text-sm uppercase tracking-widest font-medium {{ request()->routeIs('combos.*') ? 'text-gold-400' : '' }}">Combos</a>
                     @endif
 
-                    <a href="{{ route('pages.show', 'about-us') }}"
-                        class="text-neutral-300 hover:text-gold-400 transition-colors duration-300 text-sm uppercase tracking-widest font-medium">About</a>
+
                     <a href="{{ route('contact') }}"
                         class="text-neutral-300 hover:text-gold-400 transition-colors duration-300 text-sm uppercase tracking-widest font-medium">Contact</a>
                 </div>
@@ -418,8 +417,7 @@
                     class="block px-3 py-2 text-base font-medium text-white hover:text-gold-400 hover:bg-leather-700 rounded-md">Deals</a>
                 <a href="{{ route('combos.index') }}"
                     class="block px-3 py-2 text-base font-medium text-white hover:text-gold-400 hover:bg-leather-700 rounded-md">Combos</a>
-                <a href="{{ route('pages.show', 'about-us') }}"
-                    class="block px-3 py-2 text-base font-medium text-white hover:text-gold-400 hover:bg-leather-700 rounded-md">About</a>
+
                 <a href="{{ route('contact') }}"
                     class="block px-3 py-2 text-base font-medium text-white hover:text-gold-400 hover:bg-leather-700 rounded-md">Contact</a>
                 @auth

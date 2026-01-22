@@ -104,8 +104,8 @@
                         </a>
                     @endauth
 
-                    <a href="{{ route('products.index') }}"
-                        class="text-neutral-300 hover:text-gold-400 transition-colors p-2" title="Search Products">
+                    <a href="{{ route('home') }}" class="text-neutral-300 hover:text-gold-400 transition-colors p-2"
+                        title="Search Products">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />

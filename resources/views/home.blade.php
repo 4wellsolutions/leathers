@@ -246,7 +246,7 @@
                     <h2 class="section-title">Featured Products</h2>
                     <div class="w-24 h-1 bg-gold-500"></div>
                 </div>
-                <a href="{{ route('products.index') }}"
+                <a href="{{ route('home') }}#categories"
                     class="hidden md:flex items-center text-leather-700 font-semibold hover:text-leather-900 transition-colors">
                     View All Products
                     <svg class="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -263,7 +263,7 @@
             </div>
 
             <div class="mt-12 text-center md:hidden">
-                <a href="{{ route('products.index') }}" class="btn-outline inline-block">View All Products</a>
+                <a href="{{ route('home') }}#categories" class="btn-outline inline-block">View All Products</a>
             </div>
         </div>
     </section>
@@ -425,16 +425,16 @@
     </section>
     <!-- WebSite Schema -->
     <script type="application/ld+json">
-            {
-              "@@context": "https://schema.org",
-              "@@type": "WebSite",
-              "name": "Leathers.pk",
-              "url": "{{ url('/') }}",
-              "potentialAction": {
-                "@@type": "SearchAction",
-                "target": "{{ url('/shop') }}?search={search_term_string}",
-                "query-input": "required name=search_term_string"
-              }
-            }
-            </script>
+                {
+                  "@@context": "https://schema.org",
+                  "@@type": "WebSite",
+                  "name": "Leathers.pk",
+                  "url": "{{ url('/') }}",
+                  "potentialAction": {
+                    "@@type": "SearchAction",
+                    "target": "{{ url('/shop') }}?search={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                  }
+                }
+                </script>
 @endsection

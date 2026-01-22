@@ -17,14 +17,18 @@ class CheckRedirects
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $path = $request->path();
+        $path = trim($request->path(), '/');
 
         // Check if there is a redirect for this path
         // Use cache to prevent DB hit on every request
-        // Cache key includes 'redirect_' and the path
         $redirect = Cache::remember("redirect_{$path}", 3600, function () use ($path) {
             $fromCol = Redirect::getFromColumn();
-            return Redirect::where($fromCol, $path)
+
+            // Try matching with both leading slash and without
+            return Redirect::where(function ($query) use ($fromCol, $path) {
+                $query->where($fromCol, $path)
+                    ->orWhere($fromCol, '/' . $path);
+            })
                 ->where('is_active', true)
                 ->first();
         });

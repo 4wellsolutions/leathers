@@ -62,4 +62,28 @@ class Redirect extends Model
         $col = self::getToColumn();
         $this->attributes[$col] = $value;
     }
+
+    /**
+     * Clear the cache for this redirect.
+     */
+    public function clearCache()
+    {
+        $fromCol = self::getFromColumn();
+        $path = trim($this->{$fromCol}, '/');
+        \Illuminate\Support\Facades\Cache::forget("redirect_{$path}");
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted()
+    {
+        static::saved(function ($redirect) {
+            $redirect->clearCache();
+        });
+
+        static::deleted(function ($redirect) {
+            $redirect->clearCache();
+        });
+    }
 }

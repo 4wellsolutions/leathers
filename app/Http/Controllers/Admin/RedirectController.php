@@ -43,7 +43,10 @@ class RedirectController extends Controller
             'is_active' => $validated['is_active']
         ];
 
-        Redirect::create($data);
+        $redirect = Redirect::create($data);
+
+        // Clear cache just in case (though model events should handle it)
+        $redirect->clearCache();
 
         return redirect()->route('admin.redirects.index')->with('success', 'Redirect created successfully.');
     }
@@ -76,11 +79,15 @@ class RedirectController extends Controller
 
         $redirect->update($data);
 
+        // Clear cache just in case
+        $redirect->clearCache();
+
         return redirect()->route('admin.redirects.index')->with('success', 'Redirect updated successfully.');
     }
 
     public function destroy(Redirect $redirect)
     {
+        $redirect->clearCache();
         $redirect->delete();
         return redirect()->route('admin.redirects.index')->with('success', 'Redirect deleted successfully.');
     }

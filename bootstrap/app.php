@@ -19,7 +19,20 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->reportable(function (\Throwable $e) {
+            if (app()->environment('production')) {
+                try {
+                    \Illuminate\Support\Facades\Mail::to('4wellsolutions@gmail.com')
+                        ->send(new \App\Mail\ServerError($e, [
+                            'url' => request()->fullUrl(),
+                            'method' => request()->method(),
+                            'ip' => request()->ip(),
+                        ]));
+                } catch (\Throwable $mailError) {
+                    \Illuminate\Support\Facades\Log::error('Failed to send error email: ' . $mailError->getMessage());
+                }
+            }
+        });
     })
     ->withSchedule(function ($schedule) {
         $schedule->command('queue:work --stop-when-empty')->everyMinute()->withoutOverlapping();

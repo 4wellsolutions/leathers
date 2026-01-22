@@ -1,0 +1,259 @@
+# Leathers.pk - SEO Documentation
+
+> Premium handcrafted leather goods in Pakistan | Belts, Wallets, Watches & Bags
+
+## Business Information
+
+**Company Name**: Leathers.pk
+**Industry**: E-commerce - Leather Goods & Accessories
+**Location**: Pakistan
+**Target Market**: Pakistan (primary), International shipping available
+**Brand Promise**: Premium quality, handcrafted leather products with lifetime warranty
+
+## Core Products & Categories
+
+### Main Categories
+1. **Leather Belts** - Handcrafted genuine leather belts for men
+2. **Leather Wallets** - Premium wallets with RFID protection
+3. **Leather Watches** - Luxury timepieces with leather straps
+4. **Leather Bags** - Durable messenger bags and accessories
+
+### Product Features
+- 100% genuine leather from premium tanneries
+- Handcrafted by skilled artisans
+- Lifetime warranty on all products
+- Free shipping on orders over Rs. 5,000
+- Secure payment via Stripe
+- Multiple color variants available
+- Premium packaging
+
+## Target Keywords
+
+### Primary Keywords
+- leather belts Pakistan
+- genuine leather wallets
+- handcrafted leather goods
+- premium leather accessories
+- leather watches Pakistan
+- men's leather belts
+- RFID wallets Pakistan
+
+### Long-tail Keywords
+- handmade leather belt for men
+- genuine leather wallet with RFID
+- premium leather goods online Pakistan
+- best leather belts in Pakistan
+- luxury leather accessories
+- handcrafted leather products
+
+### Local SEO Keywords
+- leather goods Karachi
+- leather products Lahore
+- leather accessories Islamabad
+- Pakistani leather craftsmanship
+
+## Site Structure & URLs
+
+### Homepage
+- URL: `https://leathers.pk/`
+- Title: "Leathers.pk - Premium Handcrafted Leather Belts, Wallets & Watches"
+- Focus: Brand introduction, featured products, categories, USPs
+
+### Category Pages
+- `/category/belts` - Leather Belts Collection
+- `/category/wallets` - Leather Wallets Collection
+- `/category/watches` - Leather Watches Collection
+- `/category/bags` - Leather Bags Collection
+
+### Product Pages
+- `/products/{slug}` - Individual product detail pages
+- Schema: Product structured data with price, availability, reviews
+- Images: Multiple high-quality images per product variant
+- Rich content: Detailed descriptions, specifications, care instructions
+
+### Content Pages
+- `/blog` - "The Journal" - Leather care tips, style guides, brand stories
+- `/deals` - Special promotional offers
+- `/combos` - Bundle deals and gift sets
+- `/page/about-us` - Brand story and mission
+- `/page/privacy-policy` - Privacy policy
+- `/page/terms-and-conditions` - Terms of service
+
+### Utility Pages
+- `/cart` - Shopping cart (noindex)
+- `/checkout` - Checkout process (noindex)
+- `/contact` - Contact form
+
+## SEO Implementation
+
+### Meta Tags
+All pages include:
+- Unique meta title (50-60 characters)
+- Compelling meta description (150-160 characters)
+- Open Graph tags for social sharing
+- Canonical URLs
+- Robots meta tags (index/noindex as appropriate)
+
+### Structured Data (JSON-LD)
+- **Product Schema**: Price, availability, brand, SKU, images, reviews
+- **BreadcrumbList**: Navigation hierarchy
+- **Organization**: Business information
+- **WebSite**: Site search functionality
+- **CollectionPage**: Category pages
+
+### Image Optimization
+- Descriptive alt tags on all images
+- Product images: High quality, multiple angles
+- Lazy loading for performance
+- WebP format support
+- Responsive images with srcset
+
+### Content Strategy
+- Product descriptions: 200-300 words minimum
+- Category descriptions: Unique content for each category
+- Blog posts: 800+ words, keyword-optimized
+- Internal linking between related products
+- User-generated content: Reviews and ratings
+
+### Technical SEO
+- Clean, semantic HTML5 markup
+- Mobile-first responsive design
+- Fast page load times (optimized assets)
+- HTTPS secure connection
+- XML sitemap generation
+- Robots.txt configuration
+- 301 redirects for changed URLs
+- Proper heading hierarchy (H1, H2, H3)
+
+### URL Structure
+- Clean, descriptive URLs
+- Hyphens for word separation
+- Lowercase letters
+- No unnecessary parameters
+- Category hierarchy in URLs
+
+## Content Marketing
+
+### Blog Topics
+- Leather care and maintenance guides
+- Style tips for leather accessories
+- Behind-the-scenes craftsmanship stories
+- Product comparison guides
+- Gift guides for special occasions
+- Leather quality identification tips
+
+### Social Proof
+- Customer reviews and testimonials
+- Product ratings
+- Trust badges (secure payment, warranty)
+- Social media integration
+- User-generated content showcase
+
+## Local SEO Strategy
+
+### Google My Business
+- Business name: Leathers.pk
+- Category: Leather Goods Store
+- Service areas: Pakistan-wide delivery
+- Business hours and contact information
+
+### Local Citations
+- Consistent NAP (Name, Address, Phone) across platforms
+- Local business directories
+- Pakistani e-commerce platforms
+
+## Conversion Optimization
+
+### Call-to-Actions
+- "Shop Collection" - Homepage hero
+- "Add to Cart" - Product pages
+- "Proceed to Checkout" - Cart page
+- "Subscribe" - Newsletter signup
+- "View Bundle" - Combo deals
+
+### Trust Signals
+- "100% Genuine Leather" badge
+- "Lifetime Warranty" guarantee
+- "Free Shipping" on orders over Rs. 5,000
+- "Secure Checkout" with Stripe
+- Customer reviews and ratings
+
+### User Experience
+- Fast navigation to categories
+- Easy product filtering and sorting
+- Quick add to cart functionality
+- Persistent shopping cart
+- Guest checkout option
+- Mobile-optimized experience
+
+## Performance Metrics
+
+### Target Metrics
+- Page load time: < 3 seconds
+- Mobile-friendly score: 100/100
+- Core Web Vitals: All green
+- Bounce rate: < 50%
+- Average session duration: > 2 minutes
+- Conversion rate: 2-3%
+
+### Tracking
+- Google Analytics 4
+- Google Search Console
+- Conversion tracking
+- E-commerce tracking
+- Event tracking (add to cart, checkout steps)
+
+## Competitive Advantages
+
+1. **Quality Focus**: 100% genuine leather, premium craftsmanship
+2. **Warranty**: Lifetime warranty on all products
+3. **Free Shipping**: On orders over Rs. 5,000
+4. **Secure Payment**: Stripe integration
+5. **Customer Service**: Responsive support
+6. **Product Variety**: Multiple colors and styles
+7. **Gift Options**: Bundle deals and combo packs
+8. **Content**: Educational blog about leather care
+
+## Brand Voice & Messaging
+
+- **Tone**: Premium, sophisticated, trustworthy
+- **Style**: Professional yet approachable
+- **Values**: Quality, craftsmanship, durability, elegance
+- **Unique Selling Proposition**: "Timeless Elegance, Crafted in Leather"
+
+## Customer Journey
+
+1. **Awareness**: Blog content, social media, SEO
+2. **Consideration**: Category browsing, product comparisons
+3. **Decision**: Product details, reviews, trust signals
+4. **Purchase**: Easy checkout, secure payment
+5. **Retention**: Email marketing, loyalty programs, quality service
+
+## SEO Priorities
+
+### High Priority
+- Optimize product titles and descriptions
+- Build quality backlinks from fashion/lifestyle blogs
+- Create comprehensive buying guides
+- Improve site speed and Core Web Vitals
+- Enhance mobile user experience
+
+### Medium Priority
+- Expand blog content library
+- Implement customer review system
+- Create video content (product showcases)
+- Build local citations
+- Social media engagement
+
+### Ongoing
+- Monitor search rankings
+- Update content regularly
+- Fix technical SEO issues
+- Analyze competitor strategies
+- Test and optimize conversion rates
+
+---
+
+**Last Updated**: January 2026
+**SEO Strategy Owner**: Development Team
+**Review Frequency**: Quarterly

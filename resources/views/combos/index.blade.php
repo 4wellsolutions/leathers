@@ -79,7 +79,7 @@
                 </div>
                 <h3 class="text-xl font-bold text-leather-900 mb-2">No bundles available</h3>
                 <p class="text-neutral-600 mb-6">Check back soon for exciting bundle deals.</p>
-                <a href="{{ route('products.index') }}" class="btn-primary">Browse Products</a>
+                <a href="{{ route('home') }}" class="btn-primary">Browse Products</a>
             </div>
         @endif
     </div>

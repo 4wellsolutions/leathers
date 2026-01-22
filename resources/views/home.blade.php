@@ -26,7 +26,7 @@
                     modern gentleman.
                 </p>
                 <div class="flex space-x-4">
-                    <a href="{{ route('products.index') }}" class="btn-secondary">
+                    <a href="#categories" class="btn-secondary">
                         Shop Collection
                     </a>
                     <a href="#categories" class="btn-outline border-white text-white hover:bg-white hover:text-leather-900">
@@ -304,7 +304,8 @@
                             </div>
                             <div class="p-4">
                                 <p class="text-xs text-gold-600 font-semibold uppercase tracking-wider mb-1">
-                                    {{ $product->category->name }}</p>
+                                    {{ $product->category->name }}
+                                </p>
                                 <h3 class="text-base font-bold text-leather-900 mb-2 truncate">
                                     <a href="{{ route('products.show', $product->slug) }}"
                                         class="hover:text-gold-600 transition-colors">{{ $product->name }}</a>
@@ -315,11 +316,11 @@
                                     <span class="text-sm text-neutral-500 line-through whitespace-nowrap">Rs.
                                         {{ number_format($product->price) }}</span>
                                     @if($product->price > $product->effective_price)
-                                                            @php
-                                                                $discount = round((($product->price - $product->effective_price) / $product->price) * 100);
-                                                             @endphp
-                                          <span
-                                                                class="text-xs font-bold text-white bg-red-600 px-2 py-0.5 rounded whitespace-nowrap">-{{ $discount }}%</span>
+                                        @php
+                                            $discount = round((($product->price - $product->effective_price) / $product->price) * 100);
+                                         @endphp
+                                        <span
+                                            class="text-xs font-bold text-white bg-red-600 px-2 py-0.5 rounded whitespace-nowrap">-{{ $discount }}%</span>
                                     @endif
                                 </div>
                                 <a href="{{ route('products.show', $product->slug) }}"
@@ -424,16 +425,16 @@
     </section>
     <!-- WebSite Schema -->
     <script type="application/ld+json">
-        {
-          "@@context": "https://schema.org",
-          "@@type": "WebSite",
-          "name": "Leathers.pk",
-          "url": "{{ url('/') }}",
-          "potentialAction": {
-            "@@type": "SearchAction",
-            "target": "{{ url('/shop') }}?search={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
-        }
-        </script>
+            {
+              "@@context": "https://schema.org",
+              "@@type": "WebSite",
+              "name": "Leathers.pk",
+              "url": "{{ url('/') }}",
+              "potentialAction": {
+                "@@type": "SearchAction",
+                "target": "{{ url('/shop') }}?search={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            }
+            </script>
 @endsection

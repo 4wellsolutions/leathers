@@ -77,7 +77,7 @@
                     </div>
                     
                     <div class="mt-8 flex justify-between items-center">
-                        <a href="{{ route('products.index') }}" class="flex items-center text-leather-700 font-semibold hover:text-leather-900 transition-colors">
+                        <a href="{{ route('home') }}" class="flex items-center text-leather-700 font-semibold hover:text-leather-900 transition-colors">
                             <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
@@ -143,7 +143,7 @@
                 </div>
                 <h2 class="text-2xl font-serif font-bold text-leather-900 mb-2">Your cart is empty</h2>
                 <p class="text-neutral-600 mb-8">Looks like you haven't added any items to your cart yet.</p>
-                <a href="{{ route('products.index') }}" class="btn-primary">Start Shopping</a>
+                <a href="{{ route('home') }}" class="btn-primary">Start Shopping</a>
             </div>
         @endif
     </div>

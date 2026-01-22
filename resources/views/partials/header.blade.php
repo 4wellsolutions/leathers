@@ -230,7 +230,7 @@
                                     <h3 class="text-xl font-serif font-bold text-leather-900 mb-2">Your cart is empty</h3>
                                     <p class="text-neutral-500 mb-8 max-w-[220px] mx-auto">Looks like you haven't added any
                                         items to your cart yet.</p>
-                                    <a href="{{ route('products.index') }}"
+                                    <a href="{{ route('home') }}"
                                         class="inline-flex items-center justify-center px-8 py-3 border border-transparent rounded-lg text-sm font-bold text-white bg-gold-500 hover:bg-gold-600 transition-colors uppercase tracking-wide shadow-md hover:shadow-lg">
                                         Start Shopping
                                     </a>
@@ -375,7 +375,7 @@
                                         </svg>
                                     </div>
                                     <h3 class="text-lg font-serif font-bold text-leather-900 mb-1">Cart Empty</h3>
-                                    <a href="{{ route('products.index') }}"
+                                    <a href="{{ route('home') }}"
                                         class="mt-4 inline-flex items-center justify-center px-6 py-2 border border-transparent rounded-lg text-xs font-bold text-white bg-gold-500 hover:bg-gold-600 transition-colors uppercase tracking-wide">
                                         Shop Now
                                     </a>

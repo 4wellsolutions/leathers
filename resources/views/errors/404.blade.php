@@ -47,7 +47,7 @@
 
             {{-- Search Bar --}}
             <div class="mt-8 max-w-md mx-auto animate-fade-in-up animation-delay-500">
-                <form action="{{ route('products.index') }}" method="GET" class="relative group">
+                <form action="{{ route('home') }}" method="GET" class="relative group">
                     <input type="text" name="search" placeholder="Search specifically for..."
                         class="w-full px-5 py-3 pr-12 text-neutral-900 bg-white border-2 border-neutral-200 rounded-full focus:border-gold-500 focus:ring-0 focus:outline-none transition-all shadow-sm group-hover:border-neutral-300">
                     <button type="submit"
@@ -71,7 +71,7 @@
                     </svg>
                     Return Home
                 </a>
-                <a href="{{ route('products.index') }}"
+                <a href="{{ route('home') }}"
                     class="inline-flex items-center justify-center px-8 py-3 text-base font-medium transition-all bg-white border-2 border-neutral-200 text-neutral-900 rounded-full shadow-sm hover:border-gold-500 hover:text-gold-600 hover:shadow-md hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500">
                     Browse Collections
                 </a>

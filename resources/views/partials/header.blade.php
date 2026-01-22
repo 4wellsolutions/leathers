@@ -41,15 +41,15 @@
 
                     <!-- Categories Dropdown -->
                     <div class="relative group h-full flex items-center">
-                        <a href="{{ route('products.index') }}"
-                            class="text-neutral-300 hover:text-gold-400 transition-colors duration-300 text-sm uppercase tracking-widest font-medium flex items-center {{ request()->routeIs('products.*') || request()->routeIs('category.*') ? 'text-gold-400' : '' }}">
+                        <span
+                            class="text-neutral-300 hover:text-gold-400 transition-colors duration-300 text-sm uppercase tracking-widest font-medium flex items-center cursor-pointer {{ request()->routeIs('products.*') || request()->routeIs('category.*') ? 'text-gold-400' : '' }}">
                             Shop
                             <svg class="w-4 h-4 ml-1 transform group-hover:rotate-180 transition-transform duration-300"
                                 fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 9l-7 7-7-7" />
                             </svg>
-                        </a>
+                        </span>
 
                         <div
                             class="absolute left-0 top-full mt-4 w-64 bg-white rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 translate-y-4 transition-all duration-300 ease-out z-50 border border-neutral-100 overflow-hidden ring-1 ring-black ring-opacity-5">
@@ -166,7 +166,8 @@
                                                             </h4>
                                                             @if(isset($details['variant_name']))
                                                                 <p class="text-xs text-neutral-500 mt-0.5">
-                                                                    {{ $details['variant_name'] }}</p>
+                                                                    {{ $details['variant_name'] }}
+                                                                </p>
                                                             @endif
                                                         </div>
                                                         <button onclick="removeMiniCartItem('{{ $id }}', this)"
@@ -312,7 +313,8 @@
                                                             </h4>
                                                             @if(isset($details['variant_name']))
                                                                 <p class="text-xs text-neutral-500 mt-0.5">
-                                                                    {{ $details['variant_name'] }}</p>
+                                                                    {{ $details['variant_name'] }}
+                                                                </p>
                                                             @endif
                                                         </div>
                                                         <button onclick="removeMiniCartItem('{{ $id }}', this)"
@@ -394,14 +396,14 @@
 
                 <!-- Mobile Shop Dropdown -->
                 <div class="relative">
-                    <button @click="shopOpen = !shopOpen"
-                        class="w-full flex items-center justify-between px-3 py-2 text-base font-medium text-white hover:text-gold-400 hover:bg-leather-700 rounded-md">
+                    <span
+                        class="w-full flex items-center justify-between px-3 py-2 text-base font-medium text-white hover:text-gold-400 hover:bg-leather-700 rounded-md cursor-pointer">
                         <span>Shop</span>
                         <svg class="w-4 h-4 transition-transform duration-200" :class="{ 'rotate-180': shopOpen }"
                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
-                    </button>
+                    </span>
 
                     <div x-show="shopOpen" x-collapse class="pl-4 mt-1 space-y-1 bg-leather-750">
 

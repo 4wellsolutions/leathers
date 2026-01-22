@@ -24,7 +24,7 @@
                         <h3 class="text-lg font-bold text-leather-900 mb-4 border-b border-neutral-200 pb-2">Categories</h3>
                         <ul class="space-y-3">
                             <li>
-                                <a href="{{ route('products.index') }}"
+                                <a href="{{ route('home') }}#categories"
                                     class="flex items-center justify-between group {{ !$currentCategory ? 'text-gold-600 font-semibold' : 'text-neutral-600 hover:text-leather-900' }}">
                                     <span>All Products</span>
                                     <span
@@ -151,7 +151,7 @@
                         </div>
                         <h3 class="text-xl font-bold text-leather-900 mb-2">No products found</h3>
                         <p class="text-neutral-600 mb-6">Try adjusting your filters or check back later for new arrivals.</p>
-                        <a href="{{ route('products.index') }}" class="btn-primary">Clear Filters</a>
+                        <a href="{{ route('home') }}" class="btn-primary">Clear Filters</a>
                     </div>
                 @endif
             </div>
@@ -159,39 +159,39 @@
     </div>
     <!-- CollectionPage Schema -->
     <script type="application/ld+json">
-                {
-                  "@@context": "https://schema.org",
-                  "@@type": "CollectionPage",
-                  "name": "{{ $currentCategory ? $currentCategory->name : 'All Products' }}",
-                  "description": "{{ $currentCategory ? $currentCategory->description : 'Browse our collection of premium leather goods.' }}",
-                  "url": "{{ url()->current() }}",
-                  "breadcrumb": {
-                    "@@type": "BreadcrumbList",
-                    "itemListElement": [
-                      {
-                        "@@type": "ListItem",
-                        "position": 1,
-                        "name": "Home",
-                        "item": "{{ route('home') }}"
-                      },
-                      {
-                        "@@type": "ListItem",
-                        "position": 2,
-                        "name": "Shop",
-                        "item": "{{ route('products.index') }}"
-                      }
-                      @if($currentCategory)
-                          ,{
+                    {
+                      "@@context": "https://schema.org",
+                      "@@type": "CollectionPage",
+                      "name": "{{ $currentCategory ? $currentCategory->name : 'All Products' }}",
+                      "description": "{{ $currentCategory ? $currentCategory->description : 'Browse our collection of premium leather goods.' }}",
+                      "url": "{{ url()->current() }}",
+                      "breadcrumb": {
+                        "@@type": "BreadcrumbList",
+                        "itemListElement": [
+                          {
                             "@@type": "ListItem",
-                            "position": 3,
-                            "name": "{{ $currentCategory->name }}",
-                            "item": "{{ route('category.show', $currentCategory->slug) }}"
+                            "position": 1,
+                            "name": "Home",
+                            "item": "{{ route('home') }}"
+                          },
+                          {
+                            "@@type": "ListItem",
+                            "position": 2,
+                            "name": "Shop",
+                            "item": "{{ route('home') }}"
                           }
-                      @endif
-                    ]
-                  }
-                }
-                </script>
+                          @if($currentCategory)
+                              ,{
+                                "@@type": "ListItem",
+                                "position": 3,
+                                "name": "{{ $currentCategory->name }}",
+                                "item": "{{ route('category.show', $currentCategory->slug) }}"
+                              }
+                          @endif
+                        ]
+                      }
+                    }
+                    </script>
 
     <script>
         // Price filter functionality

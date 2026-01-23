@@ -43,6 +43,10 @@ class ComboController extends Controller
             $validated['slug'] = Str::slug($validated['name']);
         }
 
+        // Debug logging
+        \Log::info('Combo Store - Name: ' . $validated['name']);
+        \Log::info('Combo Store - Slug: ' . $validated['slug']);
+
         $combo = Combo::create([
             'name' => $validated['name'],
             'slug' => $validated['slug'],

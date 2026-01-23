@@ -354,9 +354,12 @@ class ProductController extends Controller
 
         // 2. Delete Gallery Images
         if ($product->images) {
-            foreach ($product->images as $image) {
-                if (\Storage::disk('public_root')->exists($image)) {
-                    \Storage::disk('public_root')->delete($image);
+            $images = is_string($product->images) ? json_decode($product->images, true) : $product->images;
+            if (is_array($images)) {
+                foreach ($images as $image) {
+                    if (\Storage::disk('public_root')->exists($image)) {
+                        \Storage::disk('public_root')->delete($image);
+                    }
                 }
             }
         }

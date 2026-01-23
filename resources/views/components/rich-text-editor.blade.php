@@ -230,6 +230,27 @@
                 hiddenInput.value = editorContent.innerHTML;
             }
 
+            // Initialize with paragraph formatting
+            editorContent.addEventListener('focus', function () {
+                if (!this.innerHTML.trim() || this.innerHTML === '<br>') {
+                    document.execCommand('formatBlock', false, 'p');
+                }
+            }, { once: true });
+
+            // Ensure new content starts with paragraph, not H1
+            editorContent.addEventListener('keydown', function (e) {
+                if (this.innerHTML.trim() === '' || this.innerHTML === '<br>') {
+                    // Set default format to paragraph on first keystroke
+                    setTimeout(() => {
+                        const selection = window.getSelection();
+                        if (selection.anchorNode && selection.anchorNode.nodeType === Node.TEXT_NODE) {
+                            document.execCommand('formatBlock', false, 'p');
+                        }
+                    }, 0);
+                }
+            });
+
+
             // Update button states based on selection
             editorContent.addEventListener('mouseup', updateButtonStates);
             editorContent.addEventListener('keyup', updateButtonStates);

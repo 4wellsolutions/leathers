@@ -122,12 +122,19 @@
 
     @push('scripts')
         <script>
-            document.getElementById('name').addEventListener('input', function (e) {
-                const slug = e.target.value
-                    .toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/^-+|-+$/g, '');
-                document.getElementById('slug').value = slug;
+            document.addEventListener('DOMContentLoaded', function () {
+                const nameInput = document.getElementById('name');
+                const slugInput = document.getElementById('slug');
+
+                if (nameInput && slugInput) {
+                    nameInput.addEventListener('input', function (e) {
+                        const slug = e.target.value
+                            .toLowerCase()
+                            .replace(/[^a-z0-9]+/g, '-')
+                            .replace(/^-+|-+$/g, '');
+                        slugInput.value = slug;
+                    });
+                }
             });
         </script>
     @endpush

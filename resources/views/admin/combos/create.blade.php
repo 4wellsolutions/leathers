@@ -96,8 +96,8 @@
                                         
                                         <div class="ml-3 flex items-center">
                                             @if($product->image)
-                                                <div class="relative group cursor-pointer" onclick="openImageModal('{{ asset($product->image) }}')">
-                                                    <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" 
+                                                <div class="relative group cursor-pointer" onclick="openImageModal('{{ $product->image_url }}')">
+                                                    <img src="{{ $product->image_url }}" alt="{{ $product->name }}" 
                                                          class="h-10 w-10 rounded-md object-cover border border-neutral-200 transition-transform hover:scale-105">
                                                     <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity rounded-md"></div>
                                                 </div>

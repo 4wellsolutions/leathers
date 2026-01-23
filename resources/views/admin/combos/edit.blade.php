@@ -98,10 +98,26 @@
                                     <input id="product_{{ $product->id }}" name="products[]" value="{{ $product->id }}"
                                         type="checkbox" {{ $comboItem ? 'checked' : '' }}
                                         class="focus:ring-gold-500 h-4 w-4 text-gold-600 border-neutral-300 rounded">
-                                    <label for="product_{{ $product->id }}"
-                                        class="ml-3 block text-sm font-medium text-leather-700">
-                                        {{ $product->name }} (Rs. {{ number_format($product->price) }})
-                                    </label>
+                                    
+                                    <div class="ml-3 flex items-center">
+                                        @if($product->image)
+                                            <div class="relative group cursor-pointer" onclick="openImageModal('{{ asset($product->image) }}')">
+                                                <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" 
+                                                     class="h-10 w-10 rounded-md object-cover border border-neutral-200 transition-transform hover:scale-105">
+                                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity rounded-md"></div>
+                                            </div>
+                                        @else
+                                            <div class="h-10 w-10 rounded-md bg-neutral-100 border border-neutral-200 flex items-center justify-center text-neutral-400">
+                                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                        @endif
+                                        
+                                        <label for="product_{{ $product->id }}" class="ml-3 block text-sm font-medium text-leather-700">
+                                            {{ $product->name }} <span class="text-neutral-500">(Rs. {{ number_format($product->price) }})</span>
+                                        </label>
+                                    </div>
                                 </div>
                                 <div class="flex items-center">
                                     <label for="quantity_{{ $product->id }}" class="mr-2 text-sm text-neutral-500">Qty:</label>

@@ -26,7 +26,7 @@ class ComboController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:combos',
+            'slug' => 'nullable|string|max:255|unique:combos',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'start_date' => 'nullable|date',
@@ -37,6 +37,11 @@ class ComboController extends Controller
             'quantities' => 'required|array',
             'quantities.*' => 'integer|min:1',
         ]);
+
+        // Auto-generate slug from name if not provided or if slug equals name
+        if (empty($validated['slug']) || $validated['slug'] === $validated['name']) {
+            $validated['slug'] = Str::slug($validated['name']);
+        }
 
         $combo = Combo::create([
             'name' => $validated['name'],
@@ -70,7 +75,7 @@ class ComboController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:combos,slug,' . $combo->id,
+            'slug' => 'nullable|string|max:255|unique:combos,slug,' . $combo->id,
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'start_date' => 'nullable|date',
@@ -81,6 +86,11 @@ class ComboController extends Controller
             'quantities' => 'required|array',
             'quantities.*' => 'integer|min:1',
         ]);
+
+        // Auto-generate slug from name if not provided or if slug equals name
+        if (empty($validated['slug']) || $validated['slug'] === $validated['name']) {
+            $validated['slug'] = Str::slug($validated['name']);
+        }
 
         $combo->update([
             'name' => $validated['name'],

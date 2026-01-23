@@ -24,9 +24,10 @@ class ComboController extends Controller
 
     public function store(Request $request)
     {
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:combos',
+            'slug' => 'required|string|max:255|unique:combos',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'start_date' => 'nullable|date',
@@ -77,9 +78,10 @@ class ComboController extends Controller
 
     public function update(Request $request, Combo $combo)
     {
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:combos,slug,' . $combo->id,
+            'slug' => 'required|string|max:255|unique:combos,slug,' . $combo->id,
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'start_date' => 'nullable|date',

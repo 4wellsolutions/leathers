@@ -23,11 +23,13 @@
                         </div>
 
                         <div class="sm:col-span-4">
-                            <label for="slug" class="block text-sm font-medium text-leather-700">Slug</label>
+                            <label for="slug" class="block text-sm font-medium text-leather-700">Slug <span
+                                    class="text-red-500">*</span></label>
                             <div class="mt-1">
                                 <input type="text" name="slug" id="slug" value="{{ old('slug') }}"
-                                    class="shadow-sm focus:ring-gold-500 focus:border-gold-500 block w-full sm:text-sm border-neutral-300 rounded-md">
-                                <p class="mt-1 text-xs text-neutral-500">Leave empty to auto-generate from name</p>
+                                    class="shadow-sm focus:ring-gold-500 focus:border-gold-500 block w-full sm:text-sm border-neutral-300 rounded-md"
+                                    required>
+                                <p class="mt-1 text-xs text-neutral-500">Auto-generated from name as you type</p>
                             </div>
                         </div>
 

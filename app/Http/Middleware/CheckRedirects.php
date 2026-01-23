@@ -34,6 +34,13 @@ class CheckRedirects
         });
 
         if ($redirect) {
+            // Increment hit count (optional but helpful for debugging)
+            try {
+                $redirect->increment('hit_count');
+            } catch (\Throwable $e) {
+                // Ignore errors here to not break the redirect itself
+            }
+
             return redirect($redirect->to_url, $redirect->status_code);
         }
 

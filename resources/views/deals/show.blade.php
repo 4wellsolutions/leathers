@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('meta_title', $combo->name . ' - Special Combo Deal - Leathers.pk')
-@section('meta_description', Str::limit(strip_tags($combo->description), 160))
+@section('meta_title', $deal->name . ' - Special Deal - Leathers.pk')
+@section('meta_description', Str::limit(strip_tags($deal->description), 160))
 
 @section('content')
     <div class="bg-white min-h-screen">
@@ -11,9 +11,9 @@
                 <nav class="flex text-sm text-gray-500">
                     <a href="{{ route('home') }}" class="hover:text-gold-600 transition-colors">Home</a>
                     <span class="mx-2 text-gray-300">/</span>
-                    <a href="{{ route('combos.index') }}" class="hover:text-gold-600 transition-colors">Combos</a>
+                    <a href="{{ route('deals.index') }}" class="hover:text-gold-600 transition-colors">Deals</a>
                     <span class="mx-2 text-gray-300">/</span>
-                    <span class="text-gray-900 font-medium truncate">{{ $combo->name }}</span>
+                    <span class="text-gray-900 font-medium truncate">{{ $deal->name }}</span>
                 </nav>
             </div>
         </div>
@@ -23,17 +23,17 @@
                 
                 <!-- Left Column: Visuals -->
                 <div class="flex flex-col space-y-8">
-                    <!-- Main Combo Display -->
+                    <!-- Main Deal Display -->
                     <div class="bg-neutral-50 rounded-2xl p-6 border border-neutral-200 relative overflow-hidden">
                         <div class="absolute top-4 left-4 z-10">
                             <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-gold-500 text-white shadow-sm uppercase tracking-wide">
-                                Bundle Deal
+                                Deal
                             </span>
                         </div>
                         
                         <div class="aspect-w-1 aspect-h-1 rounded-xl overflow-hidden bg-white shadow-sm border border-neutral-100 mb-6">
                             <div class="grid grid-cols-2 gap-2 h-full p-2">
-                                @foreach($combo->items->take(4) as $item)
+                                @foreach($deal->items->take(4) as $item)
                                     <div class="relative bg-neutral-50 rounded-lg overflow-hidden flex items-center justify-center">
                                          @php
                                             $imgSrc = $item->product->image_url;
@@ -51,9 +51,9 @@
 
                         <!-- Included Products List -->
                         <div>
-                            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">What's Included in this Bundle:</h3>
+                            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">What's Included in this Deal:</h3>
                             <div class="space-y-3" x-data="{ activeImage: null }">
-                                @foreach($combo->items as $item)
+                                @foreach($deal->items as $item)
                                     <div class="flex items-center p-3 bg-white border border-gray-100 rounded-xl shadow-sm hover:border-gold-200 transition-colors cursor-pointer group"
                                          @click="activeImage = '{{ ($item->variant && $item->variant->image) ? asset($item->variant->image) : $item->product->image_url }}'">
                                         <div class="h-14 w-14 flex-shrink-0 bg-neutral-50 rounded-lg p-1 border border-neutral-100 group-hover:border-gold-100">
@@ -114,23 +114,23 @@
                 <!-- Right Column: Details & Actions -->
                 <div class="mt-10 px-4 sm:px-0 sm:mt-16 lg:mt-0">
                     <div class="sticky top-24">
-                        <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl mb-4">{{ $combo->name }}</h1>
+                        <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl mb-4">{{ $deal->name }}</h1>
                         
                         <div class="flex items-center gap-4 mb-6">
                             @php
-                                $originalPrice = $combo->items->sum(function($item) {
+                                $originalPrice = $deal->items->sum(function($item) {
                                     $price = $item->variant ? ($item->variant->price ?? $item->product->price) : $item->product->price;
                                     return $price * $item->quantity;
                                 });
                             @endphp
                             
                             <h2 class="sr-only">Product Information</h2>
-                            <p class="text-4xl font-black text-gray-900">Rs. {{ number_format($combo->price) }}</p>
+                            <p class="text-4xl font-black text-gray-900">Rs. {{ number_format($deal->price) }}</p>
                             
-                            @if($originalPrice > $combo->price)
+                            @if($originalPrice > $deal->price)
                                 <div class="flex flex-col items-start">
                                     <span class="text-lg text-gray-400 line-through">Rs. {{ number_format($originalPrice) }}</span>
-                                    @php $discount = round((($originalPrice - $combo->price) / $originalPrice) * 100); @endphp
+                                    @php $discount = round((($originalPrice - $deal->price) / $originalPrice) * 100); @endphp
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-800">
                                         Save {{ $discount }}%
                                     </span>
@@ -139,17 +139,17 @@
                         </div>
 
                         <div class="prose prose-sm prose-neutral text-gray-500 mb-8">
-                            <p>{{ $combo->description }}</p>
+                            <p>{{ $deal->description }}</p>
                         </div>
 
-                        <form action="{{ route('cart.add-combo', $combo->id) }}" method="POST" class="mt-8">
+                        <form action="{{ route('cart.add-deal', $deal->id) }}" method="POST" class="mt-8">
                             @csrf
                             <button type="submit" 
                                 class="w-full flex items-center justify-center px-8 py-4 border border-transparent rounded-xl shadow-lg text-lg font-bold text-white bg-gray-900 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 transition-all duration-300 transform hover:-translate-y-1">
                                 <svg class="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                                 </svg>
-                                Add Bundle to Cart
+                                Add Deal to Cart
                             </button>
                             <p class="mt-3 text-center text-xs text-gray-400">
                                 <svg class="w-4 h-4 inline-block mr-1 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -175,8 +175,8 @@
                             </div>
 
                             <div x-show="activeTab === 'description'" class="text-gray-600 leading-relaxed text-sm">
-                                @if($combo->description)
-                                    <p>{{ $combo->description }}</p>
+                                @if($deal->description)
+                                    <p>{{ $deal->description }}</p>
                                 @else
                                     <p class="italic text-gray-400">No additional description available.</p>
                                 @endif
@@ -214,12 +214,12 @@
             </div>
 
             <!-- Related Bundles -->
-            @if($relatedCombos->count() > 0)
+            @if($relatedDeals->count() > 0)
                 <div class="mt-20 border-t border-gray-100 pt-16">
                     <h2 class="text-2xl font-bold text-gray-900 mb-8">You Might Also Like</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        @foreach($relatedCombos as $related)
-                            <a href="{{ route('combos.show', $related->slug) }}" class="group block">
+                        @foreach($relatedDeals as $related)
+                            <a href="{{ route('deals.show', $related->slug) }}" class="group block">
                                 <div class="bg-gray-100 rounded-xl overflow-hidden aspect-w-4 aspect-h-3 mb-4">
                                      <div class="grid grid-cols-2 gap-1 p-2 h-full">
                                         @foreach($related->items->take(4) as $item)

@@ -64,8 +64,8 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::all();
-        $deals = \App\Models\Deal::where('is_active', true)->get();
-        return view('admin.products.create', compact('categories', 'deals'));
+        $sales = \App\Models\Sale::where('is_active', true)->get();
+        return view('admin.products.create', compact('categories', 'sales'));
     }
 
     public function store(Request $request)
@@ -76,9 +76,11 @@ class ProductController extends Controller
             'description' => 'required|string',
             'price' => 'nullable|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
+            'sale_starts_at' => 'nullable|date',
+            'sale_ends_at' => 'nullable|date|after_or_equal:sale_starts_at',
             'stock' => 'nullable|integer|min:0',
             'category_id' => 'required|exists:categories,id',
-            'deal_id' => 'nullable|exists:deals,id',
+            'sale_id' => 'nullable|exists:sales,id',
             'is_active' => 'boolean',
             'featured' => 'boolean',
             'meta_title' => 'nullable|string|max:255',
@@ -122,8 +124,8 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::all();
-        $deals = \App\Models\Deal::where('is_active', true)->get();
-        return view('admin.products.edit', compact('product', 'categories', 'deals'));
+        $sales = \App\Models\Sale::where('is_active', true)->get();
+        return view('admin.products.edit', compact('product', 'categories', 'sales'));
     }
 
     public function update(Request $request, Product $product)
@@ -134,9 +136,11 @@ class ProductController extends Controller
             'description' => 'required|string',
             'price' => 'nullable|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
+            'sale_starts_at' => 'nullable|date',
+            'sale_ends_at' => 'nullable|date|after_or_equal:sale_starts_at',
             'stock' => 'nullable|integer|min:0',
             'category_id' => 'required|exists:categories,id',
-            'deal_id' => 'nullable|exists:deals,id',
+            'sale_id' => 'nullable|exists:sales,id',
             'is_active' => 'boolean',
             'featured' => 'boolean',
             'meta_title' => 'nullable|string|max:255',

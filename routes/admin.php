@@ -24,12 +24,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Categories
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
 
-    // Deals
-    Route::resource('deals', \App\Http\Controllers\Admin\DealController::class);
+    // Sales (formerly Deals)
+    Route::resource('sales', \App\Http\Controllers\Admin\SaleController::class);
 
-    // Combos
-    Route::get('combos/search-products', [\App\Http\Controllers\Admin\ComboController::class, 'searchProducts'])->name('combos.search-products');
-    Route::resource('combos', \App\Http\Controllers\Admin\ComboController::class);
+    // Deals (formerly Combos)
+    Route::get('deals/search-products', [\App\Http\Controllers\Admin\DealController::class, 'searchProducts'])->name('deals.search-products');
+    Route::resource('deals', \App\Http\Controllers\Admin\DealController::class);
 
     // Blogs
     Route::resource('blogs', \App\Http\Controllers\Admin\BlogController::class);
@@ -44,7 +44,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Redirects
     Route::resource('redirects', \App\Http\Controllers\Admin\RedirectController::class);
 
-    Route::resource('combos', \App\Http\Controllers\Admin\ComboController::class);
+    Route::resource('deals', \App\Http\Controllers\Admin\DealController::class);
 
     // Users
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);

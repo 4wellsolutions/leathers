@@ -17,8 +17,9 @@
                 <h3 class="text-gold-400 font-serif font-bold text-lg mb-6">Quick Links</h3>
                 <ul class="space-y-3 text-sm">
                     <li><a href="{{ route('home') }}" class="hover:text-white transition-colors">Home</a></li>
-                    <li><a href="{{ route('deals.index') }}" class="hover:text-white transition-colors">Deals</a></li>
-                    <li><a href="{{ route('combos.index') }}" class="hover:text-white transition-colors">Combos</a></li>
+                    <li><a href="{{ route('deals.index') }}" class="hover:text-white transition-colors">Bundle Deals</a>
+                    </li>
+                    <li><a href="{{ route('sales.index') }}" class="hover:text-white transition-colors">Sales</a></li>
                     <li><a href="{{ route('pages.show', 'about-us') }}" class="hover:text-white transition-colors">About
                             Us</a></li>
                     <li><a href="{{ route('blog.index') }}" class="hover:text-white transition-colors">The Journal</a>

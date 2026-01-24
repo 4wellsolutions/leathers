@@ -5,20 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ComboItem extends Model
+class DealItem extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'combo_id',
+        'deal_id',
         'product_id',
         'product_variant_id',
         'quantity',
     ];
 
-    public function combo()
+    public function deal()
     {
-        return $this->belongsTo(Combo::class);
+        return $this->belongsTo(Deal::class);
     }
 
     public function product()

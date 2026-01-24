@@ -134,7 +134,9 @@
                 </div>
             </div>
 
-            <!-- Deals Dropdown -->
+
+
+            <!-- Deals (formerly Combos) Dropdown -->
             <div>
                 <button @click="open = open === 'deals' ? null : 'deals'"
                     class="w-full group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md text-neutral-300 hover:bg-leather-700 hover:text-white focus:outline-none">
@@ -142,7 +144,7 @@
                         <svg class="mr-3 flex-shrink-0 h-6 w-6 text-neutral-400 group-hover:text-gold-500" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                         </svg>
                         Deals
                     </div>
@@ -172,48 +174,6 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
                         Add Deal
-                    </a>
-                </div>
-            </div>
-
-            <!-- Combos Dropdown -->
-            <div>
-                <button @click="open = open === 'combos' ? null : 'combos'"
-                    class="w-full group flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md text-neutral-300 hover:bg-leather-700 hover:text-white focus:outline-none">
-                    <div class="flex items-center">
-                        <svg class="mr-3 flex-shrink-0 h-6 w-6 text-neutral-400 group-hover:text-gold-500" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                        </svg>
-                        Combos
-                    </div>
-                    <svg :class="{'rotate-90': open === 'combos'}"
-                        class="ml-2 h-4 w-4 transform transition-transform duration-200" viewBox="0 0 20 20"
-                        fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </button>
-                <div x-show="open === 'combos' || '{{ request()->routeIs('admin.combos.*') }}'" class="space-y-1 pl-11"
-                    x-collapse>
-                    <a href="{{ route('admin.combos.index') }}"
-                        class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.combos.index') ? 'text-gold-500' : 'text-neutral-400 hover:text-white' }}">
-                        <svg class="mr-2 h-5 w-5 {{ request()->routeIs('admin.combos.index') ? 'text-gold-500' : 'text-neutral-500 group-hover:text-white' }}"
-                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                        </svg>
-                        All Combos
-                    </a>
-                    <a href="{{ route('admin.combos.create') }}"
-                        class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.combos.create') ? 'text-gold-500' : 'text-neutral-400 hover:text-white' }}">
-                        <svg class="mr-2 h-5 w-5 {{ request()->routeIs('admin.combos.create') ? 'text-gold-500' : 'text-neutral-500 group-hover:text-white' }}"
-                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Add Combo
                     </a>
                 </div>
             </div>

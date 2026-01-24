@@ -160,17 +160,18 @@ class ProductController extends Controller
         return view('products.show', compact('product', 'relatedProducts'));
     }
 
-    public function deals()
+    public function sales()
     {
         $products = \App\Models\Product::where('is_active', true)
-            ->whereHas('deal', function ($query) {
-                $query->where('is_active', true)
-                    ->where(function ($q) {
-                        $q->whereNull('starts_at')->orWhere('starts_at', '<=', now());
-                    })
-                    ->where(function ($q) {
-                        $q->whereNull('ends_at')->orWhere('ends_at', '>=', now());
-                    });
+            ->whereNotNull('sale_price')
+            ->where('sale_price', '>', 0)
+            ->where(function ($query) {
+                $query->whereNull('sale_starts_at')
+                    ->orWhere('sale_starts_at', '<=', now());
+            })
+            ->where(function ($query) {
+                $query->whereNull('sale_ends_at')
+                    ->orWhere('sale_ends_at', '>=', now());
             })
             ->with(['category', 'variants'])
             ->paginate(12);

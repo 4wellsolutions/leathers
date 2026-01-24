@@ -69,12 +69,12 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('deals.index') }}"
-                        class="text-neutral-300 hover:text-gold-400 transition-colors duration-300 text-sm uppercase tracking-widest font-medium {{ request()->routeIs('deals.index') ? 'text-gold-400' : '' }}">Deals</a>
+                    <a href="{{ route('sales.index') }}"
+                        class="text-red-500 hover:text-red-400 transition-colors duration-300 text-sm uppercase tracking-widest font-bold {{ request()->routeIs('sales.index') ? 'text-red-400' : '' }}">Sale</a>
 
-                    @if(\App\Models\Combo::where('is_active', true)->has('products')->exists())
-                        <a href="{{ route('combos.index') }}"
-                            class="text-neutral-300 hover:text-gold-400 transition-colors duration-300 text-sm uppercase tracking-widest font-medium {{ request()->routeIs('combos.*') ? 'text-gold-400' : '' }}">Combos</a>
+                    @if(\App\Models\Deal::where('is_active', true)->has('products')->exists())
+                        <a href="{{ route('deals.index') }}"
+                            class="text-neutral-300 hover:text-gold-400 transition-colors duration-300 text-sm uppercase tracking-widest font-medium {{ request()->routeIs('deals.*') ? 'text-gold-400' : '' }}">Deals</a>
                     @endif
 
 
@@ -413,10 +413,10 @@
                     </div>
                 </div>
 
+                <a href="{{ route('sales.index') }}"
+                    class="block px-3 py-2 text-base font-bold text-red-400 hover:text-red-300 hover:bg-leather-700 rounded-md">Sale</a>
                 <a href="{{ route('deals.index') }}"
                     class="block px-3 py-2 text-base font-medium text-white hover:text-gold-400 hover:bg-leather-700 rounded-md">Deals</a>
-                <a href="{{ route('combos.index') }}"
-                    class="block px-3 py-2 text-base font-medium text-white hover:text-gold-400 hover:bg-leather-700 rounded-md">Combos</a>
 
                 <a href="{{ route('contact') }}"
                     class="block px-3 py-2 text-base font-medium text-white hover:text-gold-400 hover:bg-leather-700 rounded-md">Contact</a>

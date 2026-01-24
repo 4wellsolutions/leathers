@@ -6,7 +6,7 @@ use App\Http\Controllers\ReviewController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/deals', [ProductController::class, 'deals'])->name('deals.index');
+Route::get('/sales', [ProductController::class, 'sales'])->name('sales.index');
 Route::get('/category/{slug}', [ProductController::class, 'category'])->name('category.show');
 Route::get('/products/{product}/review', [ReviewController::class, 'create'])->name('reviews.create');
 Route::post('/products/{product}/review', [ReviewController::class, 'store'])->name('reviews.store');
@@ -26,7 +26,7 @@ Route::get('/page/{slug}', [App\Http\Controllers\PageController::class, 'show'])
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\ComboController;
+use App\Http\Controllers\DealController;
 Route::middleware('guest')->group(function () {
     Route::get('forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
     Route::post('forgot-password', [App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendOtp'])->name('password.email');
@@ -37,7 +37,7 @@ Route::middleware('guest')->group(function () {
 });
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::get('/add-to-cart/{id}', [CartController::class, 'add'])->name('cart.add');
-Route::post('/add-combo-to-cart/{id}', [CartController::class, 'addCombo'])->name('cart.add-combo');
+Route::post('/add-deal-to-cart/{id}', [CartController::class, 'addDeal'])->name('cart.add-deal');
 Route::patch('/update-cart', [CartController::class, 'update'])->name('cart.update');
 Route::post('/remove-from-cart', [CartController::class, 'remove'])->name('cart.remove');
 
@@ -49,8 +49,8 @@ Route::post('/wishlist/remove', [WishlistController::class, 'remove'])->name('wi
 Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
 
 
-Route::get('/combos', [ComboController::class, 'index'])->name('combos.index');
-Route::get('/combo/{slug}', [ComboController::class, 'show'])->name('combos.show');
+Route::get('/deals', [DealController::class, 'index'])->name('deals.index');
+Route::get('/deal/{slug}', [DealController::class, 'show'])->name('deals.show');
 
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
@@ -126,3 +126,4 @@ Route::get('/clear-cache', function () {
         ]
     ]);
 });
+

@@ -19,8 +19,9 @@ class HomeController extends Controller
             ->take(6)
             ->get();
 
-        // Fetch active deals with products
-        $activeDeals = Deal::where('is_active', true)
+        // Fetch active sales (formerly deals)
+        // using Sale model which has starts_at/ends_at
+        $activeSales = \App\Models\Sale::where('is_active', true)
             ->where(function ($query) {
                 $query->whereNull('starts_at')
                     ->orWhere('starts_at', '<=', now());
@@ -29,12 +30,12 @@ class HomeController extends Controller
                 $query->whereNull('ends_at')
                     ->orWhere('ends_at', '>=', now());
             })
-            ->has('products')
             ->with('products')
-            ->first(); // Get just one active deal for homepage
+            ->first(); // Get just one active sale for homepage
 
-        // Fetch active combos
-        $activeCombos = Combo::where('is_active', true)
+        // Fetch active bundles (formerly combos -> now Deals)
+        // using Deal model which has start_date/end_date
+        $activeBundles = Deal::where('is_active', true)
             ->where(function ($query) {
                 $query->whereNull('start_date')
                     ->orWhere('start_date', '<=', now());
@@ -47,6 +48,6 @@ class HomeController extends Controller
             ->take(3)
             ->get();
 
-        return view('home', compact('categories', 'featuredProducts', 'activeDeals', 'activeCombos'));
+        return view('home', compact('categories', 'featuredProducts', 'activeSales', 'activeBundles'));
     }
 }

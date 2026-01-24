@@ -8,19 +8,30 @@
         @php
             // Check if product has any sale variants
             $hasVariants = $product->variants()->count() > 0;
-            $hasSale = $hasVariants
-                ? $product->variants()->whereNotNull('sale_price')->where('sale_price', '>', 0)->exists()
-                : $product->sale_price;
+            $variantHasSale = false;
+            if ($hasVariants) {
+                $variantHasSale = $product->variants()->whereNotNull('sale_price')->where('sale_price', '>', 0)->exists();
+            }
+
+            // Logic: 
+            // 1. If variants have explicit sale, use that.
+            // 2. If variants exist but NO explicit sale, check if Product has global sale (inheritance).
+            // 3. If no variants, use Product sale.
+
+            $hasSale = $variantHasSale || ($product->sale_price && $product->sale_price > 0 &&
+                (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
+                (!$product->sale_ends_at || $product->sale_ends_at->isFuture()));
 
             // Calculate discount percentage for badge
             $discountPercent = 0;
-            if ($hasVariants) {
+            if ($variantHasSale) {
                 $lowestSalePrice = $product->variants()->whereNotNull('sale_price')->where('sale_price', '>', 0)->min('sale_price');
                 $lowestPrice = $product->variants()->min('price');
                 if ($lowestSalePrice && $lowestPrice > $lowestSalePrice) {
                     $discountPercent = round((($lowestPrice - $lowestSalePrice) / $lowestPrice) * 100);
                 }
-            } else if ($product->sale_price && $product->price > $product->sale_price) {
+            } else if ($product->sale_price && $product->price > $product->sale_price && $hasSale) {
+                // Fallback to product global discount
                 $discountPercent = round((($product->price - $product->sale_price) / $product->price) * 100);
             }
         @endphp
@@ -38,13 +49,13 @@
             </div>
         @endif
 
-        @if($product->deal && $product->deal->isValid())
+        @if($product->sale && $product->sale->isValid())
             <div
                 class="absolute top-16 right-4 bg-gold-500 text-leather-900 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                @if($product->deal->discount_type === 'percentage')
-                    {{ $product->deal->discount_value }}% OFF
+                @if($product->sale->discount_type === 'percentage')
+                    {{ $product->sale->discount_value }}% OFF
                 @else
-                    Rs. {{ number_format($product->deal->discount_value) }} OFF
+                    Rs. {{ number_format($product->sale->discount_value) }} OFF
                 @endif
             </div>
         @endif

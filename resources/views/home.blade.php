@@ -268,26 +268,26 @@
         </div>
     </section>
 
-    <!-- Active Deals Section -->
-    @if($activeDeals && $activeDeals->products->count() > 0)
+    <!-- Active Deals Section (now Sales) -->
+    @if($activeSales && $activeSales->products->count() > 0)
         <section class="py-20 bg-gradient-to-br from-leather-900 to-leather-800 relative overflow-hidden">
             <div class="absolute inset-0 opacity-10 bg-cover bg-center"
                 style="background-image: url('{{ asset('/images/hero/hero.png') }}');"></div>
             <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
-                    <h2 class="text-4xl font-serif font-bold text-white mb-2">{{ $activeDeals->name }}</h2>
+                    <h2 class="text-4xl font-serif font-bold text-white mb-2">{{ $activeSales->name }}</h2>
                     <div class="w-24 h-1 bg-gold-500 mx-auto"></div>
                     <p class="mt-4 text-gold-400 text-lg font-semibold">
-                        @if($activeDeals->discount_type === 'percentage')
-                            Save {{ $activeDeals->discount_value }}% on selected items
+                        @if($activeSales->discount_type === 'percentage')
+                            Save {{ $activeSales->discount_value }}% on selected items
                         @else
-                            Flat Rs. {{ number_format($activeDeals->discount_value) }} off
+                            Flat Rs. {{ number_format($activeSales->discount_value) }} off
                         @endif
                     </p>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    @foreach($activeDeals->products->take(4) as $product)
+                    @foreach($activeSales->products->take(4) as $product)
                         <div
                             class="bg-white rounded-xl overflow-hidden shadow-lg group hover:shadow-2xl transition-all transform hover:-translate-y-1">
                             <div class="relative h-64 overflow-hidden bg-neutral-100">
@@ -295,10 +295,10 @@
                                     class="w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-110">
                                 <div
                                     class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-2 rounded-full uppercase tracking-wide shadow-lg">
-                                    @if($activeDeals->discount_type === 'percentage')
-                                        {{ $activeDeals->discount_value }}% OFF
+                                    @if($activeSales->discount_type === 'percentage')
+                                        {{ $activeSales->discount_value }}% OFF
                                     @else
-                                        Rs. {{ number_format($activeDeals->discount_value) }} OFF
+                                        Rs. {{ number_format($activeSales->discount_value) }} OFF
                                     @endif
                                 </div>
                             </div>
@@ -333,14 +333,14 @@
                 </div>
 
                 <div class="mt-12 text-center">
-                    <a href="{{ route('deals.index') }}" class="btn-secondary inline-block">View All Deals</a>
+                    <a href="{{ route('sales.index') }}" class="btn-secondary inline-block">View All Deals</a>
                 </div>
             </div>
         </section>
     @endif
 
-    <!-- Special Combos Section -->
-    @if($activeCombos->count() > 0)
+    <!-- Special Combos Section (now Bundles) -->
+    @if($activeBundles->count() > 0)
         <section class="py-20 bg-neutral-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
@@ -350,7 +350,7 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    @foreach($activeCombos as $combo)
+                    @foreach($activeBundles as $combo)
                         <div class="bg-white rounded-xl shadow-md overflow-hidden group hover:shadow-xl transition-shadow">
                             <div class="relative h-64 bg-neutral-100 p-4">
                                 <div
@@ -368,7 +368,7 @@
                             </div>
                             <div class="p-6">
                                 <h3 class="text-lg font-bold text-leather-900 mb-2 truncate">
-                                    <a href="{{ route('combos.show', $combo->slug) }}"
+                                    <a href="{{ route('deals.show', $combo->slug) }}"
                                         class="hover:text-gold-600 transition-colors">{{ $combo->name }}</a>
                                 </h3>
                                 <p class="text-sm text-neutral-600 mb-4 line-clamp-2">{{ $combo->description }}</p>
@@ -391,7 +391,7 @@
                                     @endif
                                 </div>
                                 <div class="flex space-x-2">
-                                    <a href="{{ route('combos.show', $combo->slug) }}"
+                                    <a href="{{ route('deals.show', $combo->slug) }}"
                                         class="flex-1 text-center btn-outline text-sm py-2">
                                         View Bundle
                                     </a>
@@ -402,7 +402,7 @@
                 </div>
 
                 <div class="mt-12 text-center">
-                    <a href="{{ route('combos.index') }}" class="btn-outline inline-block">View All Bundles</a>
+                    <a href="{{ route('deals.index') }}" class="btn-outline inline-block">View All Bundles</a>
                 </div>
             </div>
         </section>
@@ -425,16 +425,16 @@
     </section>
     <!-- WebSite Schema -->
     <script type="application/ld+json">
-                {
-                  "@@context": "https://schema.org",
-                  "@@type": "WebSite",
-                  "name": "Leathers.pk",
-                  "url": "{{ url('/') }}",
-                  "potentialAction": {
-                    "@@type": "SearchAction",
-                    "target": "{{ url('/shop') }}?search={search_term_string}",
-                    "query-input": "required name=search_term_string"
-                  }
-                }
-                </script>
+                        {
+                          "@@context": "https://schema.org",
+                          "@@type": "WebSite",
+                          "name": "Leathers.pk",
+                          "url": "{{ url('/') }}",
+                          "potentialAction": {
+                            "@@type": "SearchAction",
+                            "target": "{{ url('/shop') }}?search={search_term_string}",
+                            "query-input": "required name=search_term_string"
+                          }
+                        }
+                        </script>
 @endsection

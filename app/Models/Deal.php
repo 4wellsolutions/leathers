@@ -13,22 +13,34 @@ class Deal extends Model
         'name',
         'slug',
         'description',
-        'discount_type', // 'percentage' or 'fixed'
-        'discount_value',
-        'starts_at',
-        'ends_at',
+        'price',
+        'image',
+        'start_date',
+        'end_date',
         'is_active',
     ];
 
     protected $casts = [
-        'starts_at' => 'datetime',
-        'ends_at' => 'datetime',
+        'price' => 'decimal:2',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
         'is_active' => 'boolean',
     ];
 
+    public function items()
+    {
+        return $this->hasMany(DealItem::class);
+    }
+
     public function products()
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsToMany(Product::class, 'deal_items')->withPivot('quantity');
+    }
+
+    public function variants()
+    {
+        return $this->belongsToMany(ProductVariant::class, 'deal_items', 'deal_id', 'product_variant_id')
+            ->withPivot('quantity');
     }
 
     public function isValid()
@@ -39,11 +51,11 @@ class Deal extends Model
 
         $now = now();
 
-        if ($this->starts_at && $now->lt($this->starts_at)) {
+        if ($this->start_date && $now->lt($this->start_date)) {
             return false;
         }
 
-        if ($this->ends_at && $now->gt($this->ends_at)) {
+        if ($this->end_date && $now->gt($this->end_date)) {
             return false;
         }
 

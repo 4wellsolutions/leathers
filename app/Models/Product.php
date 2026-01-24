@@ -14,6 +14,8 @@ class Product extends Model
         'details',
         'price',
         'sale_price',
+        'sale_starts_at',
+        'sale_ends_at',
         'image',
         'images',
         'stock',
@@ -21,7 +23,7 @@ class Product extends Model
         'is_active',
         'meta_title',
         'meta_description',
-        'deal_id',
+        'sale_id',
         'daraz_url',
         'size_guide_image'
     ];
@@ -32,6 +34,8 @@ class Product extends Model
         'stock' => 'integer',
         'featured' => 'boolean',
         'is_active' => 'boolean',
+        'sale_starts_at' => 'datetime',
+        'sale_ends_at' => 'datetime',
     ];
 
     public function category()
@@ -106,9 +110,9 @@ class Product extends Model
         }, $images);
     }
 
-    public function deal()
+    public function sale()
     {
-        return $this->belongsTo(Deal::class);
+        return $this->belongsTo(Sale::class);
     }
 
     public function reviews()
@@ -128,18 +132,24 @@ class Product extends Model
 
     public function getEffectivePriceAttribute()
     {
-        $price = $this->sale_price ?? $this->price;
+        // If sale_price is set, check validity dates
+        if ($this->sale_price && $this->sale_price > 0) {
+            $now = now();
 
-        if ($this->deal && $this->deal->isValid()) {
-            if ($this->deal->discount_type === 'percentage') {
-                $discount = $price * ($this->deal->discount_value / 100);
-                return max(0, $price - $discount);
-            } elseif ($this->deal->discount_type === 'fixed') {
-                return max(0, $price - $this->deal->discount_value);
+            // Check start date (if set)
+            if ($this->sale_starts_at && $now->lt($this->sale_starts_at)) {
+                return $this->price;
             }
+
+            // Check end date (if set)
+            if ($this->sale_ends_at && $now->gt($this->sale_ends_at)) {
+                return $this->price;
+            }
+
+            return $this->sale_price;
         }
 
-        return $price;
+        return $this->price;
     }
 
     public function getPriceRangeAttribute()
@@ -155,6 +165,7 @@ class Product extends Model
             return 'Rs. ' . number_format($min) . ' - Rs. ' . number_format($max);
         }
 
-        return 'Rs. ' . number_format($this->sale_price ?? $this->price);
+        $effective = $this->effective_price;
+        return 'Rs. ' . number_format($effective);
     }
 }

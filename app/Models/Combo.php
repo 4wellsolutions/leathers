@@ -37,6 +37,12 @@ class Combo extends Model
         return $this->belongsToMany(Product::class, 'combo_items')->withPivot('quantity');
     }
 
+    public function variants()
+    {
+        return $this->belongsToMany(ProductVariant::class, 'combo_items', 'combo_id', 'product_variant_id')
+            ->withPivot('quantity');
+    }
+
     public function isValid()
     {
         if (!$this->is_active) {

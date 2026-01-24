@@ -1,86 +1,119 @@
 @extends('layouts.app')
 
-@section('meta_title', 'Special Bundle Deals - Leathers.pk')
-@section('meta_description', 'Discover our exclusive product bundles and save more. Premium leather goods combos with special pricing.')
+@section('meta_title', 'Special Combo Deals - Leathers.pk')
+@section('meta_description', 'Shop our exclusive leather combos and save big on premium leather accessories. Best value bundles for men.')
 
 @section('content')
-    <div class="bg-neutral-100 py-12">
+    <div class="bg-gray-50 min-h-screen py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 class="text-4xl font-serif font-bold text-leather-900 mb-2">Special Bundle Deals</h1>
-            <p class="text-neutral-600">Get more value with our curated product bundles and exclusive combo offers.</p>
-        </div>
-    </div>
+            <div class="text-center mb-12">
+                <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                    Special Combo Deals
+                </h1>
+                <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-500">
+                    Curated bundles of our premium leather accessories. Save more when you buy together.
+                </p>
+            </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        @if($combos->count() > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                @foreach($combos as $combo)
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden group hover:shadow-xl transition-shadow">
-                        <div class="relative h-64 bg-neutral-100 p-4">
-                            <div
-                                class="absolute top-4 left-4 bg-gold-500 text-leather-900 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide z-10">
-                                Bundle Deal
+            @if($combos->count() > 0)
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                    @foreach($combos as $combo)
+                        <div
+                            class="group relative bg-white rounded-2xl shadow-sm border border-neutral-200 overflow-hidden hover:shadow-xl hover:border-gold-200 transition-all duration-300 flex flex-col h-full">
+                            <!-- Bundle Badge -->
+                            <div class="absolute top-3 left-3 z-10">
+                                <span
+                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gold-500 text-white shadow-sm uppercase tracking-wider">
+                                    Bundle Deal
+                                </span>
                             </div>
-                            <div class="grid grid-cols-2 gap-2 h-full">
-                                @foreach($combo->products->take(4) as $product)
-                                    <div class="bg-white rounded-lg overflow-hidden p-2">
-                                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}"
-                                            class="w-full h-full object-contain">
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-lg font-bold text-leather-900 mb-2 group-hover:text-gold-600 transition-colors">
-                                <a href="{{ route('combos.show', $combo->slug) }}">{{ $combo->name }}</a>
-                            </h3>
-                            <p class="text-sm text-neutral-600 mb-4 line-clamp-2">{{ $combo->description }}</p>
 
-                            @php
-                                $originalPrice = $combo->products->sum(function ($product) use ($combo) {
-                                    $item = $combo->items->where('product_id', $product->id)->first();
-                                    return $product->price * ($item ? $item->quantity : 1);
-                                });
-                                $savings = $originalPrice - $combo->price;
-                            @endphp
-
-                            <div class="mb-4">
-                                <!-- Combo Price -->
-                                <div class="flex items-center gap-3 mb-2 flex-nowrap">
-                                    <span class="text-3xl font-bold text-gold-600 whitespace-nowrap">Rs.
-                                        {{ number_format($combo->price) }}</span>
-                                    @if($originalPrice > $combo->price)
-                                        <span class="text-base text-neutral-400 line-through whitespace-nowrap">Rs.
-                                            {{ number_format($originalPrice) }}</span>
-                                        @php
-                                            $discount = round((($originalPrice - $combo->price) / $originalPrice) * 100);
-                                        @endphp
-                                        <span
-                                            class="text-sm font-bold text-white bg-red-600 px-2 py-0.5 rounded whitespace-nowrap">-{{ $discount }}%</span>
+                            <!-- Image Grid -->
+                            <div class="bg-neutral-50 h-64 p-2 relative">
+                                <div class="grid grid-cols-2 gap-1.5 h-full w-full">
+                                    @foreach($combo->items->take(4) as $item)
+                                        <div
+                                            class="relative bg-white rounded-lg overflow-hidden border border-neutral-100 flex items-center justify-center p-2 group-hover:border-gold-100 transition-colors">
+                                            @php
+                                                $imgSrc = $item->product->image_url;
+                                                if ($item->variant && $item->variant->image) {
+                                                    $imgSrc = asset($item->variant->image);
+                                                }
+                                            @endphp
+                                            <img src="{{ $imgSrc }}" alt="{{ $item->product->name }}"
+                                                class="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500"
+                                                loading="lazy">
+                                        </div>
+                                    @endforeach
+                                    <!-- Fallback if fewer than 4 items to keep grid structure -->
+                                    @if($combo->items->count() < 4)
+                                        @for($i = 0; $i < (4 - $combo->items->count()); $i++)
+                                            <div class="bg-neutral-100 rounded-lg"></div>
+                                        @endfor
                                     @endif
                                 </div>
-
-                                {{-- Savings badge removed as we now show percentage --}}
                             </div>
-                            <a href="{{ route('combos.show', $combo->slug) }}" class="block text-center btn-primary text-sm py-2">
-                                View Bundle
-                            </a>
+
+                            <!-- Content -->
+                            <div class="p-5 flex flex-col flex-grow">
+                                <h3
+                                    class="text-lg font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-gold-600 transition-colors">
+                                    <a href="{{ route('combos.show', $combo->slug) }}" class="focus:outline-none">
+                                        <span class="absolute inset-0" aria-hidden="true"></span>
+                                        {{ $combo->name }}
+                                    </a>
+                                </h3>
+
+                                <p class="text-sm text-gray-500 mb-4 line-clamp-2">{{ $combo->description }}</p>
+
+                                <div class="mt-auto pt-4 border-t border-gray-100 relative z-10">
+                                    <div class="flex items-end justify-between gap-2">
+                                        <div>
+                                            <p class="text-xs text-gray-400 font-medium uppercase tracking-wide">Bundle Price</p>
+                                            <div class="flex items-baseline gap-2">
+                                                <span class="text-2xl font-bold text-gray-900">Rs.
+                                                    {{ number_format($combo->price) }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="mb-1 text-right">
+                                            @php
+                                                $originalPrice = $combo->items->sum(function ($item) {
+                                                    $price = $item->variant ? ($item->variant->price ?? $item->product->price) : $item->product->price;
+                                                    return $price * $item->quantity;
+                                                });
+                                            @endphp
+                                            @if($originalPrice > $combo->price)
+                                                @php
+                                                    $discount = round((($originalPrice - $combo->price) / $originalPrice) * 100);
+                                                @endphp
+                                                <span class="text-sm text-gray-400 line-through block">Rs.
+                                                    {{ number_format($originalPrice) }}</span>
+                                                <span
+                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-red-50 text-red-600 border border-red-100 mt-1">
+                                                    Save {{ $discount }}%
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <a href="{{ route('combos.show', $combo->slug) }}"
+                                        class="mt-4 w-full flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-gray-900 hover:bg-gold-600 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 transition-all duration-200">
+                                        View Bundle
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <div class="text-center py-20">
-                <div class="inline-block p-6 rounded-full bg-neutral-100 text-neutral-400 mb-4">
-                    <svg class="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-24 bg-white rounded-2xl shadow-sm border border-neutral-200">
+                    <svg class="mx-auto h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                             d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
+                    <h3 class="mt-4 text-xl font-medium text-gray-900">No combos available yet</h3>
+                    <p class="mt-2 text-gray-500">Check back soon for exclusive deals!</p>
                 </div>
-                <h3 class="text-xl font-bold text-leather-900 mb-2">No bundles available</h3>
-                <p class="text-neutral-600 mb-6">Check back soon for exciting bundle deals.</p>
-                <a href="{{ route('home') }}" class="btn-primary">Browse Products</a>
-            </div>
-        @endif
+            @endif
+        </div>
     </div>
 @endsection

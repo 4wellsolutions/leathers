@@ -4,247 +4,238 @@
 @section('meta_description', Str::limit(strip_tags($combo->description), 160))
 
 @section('content')
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <nav class="flex text-sm text-neutral-500 mb-8">
-            <a href="{{ route('home') }}" class="hover:text-gold-600 transition-colors">Home</a>
-            <span class="mx-2">/</span>
-            <a href="{{ route('combos.index') }}" class="hover:text-gold-600 transition-colors">Combos</a>
-            <span class="mx-2">/</span>
-            <span class="text-leather-900 font-medium">{{ $combo->name }}</span>
-        </nav>
-
-        <div class="lg:grid lg:grid-cols-2 lg:gap-x-8 lg:items-start">
-            <!-- Combo Image/Visual -->
-            <div class="flex flex-col space-y-6">
-                <div class="bg-neutral-100 rounded-xl overflow-hidden p-8 border-2 border-gold-500 relative">
-                    <div class="absolute top-4 left-4 bg-gold-500 text-leather-900 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
-                        Bundle Deal
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        @foreach($combo->products->take(4) as $product)
-                        <div class="aspect-w-1 aspect-h-1 bg-white rounded-lg overflow-hidden p-2">
-                            <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-full h-full object-contain">
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-                
-                <!-- What's Included Section -->
-                <div class="bg-white rounded-xl border border-neutral-200 p-6">
-                    <h3 class="text-lg font-bold text-leather-900 mb-4">What's Included:</h3>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4" x-data="{ selectedImage: null }">
-                        @foreach($combo->products as $product)
-                        @php
-                            $item = $combo->items->where('product_id', $product->id)->first();
-                            $qty = $item ? $item->quantity : 1;
-                        @endphp
-                        <div class="bg-neutral-50 rounded-lg border border-neutral-200 p-3 hover:shadow-md transition-shadow cursor-pointer" @click="selectedImage = '{{ $product->image_url }}'">
-                            <div class="h-16 w-16 mx-auto">
-                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-full h-full object-contain p-2">
-                            </div>
-                            <p class="text-xs font-medium text-leather-900 truncate">{{ $product->name }}</p>
-                            <p class="text-xs text-neutral-500">Qty: {{ $qty }}</p>
-                        </div>
-                        @endforeach
-                        
-                        <!-- Image Lightbox Modal -->
-                        <div x-show="selectedImage" x-cloak @click="selectedImage = null" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-                            <div class="relative max-w-4xl w-full">
-                                <button @click.stop="selectedImage = null" class="absolute -top-10 right-0 text-white hover:text-gold-400">
-                                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                                <img :src="selectedImage" class="w-full h-auto rounded-lg bg-white p-8" @click.stop>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Combo Info -->
-            <div class="mt-10 px-4 sm:px-0 sm:mt-16 lg:mt-0">
-                <h1 class="text-3xl font-extrabold tracking-tight text-leather-900">{{ $combo->name }}</h1>
-                
-                <div class="mt-3">
-                    <h2 class="sr-only">Product information</h2>
-                    <p class="text-3xl text-gold-600 font-bold">Rs. {{ number_format($combo->price) }}</p>
-                    @php
-                        $originalPrice = $combo->products->sum(function($product) use ($combo) {
-                            $item = $combo->items->where('product_id', $product->id)->first();
-                            return $product->price * ($item ? $item->quantity : 1);
-                        });
-                    @endphp
-                    @if($originalPrice > $combo->price)
-                    <div class="flex items-center gap-3 mt-1 flex-nowrap">
-                        <span class="text-lg text-neutral-400 line-through whitespace-nowrap">Rs. {{ number_format($originalPrice) }}</span>
-                        @php
-                            $discount = round((($originalPrice - $combo->price) / $originalPrice) * 100);
-                        @endphp
-                        <span class="text-sm font-bold text-white bg-red-600 px-2 py-0.5 rounded whitespace-nowrap">-{{ $discount }}%</span>
-                    </div>
-                    @endif
-                </div>
-
-                <div class="mt-6">
-                    <h3 class="sr-only">Description</h3>
-                    <div class="text-base text-neutral-700 space-y-6">
-                        <p>{{ $combo->description }}</p>
-                    </div>
-                </div>
-
-
-                <!-- Tabs Section -->
-                <div class="mt-16" x-data="{ activeTab: 'description' }">
-                    <div class="border-b border-neutral-200">
-                        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
-                            <button @click="activeTab = 'description'" 
-                                :class="{ 'border-gold-500 text-gold-600': activeTab === 'description', 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300': activeTab !== 'description' }"
-                                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm uppercase tracking-wider">
-                                Description
-                            </button>
-                            <button @click="activeTab = 'reviews'" 
-                                :class="{ 'border-gold-500 text-gold-600': activeTab === 'reviews', 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300': activeTab !== 'reviews' }"
-                                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm uppercase tracking-wider">
-                                Reviews ({{ $allReviews->count() }})
-                            </button>
-                        </nav>
-                    </div>
-
-                    <div class="py-8">
-                        <!-- Description Tab -->
-                        <div x-show="activeTab === 'description'" class="prose prose-neutral max-w-none">
-                            @if($combo->description)
-                                <p>{{ $combo->description }}</p>
-                            @else
-                                <p class="text-neutral-500 italic">No description available for this bundle.</p>
-                            @endif
-                        </div>
-
-                        <!-- Reviews Tab -->
-                        <div x-show="activeTab === 'reviews'" style="display: none;">
-                            <div class="space-y-8">
-                                @forelse($allReviews as $review)
-                                <div class="border-b border-neutral-100 pb-8 last:border-0">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <div class="flex items-center">
-                                            <div class="w-10 h-10 bg-neutral-100 rounded-full flex items-center justify-center text-leather-900 font-bold mr-3">
-                                                {{ substr($review->user->name ?? 'Guest', 0, 1) }}
-                                            </div>
-                                            <div>
-                                                <h5 class="font-bold text-leather-900">{{ $review->user->name ?? 'Guest' }}</h5>
-                                                <span class="text-xs text-neutral-500">{{ $review->created_at->format('M d, Y') }} • {{ $review->product->name }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex text-gold-500">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                @if($i <= $review->rating)
-                                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                                @else
-                                                    <svg class="w-4 h-4 fill-current text-neutral-300" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                                @endif
-                                            @endfor
-                                        </div>
-                                    </div>
-                                    <p class="text-neutral-600">{{ $review->comment }}</p>
-                                    
-                                    @if($review->image1 || $review->image2)
-                                    <div class="mt-3 flex gap-2" x-data="{ lightbox: null }">
-                                        @if($review->image1)
-                                        <div class="w-20 h-20 rounded-md overflow-hidden border border-neutral-200 cursor-pointer hover:opacity-75 transition" @click="lightbox = '{{ $review->image1 }}'">
-                                            <img src="{{ $review->image1 }}" alt="Review image" class="w-full h-full object-cover">
-                                        </div>
-                                        @endif
-                                        @if($review->image2)
-                                        <div class="w-20 h-20 rounded-md overflow-hidden border border-neutral-200 cursor-pointer hover:opacity-75 transition" @click="lightbox = '{{ $review->image2 }}'">
-                                            <img src="{{ $review->image2 }}" alt="Review image" class="w-full h-full object-cover">
-                                        </div>
-                                        @endif
-                                        
-                                        <!-- Image Lightbox -->
-                                        <div x-show="lightbox" x-cloak @click="lightbox = null" class="fixed inset-0 bg-black/90 z-[60] flex items-center justify-center p-4">
-                                            <div class="relative max-w-5xl w-full">
-                                                <button @click.stop="lightbox = null" class="absolute -top-12 right-0 text-white hover:text-gold-400 transition">
-                                                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                    </svg>
-                                                </button>
-                                                <img :src="lightbox" class="w-full h-auto rounded-lg" @click.stop>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @endif
-                                </div>
-                                @empty
-                                <p class="text-neutral-500 italic">No reviews yet for products in this bundle.</p>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-10">
-                    <form action="{{ route('cart.add-combo', $combo->id) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="w-full btn-primary flex items-center justify-center space-x-2 py-4 text-lg">
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                            </svg>
-                            <span>Add Bundle to Cart</span>
-                        </button>
-                    </form>
-                </div>
+    <div class="bg-white min-h-screen">
+        <!-- Breadcrumb & Header -->
+        <div class="bg-gray-50 border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <nav class="flex text-sm text-gray-500">
+                    <a href="{{ route('home') }}" class="hover:text-gold-600 transition-colors">Home</a>
+                    <span class="mx-2 text-gray-300">/</span>
+                    <a href="{{ route('combos.index') }}" class="hover:text-gold-600 transition-colors">Combos</a>
+                    <span class="mx-2 text-gray-300">/</span>
+                    <span class="text-gray-900 font-medium truncate">{{ $combo->name }}</span>
+                </nav>
             </div>
         </div>
 
-        <!-- Related Combos -->
-        @if($relatedCombos->count() > 0)
-        <div class="mt-20">
-            <h2 class="section-title mb-8">Other Special Bundles</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach($relatedCombos as $related)
-                <div class="bg-white rounded-xl shadow-md overflow-hidden group hover:shadow-xl transition-shadow">
-                    <div class="relative h-64 bg-neutral-100 p-4">
-                        <div class="absolute top-4 left-4 bg-gold-500 text-leather-900 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide z-10">
-                            Bundle
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="lg:grid lg:grid-cols-2 lg:gap-x-12 lg:items-start">
+                
+                <!-- Left Column: Visuals -->
+                <div class="flex flex-col space-y-8">
+                    <!-- Main Combo Display -->
+                    <div class="bg-neutral-50 rounded-2xl p-6 border border-neutral-200 relative overflow-hidden">
+                        <div class="absolute top-4 left-4 z-10">
+                            <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-gold-500 text-white shadow-sm uppercase tracking-wide">
+                                Bundle Deal
+                            </span>
                         </div>
-                        <div class="grid grid-cols-2 gap-2 h-full">
-                            @foreach($related->products->take(4) as $product)
-                            <div class="bg-white rounded-lg overflow-hidden p-2">
-                                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-full h-full object-contain">
+                        
+                        <div class="aspect-w-1 aspect-h-1 rounded-xl overflow-hidden bg-white shadow-sm border border-neutral-100 mb-6">
+                            <div class="grid grid-cols-2 gap-2 h-full p-2">
+                                @foreach($combo->items->take(4) as $item)
+                                    <div class="relative bg-neutral-50 rounded-lg overflow-hidden flex items-center justify-center">
+                                         @php
+                                            $imgSrc = $item->product->image_url;
+                                            if ($item->variant && $item->variant->image) {
+                                                $imgSrc = asset($item->variant->image);
+                                            }
+                                        @endphp
+                                        <img src="{{ $imgSrc }}" 
+                                             alt="{{ $item->product->name }}" 
+                                             class="w-full h-full object-contain p-2">
+                                    </div>
+                                @endforeach
                             </div>
-                            @endforeach
+                        </div>
+
+                        <!-- Included Products List -->
+                        <div>
+                            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">What's Included in this Bundle:</h3>
+                            <div class="space-y-3" x-data="{ activeImage: null }">
+                                @foreach($combo->items as $item)
+                                    <div class="flex items-center p-3 bg-white border border-gray-100 rounded-xl shadow-sm hover:border-gold-200 transition-colors cursor-pointer group"
+                                         @click="activeImage = '{{ ($item->variant && $item->variant->image) ? asset($item->variant->image) : $item->product->image_url }}'">
+                                        <div class="h-14 w-14 flex-shrink-0 bg-neutral-50 rounded-lg p-1 border border-neutral-100 group-hover:border-gold-100">
+                                            <img src="{{ ($item->variant && $item->variant->image) ? asset($item->variant->image) : $item->product->image_url }}" 
+                                                 class="w-full h-full object-contain" alt="{{ $item->product->name }}">
+                                        </div>
+                                        <div class="ml-4 flex-1 min-w-0">
+                                            <p class="text-sm font-semibold text-gray-900 truncate">{{ $item->product->name }}</p>
+                                            <div class="flex items-center gap-2 mt-0.5">
+                                                @if($item->variant)
+                                                    @if($item->variant->color)
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">
+                                                            {{ $item->variant->color->name }}
+                                                        </span>
+                                                    @endif
+                                                    @if($item->variant->size)
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600">
+                                                            {{ $item->variant->size }}
+                                                        </span>
+                                                    @endif
+                                                @endif
+                                                <span class="text-xs text-gray-400">Qty: {{ $item->quantity }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="ml-2 text-gray-400 group-hover:text-gold-500">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                @endforeach
+
+                                <!-- Lightbox -->
+                                <div x-show="activeImage" x-cloak 
+                                     class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+                                     x-transition:enter="transition ease-out duration-300"
+                                     x-transition:enter-start="opacity-0"
+                                     x-transition:enter-end="opacity-100"
+                                     x-transition:leave="transition ease-in duration-200"
+                                     x-transition:leave-start="opacity-100"
+                                     x-transition:leave-end="opacity-0">
+                                    <div class="relative max-w-5xl w-full max-h-[90vh]" @click.away="activeImage = null">
+                                        <button @click="activeImage = null" class="absolute -top-12 right-0 text-white hover:text-gold-400 focus:outline-none p-2 rounded-full hover:bg-white/10 transition">
+                                            <span class="sr-only">Close</span>
+                                            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                        <img :src="activeImage" class="w-full h-full object-contain rounded-lg shadow-2xl bg-white" alt="Zoomed Image">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="p-6">
-                        <h3 class="text-lg font-bold text-leather-900 mb-2 truncate">
-                            <a href="{{ route('combos.show', $related->slug) }}" class="hover:text-gold-600 transition-colors">{{ $related->name }}</a>
-                        </h3>
-                        <p class="text-sm text-neutral-600 mb-4 line-clamp-2">{{ $related->description }}</p>
-                        <div class="flex items-baseline space-x-2 mb-4">
-                            <span class="text-xl font-bold text-gold-600">Rs. {{ number_format($related->price) }}</span>
+                </div>
+
+                <!-- Right Column: Details & Actions -->
+                <div class="mt-10 px-4 sm:px-0 sm:mt-16 lg:mt-0">
+                    <div class="sticky top-24">
+                        <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl mb-4">{{ $combo->name }}</h1>
+                        
+                        <div class="flex items-center gap-4 mb-6">
                             @php
-                                $originalPrice = $related->products->sum(function($product) use ($related) {
-                                    $item = $related->items->where('product_id', $product->id)->first();
-                                    return $product->price * ($item ? $item->quantity : 1);
+                                $originalPrice = $combo->items->sum(function($item) {
+                                    $price = $item->variant ? ($item->variant->price ?? $item->product->price) : $item->product->price;
+                                    return $price * $item->quantity;
                                 });
                             @endphp
-                            @if($originalPrice > $related->price)
-                            <span class="text-sm text-neutral-400 line-through whitespace-nowrap">Rs. {{ number_format($originalPrice) }}</span>
-                            @php
-                                $discount = round((($originalPrice - $related->price) / $originalPrice) * 100);
-                            @endphp
-                            <span class="text-xs font-bold text-white bg-red-600 px-2 py-0.5 rounded whitespace-nowrap">-{{ $discount }}%</span>
+                            
+                            <h2 class="sr-only">Product Information</h2>
+                            <p class="text-4xl font-black text-gray-900">Rs. {{ number_format($combo->price) }}</p>
+                            
+                            @if($originalPrice > $combo->price)
+                                <div class="flex flex-col items-start">
+                                    <span class="text-lg text-gray-400 line-through">Rs. {{ number_format($originalPrice) }}</span>
+                                    @php $discount = round((($originalPrice - $combo->price) / $originalPrice) * 100); @endphp
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-green-100 text-green-800">
+                                        Save {{ $discount }}%
+                                    </span>
+                                </div>
                             @endif
                         </div>
-                        <a href="{{ route('combos.show', $related->slug) }}" class="block text-center btn-outline w-full">
-                            View Bundle
-                        </a>
+
+                        <div class="prose prose-sm prose-neutral text-gray-500 mb-8">
+                            <p>{{ $combo->description }}</p>
+                        </div>
+
+                        <form action="{{ route('cart.add-combo', $combo->id) }}" method="POST" class="mt-8">
+                            @csrf
+                            <button type="submit" 
+                                class="w-full flex items-center justify-center px-8 py-4 border border-transparent rounded-xl shadow-lg text-lg font-bold text-white bg-gray-900 hover:bg-gold-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 transition-all duration-300 transform hover:-translate-y-1">
+                                <svg class="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                </svg>
+                                Add Bundle to Cart
+                            </button>
+                            <p class="mt-3 text-center text-xs text-gray-400">
+                                <svg class="w-4 h-4 inline-block mr-1 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                Safe & Secure Checkout
+                            </p>
+                        </form>
+
+                        <!-- Additional Info Tabs (Simplified) -->
+                         <div class="mt-12 border-t border-gray-100 pt-8" x-data="{ activeTab: 'description' }">
+                            <div class="flex space-x-6 border-b border-gray-200 mb-6">
+                                <button @click="activeTab = 'description'" 
+                                    :class="{ 'border-gold-500 text-gold-600': activeTab === 'description', 'border-transparent text-gray-400 hover:text-gray-600': activeTab !== 'description' }"
+                                    class="pb-3 text-sm font-semibold uppercase tracking-wide border-b-2 transition-colors">
+                                    Description
+                                </button>
+                                <button @click="activeTab = 'reviews'" 
+                                    :class="{ 'border-gold-500 text-gold-600': activeTab === 'reviews', 'border-transparent text-gray-400 hover:text-gray-600': activeTab !== 'reviews' }"
+                                    class="pb-3 text-sm font-semibold uppercase tracking-wide border-b-2 transition-colors">
+                                    Reviews ({{ $allReviews->count() }})
+                                </button>
+                            </div>
+
+                            <div x-show="activeTab === 'description'" class="text-gray-600 leading-relaxed text-sm">
+                                @if($combo->description)
+                                    <p>{{ $combo->description }}</p>
+                                @else
+                                    <p class="italic text-gray-400">No additional description available.</p>
+                                @endif
+                            </div>
+
+                            <div x-show="activeTab === 'reviews'" style="display: none;">
+                                @if($allReviews->count() > 0)
+                                    <div class="space-y-6">
+                                        @foreach($allReviews as $review)
+                                            <div class="border-b border-gray-100 pb-6 last:border-0">
+                                                <div class="flex items-center justify-between mb-2">
+                                                    <div class="flex items-center">
+                                                        <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 mr-3">
+                                                            {{ substr($review->user->name ?? 'G', 0, 1) }}
+                                                        </div>
+                                                        <span class="text-sm font-bold text-gray-900">{{ $review->user->name ?? 'Guest' }}</span>
+                                                    </div>
+                                                    <div class="flex text-gold-400">
+                                                        @for($i=0; $i<5; $i++)
+                                                            <svg class="w-3 h-3 {{ $i < $review->rating ? 'fill-current' : 'text-gray-200 fill-current' }}" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/></svg>
+                                                        @endfor
+                                                    </div>
+                                                </div>
+                                                <p class="text-sm text-gray-600">{{ $review->comment }}</p>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <p class="text-gray-400 italic text-sm">No reviews yet for these products.</p>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
-                @endforeach
             </div>
+
+            <!-- Related Bundles -->
+            @if($relatedCombos->count() > 0)
+                <div class="mt-20 border-t border-gray-100 pt-16">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-8">You Might Also Like</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        @foreach($relatedCombos as $related)
+                            <a href="{{ route('combos.show', $related->slug) }}" class="group block">
+                                <div class="bg-gray-100 rounded-xl overflow-hidden aspect-w-4 aspect-h-3 mb-4">
+                                     <div class="grid grid-cols-2 gap-1 p-2 h-full">
+                                        @foreach($related->items->take(4) as $item)
+                                            <div class="bg-white rounded overflow-hidden flex items-center justify-center">
+                                                 <img src="{{ ($item->variant && $item->variant->image) ? asset($item->variant->image) : $item->product->image_url }}" class="w-full h-full object-contain p-1">
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                <h3 class="text-sm font-bold text-gray-900 group-hover:text-gold-600 transition truncate">{{ $related->name }}</h3>
+                                <p class="text-sm text-gray-500 mt-1">Rs. {{ number_format($related->price) }}</p>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
         </div>
-        @endif
     </div>
 @endsection

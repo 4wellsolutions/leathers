@@ -28,6 +28,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('deals', \App\Http\Controllers\Admin\DealController::class);
 
     // Combos
+    Route::get('combos/search-products', [\App\Http\Controllers\Admin\ComboController::class, 'searchProducts'])->name('combos.search-products');
     Route::resource('combos', \App\Http\Controllers\Admin\ComboController::class);
 
     // Blogs

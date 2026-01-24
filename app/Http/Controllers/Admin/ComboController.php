@@ -18,8 +18,27 @@ class ComboController extends Controller
 
     public function create()
     {
-        $products = Product::where('is_active', true)->get();
-        return view('admin.combos.create', compact('products'));
+        return view('admin.combos.create');
+    }
+
+    public function searchProducts(Request $request)
+    {
+        $search = $request->get('q');
+        $products = Product::where('is_active', true)
+            ->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%");
+            })
+            ->with([
+                'variants.color',
+                'variants' => function ($query) {
+                    $query->where('is_active', true);
+                }
+            ])
+            ->take(20)
+            ->get();
+
+        return response()->json($products);
     }
 
     public function store(Request $request)
@@ -33,8 +52,8 @@ class ComboController extends Controller
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'is_active' => 'boolean',
-            'products' => 'required|array|min:2',
-            'products.*' => 'exists:products,id',
+            'variants' => 'required|array|min:2',
+            'variants.*' => 'exists:product_variants,id',
             'quantities' => 'required|array',
             'quantities.*' => 'integer|min:1',
         ]);
@@ -58,10 +77,12 @@ class ComboController extends Controller
             'is_active' => $request->has('is_active'),
         ]);
 
-        foreach ($validated['products'] as $productId) {
-            $quantity = $validated['quantities'][$productId] ?? 1;
+        foreach ($validated['variants'] as $variantId) {
+            $quantity = $validated['quantities'][$variantId] ?? 1;
+            $variant = \App\Models\ProductVariant::find($variantId);
             $combo->items()->create([
-                'product_id' => $productId,
+                'product_id' => $variant->product_id,
+                'product_variant_id' => $variantId,
                 'quantity' => $quantity,
             ]);
         }
@@ -71,9 +92,31 @@ class ComboController extends Controller
 
     public function edit(Combo $combo)
     {
-        $products = Product::where('is_active', true)->get();
-        $combo->load('items');
-        return view('admin.combos.edit', compact('combo', 'products'));
+        // Load the combo with its items, variants, and products
+        $combo->load(['items.variant.color', 'items.product.variants.color']);
+
+        // We'll prepare a list of initial products to populate the UI
+        $initialProducts = collect();
+
+        foreach ($combo->items as $item) {
+            $product = $item->variant ? $item->variant->product : $item->product;
+
+            // Ensure we haven't already added this product
+            if (!$initialProducts->contains('id', $product->id)) {
+                // Load its variants fully if not already
+                if (!$product->relationLoaded('variants')) {
+                    $product->load([
+                        'variants.color',
+                        'variants' => function ($q) {
+                            $q->where('is_active', true);
+                        }
+                    ]);
+                }
+                $initialProducts->push($product);
+            }
+        }
+
+        return view('admin.combos.edit', compact('combo', 'initialProducts'));
     }
 
     public function update(Request $request, Combo $combo)
@@ -87,8 +130,8 @@ class ComboController extends Controller
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'is_active' => 'boolean',
-            'products' => 'required|array|min:2',
-            'products.*' => 'exists:products,id',
+            'variants' => 'required|array|min:2',
+            'variants.*' => 'exists:product_variants,id',
             'quantities' => 'required|array',
             'quantities.*' => 'integer|min:1',
         ]);
@@ -110,10 +153,12 @@ class ComboController extends Controller
 
         // Sync items
         $combo->items()->delete();
-        foreach ($validated['products'] as $productId) {
-            $quantity = $validated['quantities'][$productId] ?? 1;
+        foreach ($validated['variants'] as $variantId) {
+            $quantity = $validated['quantities'][$variantId] ?? 1;
+            $variant = \App\Models\ProductVariant::find($variantId);
             $combo->items()->create([
-                'product_id' => $productId,
+                'product_id' => $variant->product_id,
+                'product_variant_id' => $variantId,
                 'quantity' => $quantity,
             ]);
         }

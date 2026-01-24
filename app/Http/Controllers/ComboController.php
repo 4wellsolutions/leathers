@@ -12,13 +12,13 @@ class ComboController extends Controller
         $combos = Combo::where('is_active', true)
             ->where(function ($query) {
                 $query->whereNull('start_date')
-                      ->orWhere('start_date', '<=', now());
+                    ->orWhere('start_date', '<=', now());
             })
             ->where(function ($query) {
                 $query->whereNull('end_date')
-                      ->orWhere('end_date', '>=', now());
+                    ->orWhere('end_date', '>=', now());
             })
-            ->with('products')
+            ->with(['items.product', 'items.variant'])
             ->get();
 
         return view('combos.index', compact('combos'));
@@ -28,7 +28,7 @@ class ComboController extends Controller
     {
         $combo = Combo::where('slug', $slug)
             ->where('is_active', true)
-            ->with(['products', 'items'])
+            ->with(['items.product', 'items.variant.color'])
             ->firstOrFail();
 
         if (!$combo->isValid()) {
@@ -36,7 +36,7 @@ class ComboController extends Controller
         }
 
         // Get all reviews from products in this combo
-        $productIds = $combo->products->pluck('id');
+        $productIds = $combo->items->pluck('product_id')->unique();
         $allReviews = \App\Models\Review::whereIn('product_id', $productIds)
             ->where('is_approved', true)
             ->with(['user', 'product'])
@@ -48,13 +48,13 @@ class ComboController extends Controller
             ->where('is_active', true)
             ->where(function ($query) {
                 $query->whereNull('start_date')
-                      ->orWhere('start_date', '<=', now());
+                    ->orWhere('start_date', '<=', now());
             })
             ->where(function ($query) {
                 $query->whereNull('end_date')
-                      ->orWhere('end_date', '>=', now());
+                    ->orWhere('end_date', '>=', now());
             })
-            ->with(['products', 'items'])
+            ->with(['items.product', 'items.variant'])
             ->inRandomOrder()
             ->take(3)
             ->get();

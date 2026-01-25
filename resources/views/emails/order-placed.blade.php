@@ -1,24 +1,45 @@
-@extends('emails.layouts.master')
-
-@section('title', 'Order Received - ' . $order->order_number)
-
 @section('styles')
     <style>
+        .invoice-header {
+            border-bottom: 2px solid #F8F5F2;
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+        }
+
+        .invoice-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #2D1B14;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #C5A359;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+            font-family: 'Outfit', sans-serif;
+        }
+
         .order-summary-table {
             width: 100%;
-            margin: 25px 0;
+            margin: 30px 0;
             border-collapse: collapse;
         }
 
         .order-summary-table th {
             text-align: left;
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 700;
-            color: #C5A359;
+            color: #8A7366;
             text-transform: uppercase;
             letter-spacing: 1px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #F8F5F2;
+            padding: 15px 0;
+            border-bottom: 1px solid #EAE2D8;
         }
 
         .item-row td {
@@ -26,159 +47,119 @@
             border-bottom: 1px solid #F8F5F2;
         }
 
-        .product-img {
-            width: 70px;
-            height: 70px;
-            border-radius: 8px;
-            object-fit: cover;
-            background-color: #F8F5F2;
-            border: 1px solid #EAE2D8;
-        }
-
         .product-name {
-            font-size: 15px;
-            font-weight: 600;
+            font-family: 'Playfair Display', serif;
+            font-size: 16px;
+            font-weight: 700;
             color: #2D1B14;
             margin-bottom: 4px;
         }
 
-        .product-meta {
-            font-size: 12px;
-            color: #8A7366;
-        }
-
-        .item-price {
-            font-size: 15px;
+        .product-variant {
+            display: inline-block;
+            background-color: #2D1B14;
+            color: #ffffff;
+            font-size: 10px;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border-radius: 4px;
             font-weight: 600;
-            color: #2D1B14;
-            text-align: right;
+            letter-spacing: 0.5px;
         }
 
         .totals-container {
-            margin-top: 30px;
-            background-color: #FDFCFB;
-            border: 1px solid #EAE2D8;
-            border-radius: 12px;
-            padding: 20px;
+            width: 100%;
+            margin-top: 20px;
         }
 
         .total-row {
-            display: table;
-            width: 100%;
-            margin-bottom: 10px;
+            padding: 8px 0;
         }
 
         .total-label {
-            display: table-cell;
             font-size: 14px;
             color: #5C4A42;
         }
 
         .total-value {
-            display: table-cell;
-            text-align: right;
             font-size: 14px;
             font-weight: 600;
             color: #2D1B14;
+            text-align: right;
         }
 
         .total-final {
-            display: table;
-            width: 100%;
-            margin-top: 15px;
+            border-top: 1px solid #EAE2D8;
             padding-top: 15px;
-            border-top: 2px solid #C5A359;
+            margin-top: 10px;
         }
 
         .total-final .total-label {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: #2D1B14;
         }
 
         .total-final .total-value {
-            font-size: 22px;
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
             font-weight: 700;
             color: #C5A359;
-        }
-
-        .address-box {
-            border: 1px dashed #C5A359;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 30px;
-        }
-
-        .address-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: #C5A359;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .address-text {
-            font-size: 14px;
-            color: #5C4A42;
-            line-height: 1.6;
+            text-align: right;
         }
     </style>
 @endsection
 
 @section('content')
-    <h1 class="h1">Thank You for Your Order!</h1>
-    <p class="p">Hello {{ $order->customer_name }}, <br> We've received your order and our craftsmen are already getting to
-        work. Here's a brief summary of what you've selected.</p>
+    <!-- Invoice Like Header -->
+    <div class="invoice-header">
+        <h1 class="invoice-title">Order Received</h1>
+        <p class="p" style="margin-top: 10px; margin-bottom: 0;">Order #{{ $order->order_number }}</p>
+    </div>
 
-    <!-- Order Overview -->
-    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+    <!-- Grid Layout for Address/Info -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 40px;">
         <tr>
-            <td width="50%" style="padding-right: 10px;">
-                <div class="info-card">
-                    <div class="info-title">Order Number</div>
-                    <div class="info-value">#{{ $order->order_number }}</div>
+            <td width="50%" valign="top" style="padding-right: 20px;">
+                <div class="section-title">Bill To</div>
+                <div class="p" style="margin-bottom: 0; font-size: 14px; line-height: 1.6;">
+                    <strong>{{ $order->customer_name }}</strong><br>
+                    {{ $order->customer_email }}<br>
+                    {{ $order->customer_phone }}
                 </div>
             </td>
-            <td width="50%" style="padding-left: 10px;">
-                <div class="info-card">
-                    <div class="info-title">Order Date</div>
-                    <div class="info-value">{{ $order->created_at->format('M d, Y') }}</div>
+            <td width="50%" valign="top" style="padding-left: 20px;">
+                <div class="section-title">Ship To</div>
+                <div class="p" style="margin-bottom: 0; font-size: 14px; line-height: 1.6;">
+                    <strong>{{ $order->customer_name }}</strong><br>
+                    {{ $order->shipping_address }}<br>
+                    {{ $order->city }}
                 </div>
             </td>
         </tr>
     </table>
 
-    <h2 style="font-size: 18px; font-weight: 700; color: #2D1B14; margin-bottom: 15px;">Selected Items</h2>
+    <div class="section-title">Order Details</div>
 
     <table class="order-summary-table">
         <thead>
             <tr>
-                <th width="70%">Product</th>
-                <th width="30%" style="text-align: right;">Total</th>
+                <th width="60%">Item Description</th>
+                <th width="20%" style="text-align: center;">Qty</th>
+                <th width="20%" style="text-align: right;">Amount</th>
             </tr>
         </thead>
         <tbody>
             @foreach($order->items as $item)
                 <tr class="item-row">
                     <td>
-                        <table cellpadding="0" cellspacing="0">
-                            <tr>
-                                <td width="85" valign="top">
-                                    <img src="{{ Str::startsWith($item->product->image, 'http') ? $item->product->image : url($item->product->image) }}"
-                                        class="product-img" alt="{{ $item->product_name }}">
-                                </td>
-                                <td valign="top">
-                                    <div class="product-name">{{ $item->product_name }}</div>
-                                    <div class="product-meta">
-                                        @if($item->variant_name) {{ $item->variant_name }} | @endif
-                                        Qty: {{ $item->quantity }}
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
+                        <div class="product-name">{{ $item->product_name }}</div>
+                        @if($item->variant_name)
+                            <span class="product-variant">{{ $item->variant_name }}</span>
+                        @endif
                     </td>
-                    <td class="item-price" valign="top">
-                        Rs. {{ number_format($item->price * $item->quantity) }}
+                    <td style="text-align: center; color: #5C4A42; font-weight: 600;">{{ $item->quantity }}</td>
+                    <td style="text-align: right; color: #2D1B14; font-weight: 700;">Rs. {{ number_format($item->subtotal) }}
                     </td>
                 </tr>
             @endforeach
@@ -186,46 +167,43 @@
     </table>
 
     <!-- Totals -->
-    <div class="totals-container">
-        <div class="total-row">
-            <span class="total-label">Subtotal</span>
-            <span class="total-value">Rs. {{ number_format($order->subtotal) }}</span>
-        </div>
-        <div class="total-row">
-            <span class="total-label">Shipping Handling</span>
-            <span class="total-value">
-                @if($order->shipping_cost == 0)
-                    <span style="color: #28a745; font-weight: 700;">FREE</span>
-                @else
-                    Rs. {{ number_format($order->shipping_cost) }}
-                @endif
-            </span>
-        </div>
-        <div class="total-final">
-            <span class="total-label">Payable Amount</span>
-            <span class="total-value">Rs. {{ number_format($order->total) }}</span>
-        </div>
-    </div>
+    <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+            <td width="50%"></td>
+            <td width="50%">
+                <div class="totals-container">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td class="total-label" style="padding-bottom: 8px;">Subtotal</td>
+                            <td class="total-value" style="padding-bottom: 8px;">Rs. {{ number_format($order->subtotal) }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="total-label" style="padding-bottom: 15px;">Shipping</td>
+                            <td class="total-value" style="padding-bottom: 15px;">
+                                @if($order->shipping_cost == 0)
+                                    FREE
+                                @else
+                                    Rs. {{ number_format($order->shipping_cost) }}
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="border-top: 1px solid #EAE2D8; padding-top: 15px;"></td>
+                        </tr>
+                        <tr>
+                            <td class="total-label" style="font-size: 16px; font-weight: 700; color: #2D1B14;">Total</td>
+                            <td class="total-value"
+                                style="font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: #C5A359;">
+                                Rs. {{ number_format($order->total) }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
 
-    <!-- Details -->
-    <div class="address-box">
-        <div class="address-title">Delivery Destination</div>
-        <div class="address-text">
-            <strong>{{ $order->customer_name }}</strong><br>
-            {{ $order->shipping_address }}<br>
-            {{ $order->city }}<br>
-            Phone: {{ $order->customer_phone }}
-        </div>
-    </div>
-
-    <div class="btn-container">
+    <div style="text-align: center; margin-top: 50px; padding-top: 30px; border-top: 1px solid #F8F5F2;">
         <a href="{{ route('home') }}" class="btn">CONTINUE SHOPPING</a>
     </div>
-
-    <div class="divider"></div>
-
-    <h3 style="font-size: 16px; font-weight: 700; color: #2D1B14; margin-bottom: 10px;">What's Next?</h3>
-    <p class="p" style="font-size: 14px; margin-bottom: 0;">Our team will contact you shortly to confirm your order and
-        arrange a seamless delivery. If you have any questions in the meantime, simply reply to this email or visit our
-        contact page.</p>
 @endsection

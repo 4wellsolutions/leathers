@@ -31,8 +31,16 @@
         <div class="flex flex-col w-0 flex-1 overflow-hidden">
             <main class="flex-1 relative z-0 overflow-y-auto focus:outline-none">
                 <div class="py-6">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex justify-between items-center">
                         <h1 class="text-2xl font-semibold text-leather-900">@yield('title')</h1>
+                        <a href="{{ route('home') }}" target="_blank"
+                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gold-600 hover:bg-gold-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 transform transition hover:scale-105">
+                            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            View Website
+                        </a>
                     </div>
 
                     {{-- Validation Errors --}}

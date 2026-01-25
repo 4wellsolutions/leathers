@@ -28,12 +28,14 @@
                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
 
             {{-- Badges --}}
+            {{-- Badges --}}
             @if($hasDiscount)
                 <div
-                    class="absolute top-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide">
+                    class="absolute top-2 left-2 md:top-4 md:left-4 bg-emerald-600 text-white text-[10px] md:text-xs font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full uppercase tracking-wide">
                     Sale
                 </div>
-                <div class="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-full">
+                <div
+                    class="absolute top-2 right-2 md:top-4 md:right-4 bg-red-600 text-white text-[10px] md:text-xs font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full">
                     -{{ $discountPercent }}%
                 </div>
             @endif
@@ -102,10 +104,10 @@
 
                 <!-- Action -->
                 @if(!$hasVariants)
-                <a href="{{ route('cart.add', $product->id) }}"
-                   class="px-5 py-2.5 rounded-full text-sm font-medium bg-leather-900 text-white hover:bg-leather-800 transition-all shadow-md hover:shadow-lg">
-                    Add to Cart
-                </a>
+                    <a href="{{ route('cart.add', $product->id) }}"
+                        class="px-5 py-2.5 rounded-full text-sm font-medium bg-leather-900 text-white hover:bg-leather-800 transition-all shadow-md hover:shadow-lg">
+                        Add to Cart
+                    </a>
                 @endif
             </div>
         </div>

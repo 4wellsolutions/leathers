@@ -85,6 +85,22 @@
 
     <!-- Custom Footer Scripts -->
     {!! \App\Models\Setting::get('footer_scripts') !!}
+    <!-- Floating WhatsApp Button -->
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/923111222741" target="_blank" rel="noopener noreferrer"
+        class="fixed bottom-6 right-6 z-[100] bg-[#25D366] hover:bg-[#20bd5a] text-white p-3 rounded-full shadow-lg transition-transform hover:scale-110 flex items-center justify-center group"
+        aria-label="Chat on WhatsApp">
+        <span
+            class="absolute right-full mr-3 bg-white text-neutral-800 text-xs font-bold px-3 py-1.5 rounded-lg shadow-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            Chat with us
+        </span>
+        <!-- Official WhatsApp Icon -->
+        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.008-.57-.008-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.506 2.135.93 2.957.9 4.026.793 1.185-.119 2.073-.854 2.37-1.68.297-.825.297-1.536.208-1.684-.089-.149-.287-.208-.584-.356zM12 21.782c-5.405 0-9.782-4.377-9.782-9.782 0-2.358.851-4.526 2.271-6.223L3.333 2l5.968 1.564C10.126 3.12 11.048 2.972 12 2.972c5.405 0 9.782 4.377 9.782 9.782 0 5.405-4.377 9.782-9.782 9.782z" />
+        </svg>
+    </a>
+
 </body>
 
 </html>

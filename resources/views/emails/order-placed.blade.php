@@ -1,3 +1,7 @@
+@extends('emails.layouts.master')
+
+@section('title', 'Order Received - ' . $order->order_number)
+
 @section('styles')
     <style>
         .invoice-header {

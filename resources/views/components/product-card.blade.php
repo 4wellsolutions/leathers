@@ -38,20 +38,21 @@
 
         @if($hasSale)
             <div
-                class="absolute top-4 left-4 bg-emerald-600 text-white text-sm font-bold px-4 py-2 rounded-full uppercase tracking-wide shadow-lg animate-pulse">
+                class="absolute top-2 left-2 md:top-4 md:left-4 bg-emerald-600 text-white text-[10px] md:text-xs font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full uppercase tracking-wide shadow-lg animate-pulse z-10">
                 Sale
             </div>
         @endif
 
         @if($discountPercent > 0)
-            <div class="absolute top-4 right-4 bg-red-600 text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-lg">
+            <div
+                class="absolute top-2 right-2 md:top-4 md:right-4 bg-red-600 text-white text-[10px] md:text-xs font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full shadow-lg z-10">
                 -{{ $discountPercent }}%
             </div>
         @endif
 
         @if($product->sale && $product->sale->isValid())
             <div
-                class="absolute top-16 right-4 bg-gold-500 text-leather-900 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">
+                class="absolute top-10 right-2 md:top-16 md:right-4 bg-gold-500 text-leather-900 text-[10px] md:text-xs font-bold px-2 py-1 md:px-3 md:py-1 rounded-full uppercase tracking-wide z-10">
                 @if($product->sale->discount_type === 'percentage')
                     {{ $product->sale->discount_value }}% OFF
                 @else

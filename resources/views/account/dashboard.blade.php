@@ -3,216 +3,172 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div class="flex flex-col md:flex-row gap-8 items-start">
 
-            <!-- Sidebar Navigation (Compact & Sticky) -->
-            <div class="lg:col-span-3">
-                <div class="bg-white rounded-xl shadow-sm border border-neutral-100 sticky top-24 overflow-hidden">
-                    <!-- User Profile Header -->
-                    <div class="p-5 border-b border-neutral-100 bg-neutral-50/50 text-center">
-                        <div
-                            class="h-16 w-16 rounded-full bg-gold-100 flex items-center justify-center text-gold-700 font-bold text-2xl mx-auto mb-3 border-2 border-white shadow-sm">
-                            {{ substr(Auth::user()->name, 0, 1) }}
-                        </div>
-                        <h2 class="font-bold text-leather-900 truncate">{{ Auth::user()->name }}</h2>
-                        <p class="text-xs text-neutral-500 truncate">{{ Auth::user()->email }}</p>
+            <!-- Sidebar -->
+            @include('partials.account-sidebar')
+
+            <!-- Main Content -->
+            <div class="flex-1 w-full">
+
+                <!-- Three Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Total Orders -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-neutral-200">
+                        <p class="text-sm font-medium text-neutral-500 uppercase tracking-wide">Total Orders</p>
+                        <p class="text-3xl font-bold text-neutral-900 mt-2">{{ $totalOrders }}</p>
                     </div>
 
-                    <!-- Navigation Links -->
-                    <nav class="p-2 space-y-1">
-                        <a href="{{ route('dashboard') }}"
-                            class="flex items-center space-x-3 px-3 py-2.5 rounded-lg bg-leather-900 text-white font-medium transition-all shadow-sm">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                            </svg>
-                            <span>Overview</span>
-                        </a>
-                        <a href="{{ route('my-orders.index') }}"
-                            class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-neutral-600 hover:bg-neutral-50 hover:text-leather-900 transition-colors">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                            </svg>
-                            <span>My Orders</span>
-                        </a>
-                        <a href="#"
-                            class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-neutral-600 hover:bg-neutral-50 hover:text-leather-900 transition-colors">
-                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                            <span>Profile Settings</span>
-                        </a>
-
-                        <form action="{{ route('logout') }}" method="POST" class="pt-2 mt-2 border-t border-neutral-100">
-                            @csrf
-                            <button type="submit"
-                                class="flex w-full items-center space-x-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 transition-colors">
-                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                </svg>
-                                <span>Sign Out</span>
-                            </button>
-                        </form>
-                    </nav>
-                </div>
-            </div>
-
-            <!-- Main Content Area -->
-            <div class="lg:col-span-9 space-y-6">
-
-                <!-- Quick Stats Row -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-neutral-100 flex items-center space-x-4">
-                        <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Total Orders</p>
-                            <p class="text-2xl font-bold text-leather-900">{{ $totalOrders }}</p>
-                        </div>
+                    <!-- Pending -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-neutral-200">
+                        <p class="text-sm font-medium text-neutral-500 uppercase tracking-wide">Pending</p>
+                        <p class="text-3xl font-bold text-gold-600 mt-2">{{ $pendingOrders }}</p>
                     </div>
 
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-neutral-100 flex items-center space-x-4">
-                        <div class="w-12 h-12 rounded-full bg-gold-50 flex items-center justify-center text-gold-600">
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Pending</p>
-                            <p class="text-2xl font-bold text-gold-600">{{ $pendingOrders }}</p>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-neutral-100 flex items-center space-x-4">
-                        <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-600">
-                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Total Spent</p>
-                            <p class="text-xl font-bold text-leather-900 leading-tight">Rs. {{ number_format($totalSpent) }}
-                            </p>
-                        </div>
+                    <!-- Total Spent -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-neutral-200">
+                        <p class="text-sm font-medium text-neutral-500 uppercase tracking-wide">Total Spent</p>
+                        <p class="text-3xl font-bold text-neutral-900 mt-2">Rs. {{ number_format($totalSpent) }}</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Recent Orders Table (Takes 2/3 width) -->
+                <!-- Dashboard Widgets Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                    <!-- Recent Orders (2/3 width) -->
                     <div class="lg:col-span-2">
-                        <div class="bg-white rounded-xl shadow-sm border border-neutral-100 h-full">
-                            <div class="px-5 py-4 border-b border-neutral-100 flex justify-between items-center">
-                                <h3 class="font-bold text-lg text-leather-900 font-serif">Recent Orders</h3>
+                        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
+                            <div
+                                class="px-6 py-4 border-b border-neutral-200 flex justify-between items-center bg-neutral-50">
+                                <h3 class="font-bold text-neutral-900">Recent Orders</h3>
                                 <a href="{{ route('my-orders.index') }}"
-                                    class="text-xs font-bold text-gold-600 hover:text-gold-700 uppercase tracking-wide">View
-                                    All</a>
+                                    class="text-sm font-medium text-gold-600 hover:text-gold-700">View All</a>
                             </div>
 
                             @if($orders->count() > 0)
-                                <div class="overflow-x-auto">
+                                <!-- Desktop View (Table) -->
+                                <div class="hidden md:block overflow-x-auto">
                                     <table class="w-full text-left">
-                                        <thead class="bg-neutral-50/50 text-neutral-500 text-[10px] uppercase tracking-wider">
+                                        <thead
+                                            class="bg-neutral-50 text-neutral-500 text-xs uppercase tracking-wider border-b border-neutral-100">
                                             <tr>
-                                                <th class="px-5 py-3 font-semibold">Order ID</th>
-                                                <th class="px-5 py-3 font-semibold">Status</th>
-                                                <th class="px-5 py-3 font-semibold text-right">Amount</th>
-                                                <th class="px-5 py-3 font-semibold"></th>
+                                                <th class="px-6 py-4 font-semibold">Order #</th>
+                                                <th class="px-6 py-4 font-semibold">Date</th>
+                                                <th class="px-6 py-4 font-semibold">Status</th>
+                                                <th class="px-6 py-4 font-semibold text-right">Total</th>
+                                                <th class="px-6 py-4 font-semibold text-right">Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="divide-y divide-neutral-100 text-sm">
+                                        <tbody class="divide-y divide-neutral-100">
                                             @foreach($orders->take(5) as $order)
-                                                <tr class="hover:bg-neutral-50 transition-colors group">
-                                                    <td class="px-5 py-3">
-                                                        <span
-                                                            class="font-bold text-leather-900 group-hover:text-gold-600 transition-colors block">{{ $order->order_number }}</span>
-                                                        <span
-                                                            class="text-xs text-neutral-400">{{ $order->created_at->format('M d') }}</span>
-                                                    </td>
-                                                    <td class="px-5 py-3">
-                                                        @php
-                                                            $statusColors = [
-                                                                'pending' => 'text-gold-600 bg-gold-50',
-                                                                'processing' => 'text-blue-600 bg-blue-50',
-                                                                'shipped' => 'text-purple-600 bg-purple-50',
-                                                                'delivered' => 'text-green-600 bg-green-50',
-                                                                'cancelled' => 'text-red-600 bg-red-50',
-                                                            ];
-                                                            $color = $statusColors[$order->status] ?? 'text-neutral-600 bg-neutral-50';
-                                                        @endphp
-                                                        <span
-                                                            class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide {{ $color }}">
-                                                            {{ $order->status }}
-                                                        </span>
-                                                    </td>
-                                                    <td class="px-5 py-3 text-right font-medium text-leather-900">
-                                                        Rs. {{ number_format($order->total) }}
-                                                    </td>
-                                                    <td class="px-5 py-3 text-right">
-                                                        <a href="{{ route('my-orders.show', $order->order_number) }}"
-                                                            class="text-neutral-400 hover:text-gold-600 transition-colors">
-                                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24"
-                                                                stroke="currentColor">
-                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                    stroke-width="2" d="M9 5l7 7-7 7" />
-                                                            </svg>
-                                                        </a>
-                                                    </td>
-                                                </tr>
+                                                                        <tr class="hover:bg-neutral-50 transition-colors group">
+                                                                            <td
+                                                                                class="px-6 py-4 font-bold text-leather-900 group-hover:text-gold-600 transition-colors">
+                                                                                {{ $order->order_number }}
+                                                                            </td>
+                                                                            <td class="px-6 py-4 text-sm text-neutral-600">
+                                                                                {{ $order->created_at->format('M d, Y') }}
+                                                                            </td>
+                                                                            <td class="px-6 py-4">
+                                                                                @php
+                                                                                    $statusClasses = [
+                                                                                        'pending' => 'bg-gold-100 text-gold-800',
+                                                                                        'processing' => 'bg-blue-100 text-blue-800',
+                                                                                        'shipped' => 'bg-purple-100 text-purple-800',
+                                                                                        'delivered' => 'bg-green-100 text-green-800',
+                                                                                        'cancelled' => 'bg-red-100 text-red-800',
+                                                                                    ];
+                                                                                    $statusClass = $statusClasses[$order->status] ?? 'bg-neutral-100 text-neutral-800';
+                                                                                @endphp
+                                                <span
+                                                                                    class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide {{ $statusClass }}">
+                                                                                    {{ ucfirst($order->status) }}
+                                                                                </span>
+                                                                            </td>
+                                                                            <td class="px-6 py-4 text-right font-medium text-neutral-900">
+                                                                                Rs. {{ number_format($order->total) }}
+                                                                            </td>
+                                                                            <td class="px-6 py-4 text-right">
+                                                                                <a href="{{ route('my-orders.show', $order->order_number) }}"
+                                                                                    class="text-neutral-400 hover:text-gold-600 transition-colors">
+                                                                                    <svg class="w-5 h-5 inline-block" fill="none" viewBox="0 0 24 24"
+                                                                                        stroke="currentColor">
+                                                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                                                            stroke-width="2" d="M9 5l7 7-7 7" />
+                                                                                    </svg>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
                                 </div>
+
+                                <!-- Mobile View (Cards) -->
+                                <div class="md:hidden divide-y divide-neutral-100">
+                                    @foreach($orders->take(5) as $order)
+                                                            <div class="p-5 space-y-4">
+                                                                <div class="flex justify-between items-start">
+                                                                    <div>
+                                                                        <span class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Order
+                                                                            #</span>
+                                                                        <p class="font-bold text-leather-900 text-lg">{{ $order->order_number }}</p>
+                                                                        <p class="text-xs text-neutral-500 mt-1">
+                                                                            {{ $order->created_at->format('M d, Y \a\t h:i A') }}</p>
+                                                                    </div>
+                                                                    @php
+                                                                        $statusClasses = [
+                                                                            'pending' => 'bg-gold-100 text-gold-800',
+                                                                            'processing' => 'bg-blue-100 text-blue-800',
+                                                                            'shipped' => 'bg-purple-100 text-purple-800',
+                                                                            'delivered' => 'bg-green-100 text-green-800',
+                                                                            'cancelled' => 'bg-red-100 text-red-800',
+                                                                        ];
+                                                                        $statusClass = $statusClasses[$order->status] ?? 'bg-neutral-100 text-neutral-800';
+                                                                    @endphp
+                                         <span
+                                                                        class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide {{ $statusClass }}">
+                                                                        {{ ucfirst($order->status) }}
+                                                                    </span>
+                                                                </div>
+
+                                                                <div class="flex justify-between items-end border-t border-neutral-50 pt-4">
+                                                                    <div>
+                                                                        <span
+                                                                            class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Total</span>
+                                                                        <p class="font-serif font-bold text-xl text-leather-900">Rs.
+                                                                            {{ number_format($order->total) }}</p>
+                                                                    </div>
+                                                                    <a href="{{ route('my-orders.show', $order->order_number) }}"
+                                                                        class="px-4 py-2 bg-neutral-900 text-white text-sm font-bold rounded-lg hover:bg-gold-600 transition-colors shadow-sm">
+                                                                        View Details
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                    @endforeach
+                                </div>
                             @else
                                 <div class="p-8 text-center text-neutral-500">
-                                    <p class="text-sm">No recent orders found.</p>
+                                    <p>No orders found.</p>
                                     <a href="{{ route('home') }}"
-                                        class="text-gold-600 hover:underline text-sm font-bold mt-2 inline-block">Start
-                                        Shopping</a>
+                                        class="text-gold-600 font-medium hover:underline mt-2 inline-block">Start Shopping</a>
                                 </div>
                             @endif
                         </div>
                     </div>
 
-                    <!-- Account Details Card (Takes 1/3 width) -->
-                    <div class="lg:col-span-1">
-                        <div class="bg-white rounded-xl shadow-sm border border-neutral-100 h-full">
-                            <div class="px-5 py-4 border-b border-neutral-100">
-                                <h3 class="font-bold text-lg text-leather-900 font-serif">Account Details</h3>
+                    <!-- Account Snapshot (1/3 width) -->
+                    <div>
+                        <div class="bg-white rounded-lg shadow-sm border border-neutral-200 overflow-hidden">
+                            <div class="px-6 py-4 border-b border-neutral-200 bg-neutral-50">
+                                <h3 class="font-bold text-neutral-900">Account Details</h3>
                             </div>
-                            <div class="p-5 space-y-6">
+                            <div class="p-6 space-y-4">
                                 <div>
-                                    <h4 class="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-2">Contact
-                                        Info</h4>
-                                    <div class="space-y-2 text-sm text-neutral-600">
-                                        <div class="flex items-center gap-3">
-                                            <svg class="w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24"
-                                                stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                            </svg>
-                                            <span class="truncate">{{ Auth::user()->email }}</span>
-                                        </div>
-                                        @if(Auth::user()->phone)
-                                            <div class="flex items-center gap-3">
-                                                <svg class="w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24"
-                                                    stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                                </svg>
-                                                <span>{{ Auth::user()->phone }}</span>
-                                            </div>
-                                        @endif
-                                    </div>
+                                    <h4 class="text-xs font-bold text-neutral-400 uppercase tracking-wide mb-1">Contact</h4>
+                                    <p class="text-sm text-neutral-700">{{ Auth::user()->email }}</p>
+                                    <p class="text-sm text-neutral-700">{{ Auth::user()->phone ?? 'No phone added' }}</p>
                                 </div>
 
                                 @php
@@ -220,21 +176,21 @@
                                 @endphp
                                 @if($latestOrder)
                                     <div>
-                                        <h4 class="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-2">Default
+                                        <h4 class="text-xs font-bold text-neutral-400 uppercase tracking-wide mb-1">Default
                                             Address</h4>
-                                        <div class="p-3 bg-neutral-50 rounded-lg text-sm text-neutral-600">
-                                            <p class="font-bold text-leather-900">{{ $latestOrder->customer_name }}</p>
-                                            <p class="line-clamp-2">{{ $latestOrder->shipping_address }}</p>
+                                        <div class="text-sm text-neutral-700">
+                                            <p class="font-medium">{{ $latestOrder->customer_name }}</p>
+                                            <p>{{ $latestOrder->shipping_address }}</p>
                                             <p>{{ $latestOrder->city }}</p>
                                         </div>
-                                        <p class="text-[10px] text-neutral-400 mt-2">* Based on your last order</p>
+                                        <p class="text-xs text-neutral-400 mt-1 italic">Based on last order</p>
                                     </div>
                                 @endif
                             </div>
                         </div>
                     </div>
-                </div>
 
+                </div>
             </div>
         </div>
     </div>

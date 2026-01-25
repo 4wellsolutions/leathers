@@ -3,7 +3,9 @@
 @section('title', 'Order #' . $order->order_number)
 
 @section('content')
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+@section('content')
+    <!-- Web View (Hidden on Print) -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 print:hidden">
         <!-- Back Button -->
         <a href="{{ route('my-orders.index') }}"
             class="inline-flex items-center text-neutral-500 hover:text-gold-600 mb-6 transition-colors">
@@ -15,76 +17,101 @@
 
         <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-neutral-100">
             <!-- Header -->
-            <div
-                class="px-6 py-6 border-b border-neutral-100 bg-neutral-50/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <div class="flex items-center gap-3 mb-1">
-                        <h1 class="text-2xl font-serif font-bold text-leather-900">Order #{{ $order->order_number }}</h1>
-                        @php
-                            $statusClasses = [
-                                'pending' => 'bg-gold-100 text-gold-800',
-                                'processing' => 'bg-blue-100 text-blue-800',
-                                'shipped' => 'bg-purple-100 text-purple-800',
-                                'delivered' => 'bg-green-100 text-green-800',
-                                'cancelled' => 'bg-red-100 text-red-800',
-                            ];
-                            $statusClass = $statusClasses[$order->status] ?? 'bg-neutral-100 text-neutral-800';
-                        @endphp
-                        <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide {{ $statusClass }}">
-                            {{ ucfirst($order->status) }}
-                        </span>
-                    </div>
-                    <p class="text-sm text-neutral-500">Placed on {{ $order->created_at->format('F d, Y \a\t h:i A') }}</p>
-                </div>
+            <div class="p-4 border-b border-neutral-100 bg-neutral-50/30">
+                <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                    <div class="space-y-2">
+                        <!-- Badge & ID -->
+                        <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                            <h1 class="text-2xl md:text-3xl font-serif font-bold text-leather-900">Order #{{ $order->order_number }}</h1>
+                            <div class="flex items-center gap-3">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide
+                                    @if($order->status == 'delivered') bg-green-100 text-green-800
+                                    @elseif($order->status == 'cancelled') bg-red-100 text-red-800
+                                    @else bg-gold-100 text-gold-800 @endif">
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                                <a href="{{ route('my-orders.invoice', $order->order_number) }}" target="_blank" class="hidden md:inline-flex items-center px-3 py-1 bg-neutral-100 text-neutral-600 rounded-lg hover:bg-neutral-200 transition-colors text-xs font-bold uppercase tracking-wider">
+                                    <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                    </svg>
+                                    Invoice
+                                </a>
+                            </div>
+                        </div>
 
-                <div class="flex gap-3 print:hidden">
-                    <button onclick="window.print()"
-                        class="px-4 py-2 border border-neutral-300 rounded-lg text-sm font-medium text-neutral-600 hover:bg-neutral-50 transition-colors flex items-center">
-                        <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                        </svg>
-                        Print Invoice
-                    </button>
+                        <div class="flex items-center text-sm text-neutral-500 gap-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            Placed on {{ $order->created_at->format('F d, Y \a\t h:i A') }}
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex">
+                        <a href="{{ route('my-orders.invoice', $order->order_number) }}" target="_blank" class="w-full md:w-auto px-5 py-2.5 border border-neutral-200 bg-white rounded-lg text-sm font-bold text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition-all shadow-sm flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>
+                            Print Invoice
+                        </a>
+                    </div>
                 </div>
             </div>
 
-            <div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
+            <div class="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
                 <!-- Left Column: Order Items -->
                 <div class="lg:col-span-2 space-y-8">
                     <div>
-                        <h3 class="text-lg font-bold text-leather-900 mb-4 pb-2 border-b border-neutral-100">Items Ordered
-                        </h3>
-                        <div class="space-y-4">
+                        <h3 class="text-lg font-bold text-leather-900 mb-6 pb-2 border-b border-neutral-100">Items Ordered</h3>
+                        <div class="space-y-8">
                             @foreach($order->items as $item)
-                                <div
-                                    class="flex gap-4 p-4 border border-neutral-100 rounded-lg hover:shadow-sm transition-shadow">
-                                    <!-- Product Image -->
-                                    <div
-                                        class="w-20 h-20 bg-neutral-50 rounded-md border border-neutral-200 flex-shrink-0 overflow-hidden">
+                                <div class="flex flex-row gap-4 sm:gap-6 pb-6 sm:pb-8 border-b border-neutral-100 last:border-0 last:pb-0 items-start">
+                                    <!-- Premium Image Container -->
+                                    <div class="w-20 h-20 sm:w-28 sm:h-28 bg-white rounded-xl shadow-sm border border-neutral-100 flex-shrink-0 p-2 overflow-hidden relative group">
                                         @if($item->product && $item->product->images && count($item->product->images) > 0)
-                                            <img src="{{ asset($item->product->images[0]) }}" alt="{{ $item->product_name }}"
-                                                class="w-full h-full object-contain p-1">
+                                            <img src="{{ asset($item->product->images[0]) }}" alt="{{ $item->product_name }}" 
+                                                 class="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500">
                                         @else
-                                            <div class="w-full h-full flex items-center justify-center text-neutral-300">
+                                            <div class="w-full h-full flex items-center justify-center text-neutral-300 bg-neutral-50 rounded-lg">
                                                 <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                 </svg>
                                             </div>
                                         @endif
                                     </div>
-
-                                    <div class="flex-grow flex flex-col justify-center">
-                                        <h4 class="font-bold text-leather-900 text-lg">{{ $item->product_name }}</h4>
-                                        <div class="flex justify-between items-end mt-2">
-                                            <div class="text-sm text-neutral-500">
-                                                <span class="bg-neutral-100 px-2 py-1 rounded text-xs font-semibold mr-2">Qty:
-                                                    {{ $item->quantity }}</span>
-                                                <span>Unit Price: Rs. {{ number_format($item->price) }}</span>
+                                    
+                                    <!-- Content -->
+                                    <div class="flex-grow w-full">
+                                        <div class="flex flex-col gap-1 sm:gap-3">
+                                            <div>
+                                                @php
+                                                    $nameParts = explode(' - ', $item->product_name, 2);
+                                                    $baseName = $nameParts[0];
+                                                    $variantDetail = $nameParts[1] ?? null;
+                                                @endphp
+                                                
+                                                <h4 class="font-serif font-bold text-leather-900 text-base sm:text-xl leading-snug line-clamp-2">{{ $baseName }}</h4>
+                                                
+                                                <div class="flex flex-wrap items-center gap-2 sm:gap-3 mt-2">
+                                                    @if($variantDetail)
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-bold bg-neutral-900 text-white shadow-sm">
+                                                            {{ $variantDetail }}
+                                                        </span>
+                                                        <span class="text-neutral-300 text-xs hidden sm:inline">|</span>
+                                                    @endif
+                                                    
+                                                    <div class="text-xs sm:text-sm font-medium text-neutral-600 bg-neutral-50 px-2 py-1 rounded">
+                                                        Qty: <span class="text-leather-900 font-bold">{{ $item->quantity }}</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="text-lg font-bold text-leather-900 font-serif">
-                                                Rs. {{ number_format($item->subtotal) }}
+                                            
+                                            <div class="flex justify-between items-end border-t border-neutral-50 pt-2 mt-1 sm:border-0 sm:pt-0 sm:mt-0 sm:block sm:text-right">
+                                                <p class="text-[10px] text-neutral-400 uppercase tracking-wide mb-0.5 sm:mb-1">Total</p>
+                                                <p class="text-lg sm:text-xl font-serif font-bold text-leather-900">
+                                                    Rs. {{ number_format($item->subtotal) }}
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
@@ -173,4 +200,5 @@
             </div>
         </div>
     </div>
+
 @endsection

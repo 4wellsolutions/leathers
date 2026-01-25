@@ -71,6 +71,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::get('/my-orders', [UserOrderController::class, 'index'])->name('my-orders.index');
     Route::get('/my-orders/{order_number}', [UserOrderController::class, 'show'])->name('my-orders.show');
+    Route::get('/my-orders/{order_number}/invoice', [UserOrderController::class, 'invoice'])->name('my-orders.invoice');
+
+    // Profile Routes
+    Route::get('/my-profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile.edit');
+    Route::post('/my-profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });
 
 // Email Test Route

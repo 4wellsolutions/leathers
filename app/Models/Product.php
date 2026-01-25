@@ -36,6 +36,7 @@ class Product extends Model
         'is_active' => 'boolean',
         'sale_starts_at' => 'datetime',
         'sale_ends_at' => 'datetime',
+        'images' => 'array',
     ];
 
     public function category()

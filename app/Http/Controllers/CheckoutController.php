@@ -76,6 +76,15 @@ class CheckoutController extends Controller
             'notes' => $request->notes
         ]);
 
+        // Sync address to user profile if authenticated
+        if (\Illuminate\Support\Facades\Auth::check()) {
+            $user = \Illuminate\Support\Facades\Auth::user();
+            $user->address = $request->address;
+            $user->city = $request->city;
+            // $user->phone = $request->phone; // Optional: Sync phone too if needed
+            $user->save();
+        }
+
         foreach ($cart as $id => $item) {
             \App\Models\OrderItem::create([
                 'order_id' => $order->id,

@@ -45,4 +45,21 @@ class UserOrderController extends Controller
 
         return view('account.orders.show', compact('order'));
     }
+
+    public function invoice($order_number)
+    {
+        $user = Auth::user();
+
+        $order = Order::where('order_number', $order_number)
+            ->where(function ($q) use ($user) {
+                $q->where('customer_email', $user->email);
+                if ($user->phone) {
+                    $q->orWhere('customer_phone', $user->phone);
+                }
+            })
+            ->with('items.product')
+            ->firstOrFail();
+
+        return view('account.orders.invoice', compact('order'));
+    }
 }

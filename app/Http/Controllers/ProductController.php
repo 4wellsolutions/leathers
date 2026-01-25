@@ -163,16 +163,13 @@ class ProductController extends Controller
     public function sales()
     {
         $products = \App\Models\Product::where('is_active', true)
+            ->where('price', '>', 0)
             ->whereNotNull('sale_price')
             ->where('sale_price', '>', 0)
-            ->where(function ($query) {
-                $query->whereNull('sale_starts_at')
-                    ->orWhere('sale_starts_at', '<=', now());
-            })
-            ->where(function ($query) {
-                $query->whereNull('sale_ends_at')
-                    ->orWhere('sale_ends_at', '>=', now());
-            })
+            ->whereNotNull('sale_starts_at')
+            ->where('sale_starts_at', '<=', now())
+            ->whereNotNull('sale_ends_at')
+            ->where('sale_ends_at', '>=', now())
             ->with(['category', 'variants'])
             ->paginate(12);
 

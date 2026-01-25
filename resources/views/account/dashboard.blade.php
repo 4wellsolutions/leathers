@@ -202,7 +202,7 @@
                         <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden mb-6">
                             <div class="px-6 py-4 border-b border-neutral-100 bg-neutral-50/50 flex justify-between items-center">
                                 <h3 class="font-bold text-leather-900 font-serif text-lg">Account Details</h3>
-                                <a href="{{ route('profile.show') }}" class="text-neutral-400 hover:text-gold-600"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></a>
+                                <a href="{{ route('profile.edit') }}" class="text-neutral-400 hover:text-gold-600"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></a>
                             </div>
                             <div class="p-6 space-y-6">
                                 <div>

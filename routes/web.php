@@ -56,6 +56,7 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.in
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/success/{order_number}', [CheckoutController::class, 'success'])->name('checkout.success');
 
+use App\Http\Controllers\UserOrderController;
 use App\Http\Controllers\AuthController;
 
 Route::middleware('guest')->group(function () {
@@ -65,8 +66,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
-Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard')->middleware('auth');
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+    Route::get('/my-orders', [UserOrderController::class, 'index'])->name('my-orders.index');
+    Route::get('/my-orders/{order_number}', [UserOrderController::class, 'show'])->name('my-orders.show');
+});
 
 // Email Test Route
 // Email Test Routes

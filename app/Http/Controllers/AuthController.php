@@ -91,6 +91,22 @@ class AuthController extends Controller
 
     public function dashboard()
     {
-        return view('account.dashboard');
+        $user = Auth::user();
+
+        // Fetch orders by email or phone
+        $orders = \App\Models\Order::where(function ($query) use ($user) {
+            $query->where('customer_email', $user->email);
+            if ($user->phone) {
+                $query->orWhere('customer_phone', $user->phone);
+            }
+        })
+            ->latest()
+            ->get();
+
+        $totalOrders = $orders->count();
+        $pendingOrders = $orders->where('status', 'pending')->count();
+        $totalSpent = $orders->sum('total');
+
+        return view('account.dashboard', compact('orders', 'totalOrders', 'pendingOrders', 'totalSpent'));
     }
 }

@@ -86,27 +86,88 @@ class CheckoutController extends Controller
         }
 
         foreach ($cart as $id => $item) {
-            \App\Models\OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $item['product_id'] ?? $id, // Use product_id from cart item, fallback to key
-                'product_name' => $item['name'],
-                'price' => $item['price'],
-                'quantity' => $item['quantity'],
-                'subtotal' => $item['price'] * $item['quantity']
-            ]);
+            // Check if it's a DEAL
+            if (isset($item['type']) && $item['type'] === 'deal' && isset($item['deal_id'])) {
+                $deal = \App\Models\Deal::with(['items.product', 'items.variant'])->find($item['deal_id']);
 
-            // Decrease stock - handle both variant and product stock
-            if (isset($item['variant_id']) && $item['variant_id']) {
-                // Decrease variant stock
-                $variant = \App\Models\ProductVariant::find($item['variant_id']);
-                if ($variant) {
-                    $variant->decrement('stock', $item['quantity']);
+                if ($deal) {
+                    // Calculate total regular price of items in the deal to determine ratio
+                    $totalRegularPrice = 0;
+                    foreach ($deal->items as $dealItem) {
+                        $pPrice = $dealItem->product->price ?? 0;
+                        if ($dealItem->variant) {
+                            $pPrice = $dealItem->variant->price ?? $pPrice;
+                        }
+                        $totalRegularPrice += $pPrice; // quantity is usually 1 per deal item
+                    }
+
+                    // Ratio for pro-rating (prevent division by zero)
+                    $ratio = ($totalRegularPrice > 0) ? ($deal->price / $totalRegularPrice) : 0;
+
+                    // Distribute deal price across items
+                    $remainingDealPrice = $deal->price * $item['quantity']; // Total to account for
+
+                    foreach ($deal->items as $index => $dealItem) {
+                        // Calculate item text details
+                        $itemName = $dealItem->product->name;
+                        if ($dealItem->variant_id && $dealItem->variant) {
+                            $itemName .= ' - ' . $dealItem->variant->name;
+                        }
+                        $itemName .= ' (Deal: ' . $deal->name . ')';
+
+                        // Calculate pro-rated price
+                        $itemRegularPrice = ($dealItem->variant ? $dealItem->variant->price : $dealItem->product->price) ?? 0;
+                        $proRatedPrice = round($itemRegularPrice * $ratio, 2);
+
+                        // Adjust last item to handle rounding errors
+                        if ($index === $deal->items->count() - 1) {
+                            // This logic is for SINGLE deal unit. For N quantity, we multiply.
+                            // Actually, simpler: Just store unit price.
+                            // But total for line item is quantity * unit price.
+                        }
+
+                        // Create OrderItem
+                        \App\Models\OrderItem::create([
+                            'order_id' => $order->id,
+                            'product_id' => $dealItem->product_id,
+                            'product_name' => $itemName,
+                            'price' => $proRatedPrice, // Unit price
+                            'quantity' => $item['quantity'], // Use cart quantity (e.g. 2 deals = 2 of each item)
+                            'subtotal' => $proRatedPrice * $item['quantity']
+                        ]);
+
+                        // Decrement Stock
+                        if ($dealItem->variant_id && $dealItem->variant) {
+                            $dealItem->variant->decrement('stock', $item['quantity']);
+                        } else {
+                            $dealItem->product->decrement('stock', $item['quantity']);
+                        }
+                    }
                 }
             } else {
-                // Decrease product stock
-                $product = \App\Models\Product::find($item['product_id'] ?? $id);
-                if ($product) {
-                    $product->decrement('stock', $item['quantity']);
+                // REGULAR PRODUCT
+                \App\Models\OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item['product_id'] ?? $id, // Use product_id from cart item, fallback to key
+                    'product_name' => $item['name'],
+                    'price' => $item['price'],
+                    'quantity' => $item['quantity'],
+                    'subtotal' => $item['price'] * $item['quantity']
+                ]);
+
+                // Decrease stock - handle both variant and product stock
+                if (isset($item['variant_id']) && $item['variant_id']) {
+                    // Decrease variant stock
+                    $variant = \App\Models\ProductVariant::find($item['variant_id']);
+                    if ($variant) {
+                        $variant->decrement('stock', $item['quantity']);
+                    }
+                } else {
+                    // Decrease product stock
+                    $product = \App\Models\Product::find($item['product_id'] ?? $id);
+                    if ($product) {
+                        $product->decrement('stock', $item['quantity']);
+                    }
                 }
             }
         }

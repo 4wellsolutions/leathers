@@ -54,6 +54,8 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a href="{{ route('deals.show', $deal->slug) }}" target="_blank"
+                                    class="text-blue-600 hover:text-blue-900 mr-4">View</a>
                                 <a href="{{ route('admin.deals.edit', $deal->id) }}"
                                     class="text-gold-600 hover:text-gold-900 mr-4">Edit</a>
                                 <form action="{{ route('admin.deals.destroy', $deal->id) }}" method="POST" class="inline-block"

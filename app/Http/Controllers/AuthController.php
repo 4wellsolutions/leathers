@@ -17,35 +17,35 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'phone' => ['required'],
             'password' => ['required'],
         ]);
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            
+
             $redirectUrl = Auth::user()->is_admin ? route('admin.dashboard') : route('dashboard');
-            
+
             if ($request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'redirect' => $redirectUrl
                 ]);
             }
-            
+
             return redirect()->intended($redirectUrl);
         }
 
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => false,
-                'errors' => ['email' => ['The provided credentials do not match our records.']]
+                'errors' => ['phone' => ['The provided credentials do not match our records.']]
             ], 422);
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+            'phone' => 'The provided credentials do not match our records.',
+        ])->onlyInput('phone');
     }
 
     public function showRegister()
@@ -57,17 +57,26 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'phone' => 'required|string|unique:users,phone',
+            'email' => 'nullable|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = User::create([
             'name' => $request->name,
+            'phone' => $request->phone,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
         Auth::login($user);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'redirect' => '/dashboard'
+            ]);
+        }
 
         return redirect('/dashboard');
     }

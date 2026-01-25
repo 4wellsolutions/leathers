@@ -136,7 +136,7 @@
 
                 @if($products->count() > 0)
                     <!-- Grid View -->
-                    <div id="gridView" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div id="gridView" class="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
                         @foreach($products as $product)
                             <x-product-card :product="$product" />
                         @endforeach
@@ -260,39 +260,39 @@
     </div>
     <!-- CollectionPage Schema -->
     <script type="application/ld+json">
-                                {
-                                  "@@context": "https://schema.org",
-                                  "@@type": "CollectionPage",
-                                  "name": "{{ $currentCategory ? $currentCategory->name : 'All Products' }}",
-                                  "description": "{{ $currentCategory ? $currentCategory->description : 'Browse our collection of premium leather goods.' }}",
-                                  "url": "{{ url()->current() }}",
-                                  "breadcrumb": {
-                                    "@@type": "BreadcrumbList",
-                                    "itemListElement": [
-                                      {
-                                        "@@type": "ListItem",
-                                        "position": 1,
-                                        "name": "Home",
-                                        "item": "{{ route('home') }}"
-                                      },
-                                      {
-                                        "@@type": "ListItem",
-                                        "position": 2,
-                                        "name": "Shop",
-                                        "item": "{{ route('home') }}"
-                                      }
-                                      @if($currentCategory)
-                                          ,{
+                                    {
+                                      "@@context": "https://schema.org",
+                                      "@@type": "CollectionPage",
+                                      "name": "{{ $currentCategory ? $currentCategory->name : 'All Products' }}",
+                                      "description": "{{ $currentCategory ? $currentCategory->description : 'Browse our collection of premium leather goods.' }}",
+                                      "url": "{{ url()->current() }}",
+                                      "breadcrumb": {
+                                        "@@type": "BreadcrumbList",
+                                        "itemListElement": [
+                                          {
                                             "@@type": "ListItem",
-                                            "position": 3,
-                                            "name": "{{ $currentCategory->name }}",
-                                            "item": "{{ route('category.show', $currentCategory->slug) }}"
+                                            "position": 1,
+                                            "name": "Home",
+                                            "item": "{{ route('home') }}"
+                                          },
+                                          {
+                                            "@@type": "ListItem",
+                                            "position": 2,
+                                            "name": "Shop",
+                                            "item": "{{ route('home') }}"
                                           }
-                                      @endif
-                                    ]
-                                  }
-                                }
-                                </script>
+                                          @if($currentCategory)
+                                              ,{
+                                                "@@type": "ListItem",
+                                                "position": 3,
+                                                "name": "{{ $currentCategory->name }}",
+                                                "item": "{{ route('category.show', $currentCategory->slug) }}"
+                                              }
+                                          @endif
+                                        ]
+                                      }
+                                    }
+                                    </script>
 
     <script>
         // Price filter functionality

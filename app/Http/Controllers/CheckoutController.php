@@ -30,17 +30,14 @@ class CheckoutController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email:rfc,dns',
+            'full_name' => 'required|string|max:255',
+            'email' => 'nullable|email:rfc,dns',
             'phone' => ['required', 'regex:/^[0-9+\-\s()]{10,15}$/'],
             'address' => 'required|string|max:500',
             'city' => 'required|string|max:255',
             'notes' => 'nullable|string|max:1000',
         ], [
-            'first_name.required' => 'First name is required',
-            'last_name.required' => 'Last name is required',
-            'email.required' => 'Email address is required',
+            'full_name.required' => 'Full name is required',
             'email.email' => 'Please enter a valid email address',
             'phone.required' => 'Phone number is required',
             'phone.regex' => 'Please enter a valid phone number (10-15 digits)',
@@ -66,7 +63,7 @@ class CheckoutController extends Controller
 
         $order = \App\Models\Order::create([
             'order_number' => 'ORD-' . strtoupper(uniqid()),
-            'customer_name' => $request->first_name . ' ' . $request->last_name,
+            'customer_name' => $request->full_name,
             'customer_email' => $request->email,
             'customer_phone' => $request->phone,
             'shipping_address' => $request->address,
@@ -110,6 +107,13 @@ class CheckoutController extends Controller
         // Load items relationship and dispatch email job
         $order->load('items.product');
         SendOrderPlacedEmail::dispatch($order);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'redirect_url' => route('checkout.success', $order->order_number)
+            ]);
+        }
 
         return redirect()->route('checkout.success', $order->order_number);
     }

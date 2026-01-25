@@ -81,6 +81,8 @@
 
     @include('partials.footer')
 
+    @include('partials.sticky-cart-footer')
+
     <!-- Custom Footer Scripts -->
     {!! \App\Models\Setting::get('footer_scripts') !!}
 </body>

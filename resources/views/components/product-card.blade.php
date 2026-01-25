@@ -117,20 +117,20 @@
         </div>
     </div>
     <!-- Card Content -->
-    <div class="p-4 bg-white rounded-b-xl flex flex-col">
+    <div class="p-3 md:p-4 bg-white rounded-b-xl flex flex-col">
         <!-- Top Section: Category and Title -->
         <div class="flex-grow">
-            <p class="text-xs text-gold-600 font-semibold uppercase tracking-wider mb-1">
+            <p class="text-[10px] md:text-xs text-gold-600 font-semibold uppercase tracking-wider mb-1">
                 {{ $product->category->name }}
             </p>
-            <h3 class="text-base font-bold text-leather-900 mb-2 line-clamp-2">
+            <h3 class="text-sm md:text-base font-bold text-leather-900 mb-2 line-clamp-2">
                 <a href="{{ route('products.show', $product->slug) }}">{{ $product->name }}</a>
             </h3>
         </div>
 
         <!-- Bottom Section: Price and Rating -->
         <div class="mt-auto">
-            <div class="flex items-center gap-2 mb-2 flex-wrap">
+            <div class="flex items-center gap-1.5 md:gap-2 mb-2 flex-wrap">
                 @php
                     // Check if product has variants
                     $hasVariants = $product->variants()->count() > 0;
@@ -152,16 +152,17 @@
                 @endphp
 
                 @if($hasDiscount)
-                    <span class="text-2xl font-bold text-leather-900 whitespace-nowrap">Rs.
+                    <span class="text-lg md:text-2xl font-bold text-leather-900 whitespace-nowrap">Rs.
                         {{ number_format($displayPrice) }}</span>
-                    <span class="text-base text-neutral-400 line-through whitespace-nowrap">Rs.
+                    <span class="text-xs md:text-base text-neutral-400 line-through whitespace-nowrap">Rs.
                         {{ number_format($lowestPrice) }}</span>
                 @else
                     @if($hasVariants && $lowestPrice != $highestPrice)
-                        <span class="text-2xl font-bold text-leather-900">Rs. {{ number_format($lowestPrice) }} - Rs.
+                        <span class="text-lg md:text-2xl font-bold text-leather-900">Rs. {{ number_format($lowestPrice) }} - Rs.
                             {{ number_format($highestPrice) }}</span>
                     @else
-                        <span class="text-2xl font-bold text-leather-900">Rs. {{ number_format($displayPrice) }}</span>
+                        <span class="text-lg md:text-2xl font-bold text-leather-900">Rs.
+                            {{ number_format($displayPrice) }}</span>
                     @endif
                 @endif
             </div>

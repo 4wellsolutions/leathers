@@ -169,4 +169,29 @@ class Product extends Model
         $effective = $this->effective_price;
         return 'Rs. ' . number_format($effective);
     }
+
+    /**
+     * Strict check for active sale:
+     * Requires Price, Sale Price, Start Date, and End Date to ALL be set and valid.
+     */
+    public function getHasActiveSaleAttribute()
+    {
+        // 1. Basic price checks
+        if (!$this->price || $this->price <= 0)
+            return false;
+        if (!$this->sale_price || $this->sale_price <= 0)
+            return false;
+        if ($this->sale_price >= $this->price)
+            return false;
+
+        // 2. Strict date checks (must be non-null and within range)
+        $now = now();
+
+        if (!$this->sale_starts_at || $now->lt($this->sale_starts_at))
+            return false;
+        if (!$this->sale_ends_at || $now->gt($this->sale_ends_at))
+            return false;
+
+        return true;
+    }
 }

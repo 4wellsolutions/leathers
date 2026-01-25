@@ -9,18 +9,22 @@
             // Check if product has any sale variants
             $hasVariants = $product->variants()->count() > 0;
             $variantHasSale = false;
+
+            // Check variant sales (if any)
             if ($hasVariants) {
-                $variantHasSale = $product->variants()->whereNotNull('sale_price')->where('sale_price', '>', 0)->exists();
+                // For variants, we might need similar strict logic if they have their own dates, 
+                // but usually variants just override price. If your variants share the product's dates,
+                // we should check product dates too. 
+                // For now, let's assume if a variant has a specific sale price, it's valid if regular price logic holds.
+                // Or if we want strict logic everywhere:
+                $variantHasSale = $product->variants()
+                    ->whereNotNull('sale_price')
+                    ->where('sale_price', '>', 0)
+                    ->exists();
             }
 
-            // Logic: 
-            // 1. If variants have explicit sale, use that.
-            // 2. If variants exist but NO explicit sale, check if Product has global sale (inheritance).
-            // 3. If no variants, use Product sale.
-
-            $hasSale = $variantHasSale || ($product->sale_price && $product->sale_price > 0 &&
-                (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
-                (!$product->sale_ends_at || $product->sale_ends_at->isFuture()));
+            // STRICT SALE CHECK: Use the model accessor
+            $hasSale = $product->has_active_sale || $variantHasSale;
 
             // Calculate discount percentage for badge
             $discountPercent = 0;
@@ -30,8 +34,8 @@
                 if ($lowestSalePrice && $lowestPrice > $lowestSalePrice) {
                     $discountPercent = round((($lowestPrice - $lowestSalePrice) / $lowestPrice) * 100);
                 }
-            } else if ($product->sale_price && $product->price > $product->sale_price && $hasSale) {
-                // Fallback to product global discount
+            } else if ($hasSale) {
+                // Use strict sale validated prices
                 $discountPercent = round((($product->price - $product->sale_price) / $product->price) * 100);
             }
         @endphp

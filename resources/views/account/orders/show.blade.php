@@ -5,7 +5,8 @@
 @section('content')
 @section('content')
     <!-- Web View (Hidden on Print) -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 print:hidden">
+    <div x-data="{ showModal: false, modalImage: '', openModal(img) { this.modalImage = img; this.showModal = true; } }" 
+         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 print:hidden">
         <!-- Back Button -->
         <a href="{{ route('my-orders.index') }}"
             class="inline-flex items-center text-neutral-500 hover:text-gold-600 mb-6 transition-colors">
@@ -68,10 +69,17 @@
                             @foreach($order->items as $item)
                                 <div class="flex flex-row gap-4 sm:gap-6 pb-6 sm:pb-8 border-b border-neutral-100 last:border-0 last:pb-0 items-start">
                                     <!-- Premium Image Container -->
-                                    <div class="w-20 h-20 sm:w-28 sm:h-28 bg-white rounded-xl shadow-sm border border-neutral-100 flex-shrink-0 p-2 overflow-hidden relative group">
+                                    <div class="w-20 h-20 sm:w-28 sm:h-28 bg-white rounded-xl shadow-sm border border-neutral-100 flex-shrink-0 p-2 overflow-hidden relative group cursor-pointer"
+                                         @click="openModal('{{ asset($item->product && $item->product->images && count($item->product->images) > 0 ? $item->product->images[0] : 'images/placeholder.jpg') }}')">
                                         @if($item->product && $item->product->images && count($item->product->images) > 0)
                                             <img src="{{ asset($item->product->images[0]) }}" alt="{{ $item->product_name }}" 
                                                  class="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500">
+                                            <!-- Zoom Icon Overlay -->
+                                            <div class="absolute inset-0 bg-black/5 items-center justify-center hidden group-hover:flex transition-all">
+                                                <svg class="w-6 h-6 text-white drop-shadow-md" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m-3-3h6" />
+                                                </svg>
+                                            </div>
                                         @else
                                             <div class="w-full h-full flex items-center justify-center text-neutral-300 bg-neutral-50 rounded-lg">
                                                 <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -197,6 +205,29 @@
                             class="text-sm font-bold text-gold-600 hover:text-gold-700 hover:underline">Contact Support</a>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Image Modal -->
+        <div x-show="showModal" style="display: none;" 
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 cursor-pointer"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @click.self="showModal = false">
+            
+            <div class="relative max-w-4xl max-h-[90vh]">
+                <!-- Close Button -->
+                <button @click="showModal = false" class="absolute -top-12 -right-4 md:-right-12 text-white hover:text-gold-500 transition-colors p-2">
+                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <img :src="modalImage" alt="Product Zoom" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain">
             </div>
         </div>
     </div>

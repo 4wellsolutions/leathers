@@ -219,14 +219,14 @@
             x-transition:leave-end="opacity-0"
             @click.self="showModal = false">
             
-            <div class="relative max-w-4xl max-h-[90vh]">
-                <!-- Close Button -->
-                <button @click="showModal = false" class="absolute -top-12 -right-4 md:-right-12 text-white hover:text-gold-500 transition-colors p-2">
-                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+            <!-- Close Button (Screen Top-Right) -->
+            <button @click="showModal = false" class="absolute top-4 right-4 text-white hover:text-gold-500 transition-colors p-2 z-50">
+                <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
 
+            <div class="relative max-w-4xl max-h-[90vh]">
                 <img :src="modalImage" alt="Product Zoom" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain">
             </div>
         </div>

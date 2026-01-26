@@ -3,7 +3,8 @@
 @section('title', 'Order #' . $order->order_number)
 
 @section('content')
-    <div class="pb-20">
+    <div class="pb-20"
+        x-data="{ showModal: false, modalImage: '', openModal(img) { this.modalImage = img; this.showModal = true; } }">
         <!-- Sticky Header -->
         <div
             class="sticky top-0 z-10 bg-neutral-100/95 backdrop-blur-sm border-b border-neutral-200 -mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 py-4 mb-8 flex items-center justify-between">
@@ -39,11 +40,20 @@
                     <div class="divide-y divide-neutral-100">
                         @foreach($order->items as $item)
                             <div class="p-6 flex items-center">
-                                <div
-                                    class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 p-2">
+                                <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 p-2 cursor-pointer group relative"
+                                    @click="openModal('{{ asset($item->product && $item->product->image ? $item->product->image : 'images/placeholder.jpg') }}')">
                                     @if($item->product && $item->product->image)
                                         <img src="{{ asset($item->product->image) }}" alt="{{ $item->product_name }}"
-                                            class="h-full w-full object-contain object-center">
+                                            class="h-full w-full object-contain object-center transform group-hover:scale-110 transition-transform">
+                                        <!-- Hover Overlay -->
+                                        <div
+                                            class="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <svg class="w-6 h-6 text-white drop-shadow-sm" fill="none" viewBox="0 0 24 24"
+                                                stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m-3-3h6" />
+                                            </svg>
+                                        </div>
                                     @else
                                         <div class="h-full w-full bg-neutral-100 flex items-center justify-center text-neutral-400">
                                             <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -279,6 +289,27 @@
                         @endif
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Admin Image Modal -->
+        <div x-show="showModal" style="display: none;"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 cursor-pointer"
+            x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @click.self="showModal = false">
+
+            <div class="relative max-w-4xl max-h-[90vh]">
+                <!-- Close Button -->
+                <button @click="showModal = false"
+                    class="absolute -top-12 -right-4 md:-right-12 text-white hover:text-gold-500 transition-colors p-2">
+                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <img :src="modalImage" alt="Product Zoom"
+                    class="max-w-full max-h-[85vh] rounded-lg shadow-2xl object-contain">
             </div>
         </div>
     </div>

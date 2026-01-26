@@ -230,7 +230,7 @@
                                         </div>
                                      @else
                                         <p class="text-sm text-neutral-400 italic">No address saved.</p>
-                                        <a href="{{ route('profile.show') }}" class="text-xs font-bold text-gold-600 mt-1 inline-block hover:underline">Add Address</a>
+                                        <a href="{{ route('profile.edit') }}" class="text-xs font-bold text-gold-600 mt-1 inline-block hover:underline">Add Address</a>
                                      @endif
                                 </div>
                             </div>

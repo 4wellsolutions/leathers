@@ -96,44 +96,44 @@
                         <!-- Login Form -->
                         <div id="login-form" x-show="selected === 'login'" x-transition class="bg-neutral-50 rounded-lg p-4"
                             x-data="{ 
-                                                                                                                                                                                showPassword: false, 
-                                                                                                                                                                                loginError: '',
-                                                                                                                                                                                isLoading: false,
-                                                                                                                                                                                async handleLogin() {
-                                                                                                                                                                                    this.loginError = '';
-                                                                                                                                                                                    this.isLoading = true;
-                                                                                                                                                                                    const formData = new FormData(this.$refs.loginForm);
+                                                                                                                                                                                        showPassword: false, 
+                                                                                                                                                                                        loginError: '',
+                                                                                                                                                                                        isLoading: false,
+                                                                                                                                                                                        async handleLogin() {
+                                                                                                                                                                                            this.loginError = '';
+                                                                                                                                                                                            this.isLoading = true;
+                                                                                                                                                                                            const formData = new FormData(this.$refs.loginForm);
 
-                                                                                                                                                                                    try {
-                                                                                                                                                                                        const response = await fetch('{{ route('login') }}', {
-                                                                                                                                                                                            method: 'POST',
-                                                                                                                                                                                            headers: {
-                                                                                                                                                                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                                                                                                                                                                                'Accept': 'application/json',
-                                                                                                                                                                                            },
-                                                                                                                                                                                            body: formData
-                                                                                                                                                                                        });
-                                                                                                                                                                                        const data = await response.json();
+                                                                                                                                                                                            try {
+                                                                                                                                                                                                const response = await fetch('{{ route('login') }}', {
+                                                                                                                                                                                                    method: 'POST',
+                                                                                                                                                                                                    headers: {
+                                                                                                                                                                                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                                                                                                                                                                        'Accept': 'application/json',
+                                                                                                                                                                                                    },
+                                                                                                                                                                                                    body: formData
+                                                                                                                                                                                                });
+                                                                                                                                                                                                const data = await response.json();
 
-                                                                                                                                                                                        if (data.success) {
-                                                                                                                                                                                            window.location.reload();
-                                                                                                                                                                                        } else {
-                                                                                                                                                                                            if (data.errors && data.errors.phone) {
-                                                                                                                                                                                                this.loginError = data.errors.phone[0];
-                                                                                                                                                                                            } else if (data.message) {
-                                                                                                                                                                                                this.loginError = data.message;
-                                                                                                                                                                                            } else {
-                                                                                                                                                                                                this.loginError = 'Invalid credentials';
+                                                                                                                                                                                                if (data.success) {
+                                                                                                                                                                                                    window.location.reload();
+                                                                                                                                                                                                } else {
+                                                                                                                                                                                                    if (data.errors && data.errors.phone) {
+                                                                                                                                                                                                        this.loginError = data.errors.phone[0];
+                                                                                                                                                                                                    } else if (data.message) {
+                                                                                                                                                                                                        this.loginError = data.message;
+                                                                                                                                                                                                    } else {
+                                                                                                                                                                                                        this.loginError = 'Invalid credentials';
+                                                                                                                                                                                                    }
+                                                                                                                                                                                                }
+                                                                                                                                                                                            } catch (error) {
+                                                                                                                                                                                                console.error('Login error:', error);
+                                                                                                                                                                                                this.loginError = 'An error occurred. Please try again.';
+                                                                                                                                                                                            } finally {
+                                                                                                                                                                                                this.isLoading = false;
                                                                                                                                                                                             }
                                                                                                                                                                                         }
-                                                                                                                                                                                    } catch (error) {
-                                                                                                                                                                                        console.error('Login error:', error);
-                                                                                                                                                                                        this.loginError = 'An error occurred. Please try again.';
-                                                                                                                                                                                    } finally {
-                                                                                                                                                                                        this.isLoading = false;
-                                                                                                                                                                                    }
-                                                                                                                                                                                }
-                                                                                                                                                                            }">
+                                                                                                                                                                                    }">
                             <h3 class="font-bold text-leather-900 mb-3">Sign in to continue</h3>
                             <form x-ref="loginForm" action="{{ route('login') }}" method="POST" @submit.prevent="handleLogin">
                                 @csrf
@@ -186,46 +186,46 @@
                         <div id="register-form" x-show="selected === 'register'" x-transition
                             class="bg-neutral-50 rounded-lg p-4"
                             x-data="{
-                                                                                                                                                                        showPassword: false,
-                                                                                                                                                                        registerError: '',
-                                                                                                                                                                        isLoading: false,
-                                                                                                                                                                        async handleRegister() {
-                                                                                                                                                                            this.registerError = '';
-                                                                                                                                                                            this.isLoading = true;
-                                                                                                                                                                            const formData = new FormData(this.$refs.registerForm);
+                                                                                                                                                                                showPassword: false,
+                                                                                                                                                                                registerError: '',
+                                                                                                                                                                                isLoading: false,
+                                                                                                                                                                                async handleRegister() {
+                                                                                                                                                                                    this.registerError = '';
+                                                                                                                                                                                    this.isLoading = true;
+                                                                                                                                                                                    const formData = new FormData(this.$refs.registerForm);
 
-                                                                                                                                                                            try {
-                                                                                                                                                                                const response = await fetch('{{ route('register') }}', {
-                                                                                                                                                                                    method: 'POST',
-                                                                                                                                                                                    headers: {
-                                                                                                                                                                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                                                                                                                                                                        'Accept': 'application/json',
-                                                                                                                                                                                    },
-                                                                                                                                                                                    body: formData
-                                                                                                                                                                                });
-                                                                                                                                                                                const data = await response.json();
+                                                                                                                                                                                    try {
+                                                                                                                                                                                        const response = await fetch('{{ route('register') }}', {
+                                                                                                                                                                                            method: 'POST',
+                                                                                                                                                                                            headers: {
+                                                                                                                                                                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                                                                                                                                                                'Accept': 'application/json',
+                                                                                                                                                                                            },
+                                                                                                                                                                                            body: formData
+                                                                                                                                                                                        });
+                                                                                                                                                                                        const data = await response.json();
 
-                                                                                                                                                                                if (data.success) {
-                                                                                                                                                                                    window.location.reload();
-                                                                                                                                                                                } else {
-                                                                                                                                                                                    // Handle validation errors
-                                                                                                                                                                                    if (data.errors) {
-                                                                                                                                                                                        const firstError = Object.values(data.errors)[0][0];
-                                                                                                                                                                                        this.registerError = firstError;
-                                                                                                                                                                                    } else if (data.message) {
-                                                                                                                                                                                        this.registerError = data.message;
-                                                                                                                                                                                    } else {
-                                                                                                                                                                                        this.registerError = 'Registration failed';
+                                                                                                                                                                                        if (data.success) {
+                                                                                                                                                                                            window.location.reload();
+                                                                                                                                                                                        } else {
+                                                                                                                                                                                            // Handle validation errors
+                                                                                                                                                                                            if (data.errors) {
+                                                                                                                                                                                                const firstError = Object.values(data.errors)[0][0];
+                                                                                                                                                                                                this.registerError = firstError;
+                                                                                                                                                                                            } else if (data.message) {
+                                                                                                                                                                                                this.registerError = data.message;
+                                                                                                                                                                                            } else {
+                                                                                                                                                                                                this.registerError = 'Registration failed';
+                                                                                                                                                                                            }
+                                                                                                                                                                                        }
+                                                                                                                                                                                    } catch (error) {
+                                                                                                                                                                                        console.error('Register error:', error);
+                                                                                                                                                                                        this.registerError = 'An error occurred. Please try again.';
+                                                                                                                                                                                    } finally {
+                                                                                                                                                                                        this.isLoading = false;
                                                                                                                                                                                     }
                                                                                                                                                                                 }
-                                                                                                                                                                            } catch (error) {
-                                                                                                                                                                                console.error('Register error:', error);
-                                                                                                                                                                                this.registerError = 'An error occurred. Please try again.';
-                                                                                                                                                                            } finally {
-                                                                                                                                                                                this.isLoading = false;
-                                                                                                                                                                            }
-                                                                                                                                                                        }
-                                                                                                                                                                    }">
+                                                                                                                                                                            }">
                             <h3 class="font-bold text-leather-900 mb-3">Create an account</h3>
                             <form x-ref="registerForm" action="{{ route('register') }}" method="POST"
                                 @submit.prevent="handleRegister">
@@ -313,23 +313,34 @@
 
                 @auth
                     <!-- Logged In User Info -->
-                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-8">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <svg class="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <div>
-                                    <p class="font-semibold text-green-900">Signed in as {{ Auth::user()->name }}</p>
-                                    <p class="text-sm text-green-700">{{ Auth::user()->email }}</p>
+                    <div
+                        class="bg-green-50 border border-green-200 rounded-2xl p-4 sm:p-5 mb-8 transition-all hover:bg-green-100/50">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="flex items-start sm:items-center">
+                                <div
+                                    class="flex-shrink-0 w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div class="flex-grow">
+                                    <h3 class="font-bold text-leather-900 text-base sm:text-lg">Signed in as <span
+                                            class="text-green-700">{{ Auth::user()->name }}</span></h3>
+                                    <p class="text-sm text-neutral-500 font-medium tracking-tight">
+                                        {{ Auth::user()->email ?: Auth::user()->phone }}</p>
                                 </div>
                             </div>
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
-                                <button type="submit" class="text-sm text-green-700 hover:text-green-900 font-medium">Sign
-                                    Out</button>
-                            </form>
+                            <div class="flex sm:block border-t sm:border-t-0 border-green-100 pt-3 sm:pt-0">
+                                <form action="{{ route('logout') }}" method="POST" class="w-full sm:w-auto">
+                                    @csrf
+                                    <button type="submit"
+                                        class="w-full sm:w-auto text-center px-6 py-2 rounded-xl bg-white border-2 border-green-200 text-green-700 hover:bg-green-50 hover:border-green-300 transition-all font-bold text-sm shadow-sm">
+                                        Sign Out
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 @endauth

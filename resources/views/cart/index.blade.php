@@ -45,7 +45,10 @@
                                                     @php
                                                         $imagePath = $details['image'];
                                                         if (!str_starts_with($imagePath, 'http')) {
-                                                            $imagePath = asset('storage/' . $imagePath);
+                                                            if (str_starts_with($imagePath, 'storage/')) {
+                                                                $imagePath = substr($imagePath, 8);
+                                                            }
+                                                            $imagePath = asset($imagePath);
                                                         }
                                                     @endphp
                                                     <img class="h-16 w-16 object-contain p-2"
@@ -135,7 +138,10 @@
                                     @php
                                         $imagePath = $details['image'];
                                         if (!str_starts_with($imagePath, 'http')) {
-                                            $imagePath = asset('storage/' . $imagePath);
+                                            if (str_starts_with($imagePath, 'storage/')) {
+                                                $imagePath = substr($imagePath, 8);
+                                            }
+                                            $imagePath = asset($imagePath);
                                         }
                                     @endphp
                                     <img class="w-full h-full object-contain p-2"

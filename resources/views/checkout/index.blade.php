@@ -492,7 +492,10 @@
                                     @php
                                         $imagePath = $details['image'];
                                         if (!str_starts_with($imagePath, 'http')) {
-                                            $imagePath = asset('storage/' . $imagePath);
+                                            if (str_starts_with($imagePath, 'storage/')) {
+                                                $imagePath = substr($imagePath, 8);
+                                            }
+                                            $imagePath = asset($imagePath);
                                         }
                                     @endphp
                                     <img src="{{ $imagePath }}" alt="{{ $details['name'] }}"

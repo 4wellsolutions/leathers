@@ -42,7 +42,8 @@
                                         <td class="px-6 py-4">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 h-16 w-16 bg-neutral-100 rounded-md overflow-hidden">
-                                                    <img class="h-16 w-16 object-contain p-2" src="{{ $details['image'] }}"
+                                                    <img class="h-16 w-16 object-contain p-2"
+                                                        src="{{ str_starts_with($details['image'], 'http') ? $details['image'] : asset($details['image']) }}"
                                                         alt="{{ $details['name'] }}">
                                                 </div>
                                                 <div class="ml-4">
@@ -109,7 +110,8 @@
                             <div class="bg-white rounded-xl shadow-sm p-4 flex gap-4 cart-item" data-id="{{ $id }}">
                                 <!-- Image -->
                                 <div class="flex-shrink-0 w-20 h-20 bg-neutral-100 rounded-lg overflow-hidden">
-                                    <img class="w-full h-full object-contain p-2" src="{{ $details['image'] }}"
+                                    <img class="w-full h-full object-contain p-2"
+                                        src="{{ str_starts_with($details['image'], 'http') ? $details['image'] : asset($details['image']) }}"
                                         alt="{{ $details['name'] }}">
                                 </div>
 
@@ -200,13 +202,13 @@
 
                             <div class="flex justify-between text-neutral-600">
                                 <span>Shipping</span>
-                                <span class="text-sm">Calculated at checkout</span>
+                                <span id="cart-shipping">Rs. {{ number_format($shipping) }}</span>
                             </div>
 
                             <div
                                 class="flex justify-between text-lg font-bold text-leather-900 pt-4 border-t border-neutral-200">
                                 <span>Total</span>
-                                <span id="cart-grand-total">Rs. {{ number_format($total) }}</span>
+                                <span id="cart-grand-total">Rs. {{ number_format($grandTotal) }}</span>
                             </div>
                         </div>
 
@@ -233,9 +235,11 @@
                     <div class="flex gap-4 items-center">
                         <div class="flex-1">
                             <p class="text-xs text-neutral-500 uppercase font-bold tracking-wider">Subtotal</p>
-                            <p class="text-xl font-bold text-leather-900" id="mobile-cart-total">Rs. {{ number_format($total) }}
+                            <p class="text-xl font-bold text-leather-900" id="mobile-cart-total">Rs.
+                                {{ number_format($grandTotal) }}
                             </p>
-                            <p class="text-[10px] text-neutral-400">Shipping calculated at checkout</p>
+                            <p class="text-[10px] text-neutral-400">Incl. Shipping (Rs. <span
+                                    id="mobile-shipping">{{ number_format($shipping) }}</span>)</p>
                         </div>
                         <a href="{{ route('checkout.index') }}"
                             class="flex-1 btn-primary text-center py-3 text-sm rounded-xl shadow-lg">
@@ -306,7 +310,7 @@
                         .then(data => {
                             if (data.success) {
                                 container.remove();
-                                updateTotals(data.total);
+                                updateTotals(data);
 
                                 if (data.count === 0) {
                                     location.reload();
@@ -329,28 +333,28 @@
                     .then(data => {
                         if (data.success) {
                             container.querySelector('.subtotal').innerText = 'Rs. ' + data.subtotal;
-                            updateTotals(data.total);
+                            updateTotals(data);
                         }
                     });
             }
 
-            function updateTotals(total) {
-                // Update all instances of total display (desktop sidebar, mobile footer, etc)
-                const grandTotalFormatted = 'Rs. ' + total; // Backend logic handling shipping might be needed here dynamically, keeping simple for now or needing page reload for exact shipping recalc
-
-                // For now, assuming simple update. Ideally, data.total passed from backend includes shipping logic or we need to refresh.
-                // Let's assume the controller returns the raw subtotal or total.
-                // The original code updated #cart-total and #cart-grand-total.
-
-                // NOTE: The previous JS code purely visually updated totals. 
-                // Real complex shipping rules usually require a reload or an AJAX response that gives "grand_total_with_shipping".
-                // The existing controller likely returns just the subtotal or new cart total.
-                // We will update the text elements we have.
-
-                ['cart-total', 'cart-grand-total', 'mobile-cart-total'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.innerText = 'Rs. ' + total; // Use the formatted string if backend sends it, here we just use the number
-                });
+            function updateTotals(data) {
+                // Update all instances of total display
+                if (document.getElementById('cart-total')) {
+                    document.getElementById('cart-total').innerText = 'Rs. ' + data.total;
+                }
+                if (document.getElementById('cart-shipping')) {
+                    document.getElementById('cart-shipping').innerText = 'Rs. ' + data.shipping_cost;
+                }
+                if (document.getElementById('cart-grand-total')) {
+                    document.getElementById('cart-grand-total').innerText = 'Rs. ' + data.grand_total;
+                }
+                if (document.getElementById('mobile-cart-total')) {
+                    document.getElementById('mobile-cart-total').innerText = 'Rs. ' + data.grand_total;
+                }
+                if (document.getElementById('mobile-shipping')) {
+                    document.getElementById('mobile-shipping').innerText = data.shipping_cost;
+                }
             }
         });
     </script>

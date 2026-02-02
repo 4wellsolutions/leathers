@@ -16,7 +16,10 @@ class CartController extends Controller
             $total += $details['price'] * $details['quantity'];
         }
 
-        return view('cart.index', compact('cart', 'total'));
+        $shipping = \App\Models\ShippingRule::getShippingCost($total);
+        $grandTotal = $total + $shipping;
+
+        return view('cart.index', compact('cart', 'total', 'shipping', 'grandTotal'));
     }
 
     public function add(Request $request, $id)
@@ -36,7 +39,7 @@ class CartController extends Controller
         $maxStock = $product->stock;
 
         if ($variantId) {
-            $variant = $product->variants->where('id', $variantId)->first();
+            $variant = $product->variants()->with('color')->where('id', $variantId)->first();
             if ($variant) {
                 // Prioritize sale_price if available, otherwise use regular price
                 if ($variant->sale_price && $variant->sale_price > 0) {
@@ -46,7 +49,8 @@ class CartController extends Controller
                 }
                 // If both are null, keep the product's effective_price
 
-                $image = $variant->image ?? $image;
+                // Use the color-specific image if available
+                $image = ($variant->color && $variant->color->image_url) ? $variant->color->image_url : ($variant->image ?? $image);
                 $name = $product->name . ' - ' . $variant->name;
                 $maxStock = $variant->stock;
             }
@@ -99,10 +103,15 @@ class CartController extends Controller
                 $total += $item['price'] * $item['quantity'];
             }
 
+            $shipping = \App\Models\ShippingRule::getShippingCost($total);
+            $grandTotal = $total + $shipping;
+
             return response()->json([
                 'success' => true,
                 'subtotal' => number_format($subtotal),
-                'total' => number_format($total)
+                'total' => number_format($total),
+                'shipping_cost' => number_format($shipping),
+                'grand_total' => number_format($grandTotal)
             ]);
         }
     }
@@ -160,9 +169,14 @@ class CartController extends Controller
                 $total += $item['price'] * $item['quantity'];
             }
 
+            $shipping = \App\Models\ShippingRule::getShippingCost($total);
+            $grandTotal = $total + $shipping;
+
             return response()->json([
                 'success' => true,
                 'total' => number_format($total),
+                'shipping_cost' => number_format($shipping),
+                'grand_total' => number_format($grandTotal),
                 'count' => count($cart)
             ]);
         }

@@ -34,7 +34,7 @@
                         <table width="100%" cellpadding="0" cellspacing="0">
                             <tr>
                                 <td width="60">
-                                    <img src="{{ Str::startsWith($item->product->image, 'http') ? $item->product->image : url($item->product->image) }}"
+                                    <img src="{{ $item->image_url }}"
                                         style="width: 50px; height: 50px; border-radius: 4px; object-fit: cover;"
                                         alt="{{ $item->product_name }}">
                                 </td>

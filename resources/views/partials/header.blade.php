@@ -150,7 +150,7 @@
                                                 <!-- Product Image -->
                                                 <div
                                                     class="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-white shadow-sm">
-                                                    <img src="{{ asset($details['image']) }}" alt="{{ $details['name'] }}"
+                                                    <img src="{{ str_starts_with($details['image'], 'http') ? $details['image'] : asset($details['image']) }}" alt="{{ $details['name'] }}"
                                                         class="h-full w-full object-contain p-1">
                                                 </div>
 
@@ -297,7 +297,7 @@
                                                 <!-- Product Image -->
                                                 <div
                                                     class="h-14 w-14 flex-shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-white shadow-sm">
-                                                    <img src="{{ asset($details['image']) }}" alt="{{ $details['name'] }}"
+                                                    <img src="{{ str_starts_with($details['image'], 'http') ? $details['image'] : asset($details['image']) }}" alt="{{ $details['name'] }}"
                                                         class="h-full w-full object-contain p-1">
                                                 </div>
 

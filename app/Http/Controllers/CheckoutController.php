@@ -149,6 +149,7 @@ class CheckoutController extends Controller
                 \App\Models\OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $item['product_id'] ?? $id, // Use product_id from cart item, fallback to key
+                    'variant_id' => $item['variant_id'] ?? null,
                     'product_name' => $item['name'],
                     'price' => $item['price'],
                     'quantity' => $item['quantity'],

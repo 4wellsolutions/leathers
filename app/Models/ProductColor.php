@@ -47,18 +47,25 @@ class ProductColor extends Model
 
     public function getImageUrlAttribute()
     {
-        if (!$this->image) {
+        $imagePath = $this->image;
+
+        // Fallback to first image from 'images' array if 'image' is empty
+        if (!$imagePath && $this->images && count($this->images) > 0) {
+            $imagePath = $this->images[0];
+        }
+
+        if (!$imagePath) {
             return null;
         }
 
-        if (str_starts_with($this->image, 'http')) {
-            return $this->image;
+        if (str_starts_with($imagePath, 'http')) {
+            return $imagePath;
         }
 
         // Remove 'storage/' prefix if it exists (for old database entries)
-        $cleanPath = str_starts_with($this->image, 'storage/')
-            ? substr($this->image, 8)
-            : $this->image;
+        $cleanPath = str_starts_with($imagePath, 'storage/')
+            ? substr($imagePath, 8)
+            : $imagePath;
 
         // Images are now stored directly in public folder
         return asset($cleanPath);

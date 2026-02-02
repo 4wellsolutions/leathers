@@ -489,7 +489,13 @@
                                 class="flex items-center space-x-4 p-3 bg-white rounded-lg border border-neutral-200 shadow-sm">
                                 <div
                                     class="w-16 h-16 flex-shrink-0 bg-neutral-100 rounded-md overflow-hidden border border-neutral-200">
-                                    <img src="{{ $details['image'] }}" alt="{{ $details['name'] }}"
+                                    @php
+                                        $imagePath = $details['image'];
+                                        if (!str_starts_with($imagePath, 'http')) {
+                                            $imagePath = asset('storage/' . $imagePath);
+                                        }
+                                    @endphp
+                                    <img src="{{ $imagePath }}" alt="{{ $details['name'] }}"
                                         class="w-full h-full object-contain p-1">
                                 </div>
                                 <div class="flex-grow min-w-0">

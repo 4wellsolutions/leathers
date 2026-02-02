@@ -42,8 +42,14 @@
                                         <td class="px-6 py-4">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 h-16 w-16 bg-neutral-100 rounded-md overflow-hidden">
+                                                    @php
+                                                        $imagePath = $details['image'];
+                                                        if (!str_starts_with($imagePath, 'http')) {
+                                                            $imagePath = asset('storage/' . $imagePath);
+                                                        }
+                                                    @endphp
                                                     <img class="h-16 w-16 object-contain p-2"
-                                                        src="{{ str_starts_with($details['image'], 'http') ? $details['image'] : asset($details['image']) }}"
+                                                        src="{{ $imagePath }}"
                                                         alt="{{ $details['name'] }}">
                                                 </div>
                                                 <div class="ml-4">
@@ -126,8 +132,14 @@
                             <div class="bg-white rounded-xl shadow-sm p-4 flex gap-4 cart-item" data-id="{{ $id }}">
                                 <!-- Image -->
                                 <div class="flex-shrink-0 w-20 h-20 bg-neutral-100 rounded-lg overflow-hidden">
+                                    @php
+                                        $imagePath = $details['image'];
+                                        if (!str_starts_with($imagePath, 'http')) {
+                                            $imagePath = asset('storage/' . $imagePath);
+                                        }
+                                    @endphp
                                     <img class="w-full h-full object-contain p-2"
-                                        src="{{ str_starts_with($details['image'], 'http') ? $details['image'] : asset($details['image']) }}"
+                                        src="{{ $imagePath }}"
                                         alt="{{ $details['name'] }}">
                                 </div>
 

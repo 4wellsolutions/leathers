@@ -150,7 +150,13 @@
                                                 <!-- Product Image -->
                                                 <div
                                                     class="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-white shadow-sm">
-                                                    <img src="{{ str_starts_with($details['image'], 'http') ? $details['image'] : asset($details['image']) }}" alt="{{ $details['name'] }}"
+                                                    @php
+                                                        $imagePath = $details['image'];
+                                                        if (!str_starts_with($imagePath, 'http')) {
+                                                            $imagePath = asset('storage/' . $imagePath);
+                                                        }
+                                                    @endphp
+                                                    <img src="{{ $imagePath }}" alt="{{ $details['name'] }}"
                                                         class="h-full w-full object-contain p-1">
                                                 </div>
 
@@ -161,9 +167,18 @@
                                                             <h4
                                                                 class="text-sm font-bold text-leather-900 line-clamp-2 leading-snug">
                                                                 <a href="{{ route('products.show', $details['slug'] ?? '') }}"
-                                                                    class="hover:text-gold-600 transition-colors">{{ $details['name'] }}</a>
+                                                                    class="hover:text-gold-600 transition-colors">{{ $details['base_name'] ?? $details['name'] }}</a>
                                                             </h4>
-                                                            @if(isset($details['variant_name']))
+                                                            @if(isset($details['color']) || isset($details['size']))
+                                                                <div class="text-xs text-neutral-500 mt-0.5 flex flex-col">
+                                                                    @if(isset($details['color']))
+                                                                        <span>Color: {{ $details['color'] }}</span>
+                                                                    @endif
+                                                                    @if(isset($details['size']))
+                                                                        <span>Size: {{ $details['size'] }}</span>
+                                                                    @endif
+                                                                </div>
+                                                            @elseif(isset($details['variant_name']))
                                                                 <p class="text-xs text-neutral-500 mt-0.5">
                                                                     {{ $details['variant_name'] }}
                                                                 </p>
@@ -297,7 +312,13 @@
                                                 <!-- Product Image -->
                                                 <div
                                                     class="h-14 w-14 flex-shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-white shadow-sm">
-                                                    <img src="{{ str_starts_with($details['image'], 'http') ? $details['image'] : asset($details['image']) }}" alt="{{ $details['name'] }}"
+                                                    @php
+                                                        $imagePath = $details['image'];
+                                                        if (!str_starts_with($imagePath, 'http')) {
+                                                            $imagePath = asset('storage/' . $imagePath);
+                                                        }
+                                                    @endphp
+                                                    <img src="{{ $imagePath }}" alt="{{ $details['name'] }}"
                                                         class="h-full w-full object-contain p-1">
                                                 </div>
 
@@ -308,9 +329,18 @@
                                                             <h4
                                                                 class="text-sm font-bold text-leather-900 line-clamp-2 leading-snug">
                                                                 <a href="{{ route('products.show', $details['slug'] ?? '') }}"
-                                                                    class="hover:text-gold-600 transition-colors">{{ $details['name'] }}</a>
+                                                                    class="hover:text-gold-600 transition-colors">{{ $details['base_name'] ?? $details['name'] }}</a>
                                                             </h4>
-                                                            @if(isset($details['variant_name']))
+                                                            @if(isset($details['color']) || isset($details['size']))
+                                                                <div class="text-xs text-neutral-500 mt-0.5 flex flex-col">
+                                                                    @if(isset($details['color']))
+                                                                        <span>Color: {{ $details['color'] }}</span>
+                                                                    @endif
+                                                                    @if(isset($details['size']))
+                                                                        <span>Size: {{ $details['size'] }}</span>
+                                                                    @endif
+                                                                </div>
+                                                            @elseif(isset($details['variant_name']))
                                                                 <p class="text-xs text-neutral-500 mt-0.5">
                                                                     {{ $details['variant_name'] }}
                                                                 </p>

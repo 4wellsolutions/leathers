@@ -102,6 +102,15 @@ class CheckoutController extends Controller
             $user->save();
         }
 
+        // Increment Coupon Usage
+        if (session()->has('coupon')) {
+            $couponCode = session('coupon.code');
+            $coupon = \App\Models\Coupon::where('code', $couponCode)->first();
+            if ($coupon) {
+                $coupon->increment('used_count');
+            }
+        }
+
         foreach ($cart as $id => $item) {
             // Check if it's a DEAL
             if (isset($item['type']) && $item['type'] === 'deal' && isset($item['deal_id'])) {

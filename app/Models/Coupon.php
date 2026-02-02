@@ -10,7 +10,10 @@ class Coupon extends Model
         'code',
         'type',
         'value',
+        'max_discount_amount',
         'min_order_amount',
+        'usage_limit',
+        'used_count',
         'expires_at',
         'is_active',
     ];
@@ -30,6 +33,10 @@ class Coupon extends Model
             return false;
         }
 
+        if ($this->usage_limit !== null && $this->used_count >= $this->usage_limit) {
+            return false;
+        }
+
         return true;
     }
 
@@ -41,7 +48,11 @@ class Coupon extends Model
         }
 
         if ($this->type === 'percentage') {
-            return ($total * $this->value) / 100;
+            $discount = ($total * $this->value) / 100;
+            if ($this->max_discount_amount && $discount > $this->max_discount_amount) {
+                return $this->max_discount_amount;
+            }
+            return $discount;
         }
 
         return min($this->value, $total); // Ensure discount doesn't exceed total

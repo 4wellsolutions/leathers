@@ -62,6 +62,31 @@
                 @enderror
             </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="max_discount_amount" class="block text-sm font-medium text-gray-700 mb-1">Max Discount
+                        Amount (Rs.)</label>
+                    <input type="number" name="max_discount_amount" id="max_discount_amount"
+                        value="{{ old('max_discount_amount') }}" step="0.01" min="0"
+                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <p class="text-xs text-gray-500 mt-1">Applies only to Percentage coupons.</p>
+                    @error('max_discount_amount')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="usage_limit" class="block text-sm font-medium text-gray-700 mb-1">Usage Limit</label>
+                    <input type="number" name="usage_limit" id="usage_limit" value="{{ old('usage_limit') }}" min="1"
+                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <p class="text-xs text-gray-500 mt-1">Total times this coupon can be used (Leave blank for unlimited).
+                    </p>
+                    @error('usage_limit')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
             <div class="mb-4">
                 <label for="expires_at" class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
                 <input type="datetime-local" name="expires_at" id="expires_at" value="{{ old('expires_at') }}"

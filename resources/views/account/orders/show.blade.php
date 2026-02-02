@@ -170,6 +170,13 @@
                                 <span>Subtotal</span>
                                 <span class="font-medium text-leather-900">Rs. {{ number_format($order->subtotal) }}</span>
                             </div>
+
+                            @if($order->discount_amount > 0)
+                                <div class="flex justify-between text-green-600">
+                                    <span>Discount @if($order->coupon_code) <span class="text-xs">({{ $order->coupon_code }})</span> @endif</span>
+                                    <span class="font-medium">- Rs. {{ number_format($order->discount_amount) }}</span>
+                                </div>
+                            @endif
                             <div class="flex justify-between text-neutral-600">
                                 <span>Shipping</span>
                                 @if($order->shipping_cost > 0)

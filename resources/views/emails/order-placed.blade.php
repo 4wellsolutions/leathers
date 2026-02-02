@@ -182,6 +182,14 @@
                             <td class="total-value" style="padding-bottom: 8px;">Rs. {{ number_format($order->subtotal) }}
                             </td>
                         </tr>
+                        @if($order->discount_amount > 0)
+                            <tr>
+                                <td class="total-label" style="padding-bottom: 8px; color: #16a34a;">Discount
+                                    @if($order->coupon_code) ({{ $order->coupon_code }}) @endif</td>
+                                <td class="total-value" style="padding-bottom: 8px; color: #16a34a;">- Rs.
+                                    {{ number_format($order->discount_amount) }}</td>
+                            </tr>
+                        @endif
                         <tr>
                             <td class="total-label" style="padding-bottom: 15px;">Shipping</td>
                             <td class="total-value" style="padding-bottom: 15px;">

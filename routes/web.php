@@ -40,6 +40,8 @@ Route::get('/add-to-cart/{id}', [CartController::class, 'add'])->name('cart.add'
 Route::post('/add-deal-to-cart/{id}', [CartController::class, 'addDeal'])->name('cart.add-deal');
 Route::patch('/update-cart', [CartController::class, 'update'])->name('cart.update');
 Route::post('/remove-from-cart', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/apply-coupon', [CartController::class, 'applyCoupon'])->name('cart.apply-coupon');
+Route::post('/remove-coupon', [CartController::class, 'removeCoupon'])->name('cart.remove-coupon');
 
 use App\Http\Controllers\WishlistController;
 

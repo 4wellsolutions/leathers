@@ -65,6 +65,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/sitemap/generate', [\App\Http\Controllers\Admin\SitemapController::class, 'generate'])->name('sitemap.generate');
     Route::get('/sitemap/download', [\App\Http\Controllers\Admin\SitemapController::class, 'download'])->name('sitemap.download');
 
+    // Coupons
+    Route::resource('coupons', \App\Http\Controllers\Admin\CouponController::class);
+
     // Cache Management
     Route::get('/cache', [\App\Http\Controllers\Admin\CacheController::class, 'index'])->name('cache.index');
     Route::post('/cache/clear-all', [\App\Http\Controllers\Admin\CacheController::class, 'clearAll'])->name('cache.clear-all');

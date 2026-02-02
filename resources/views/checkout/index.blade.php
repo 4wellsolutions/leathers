@@ -505,15 +505,35 @@
                                     <p class="text-sm font-semibold text-gold-600">Rs.
                                         {{ number_format($details['price'] * $details['quantity']) }}
                                     </p>
+                                    @if(isset($details['original_price']) && $details['original_price'] > $details['price'])
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-xs text-neutral-400 line-through">Rs. {{ number_format($details['original_price'] * $details['quantity']) }}</span>
+                                            <span class="text-[10px] font-bold text-white bg-red-600 px-1.5 py-0.5 rounded">-{{ round((($details['original_price'] - $details['price']) / $details['original_price']) * 100) }}%</span>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
                     </div>
 
                     <div class="space-y-3 pt-4 border-t border-neutral-200">
-                        <div class="flex justify-between items-center text-sm">
-                            <span class="text-neutral-600 font-medium">Subtotal</span>
-                            <span class="text-leather-900 font-bold">Rs. {{ number_format($subtotal) }}</span>
+                        @if(isset($originalTotal) && $originalTotal > $subtotal)
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-neutral-600 font-medium">Original Price</span>
+                                <span class="text-neutral-400 font-medium line-through">Rs. {{ number_format($originalTotal) }}</span>
+                            </div>
+                        @endif
+                        
+                        @if($originalTotal > ($subtotal - ($discount ?? 0)))
+                             <div class="flex justify-between items-center text-sm mt-1 text-green-600 font-bold">
+                                <span>Your Savings</span>
+                                <span>Rs. {{ number_format($originalTotal - ($subtotal - ($discount ?? 0))) }}</span>
+                            </div>
+                        @endif
+
+                        <div class="flex justify-between items-center text-sm mt-2 pt-2 border-t border-neutral-100">
+                             <span class="text-neutral-600 font-medium">Subtotal</span>
+                             <span class="text-leather-900 font-bold">Rs. {{ number_format($subtotal) }}</span>
                         </div>
 
                         <div class="flex justify-between items-center text-sm pb-3 border-b border-neutral-200">
@@ -526,6 +546,13 @@
                                 <span class="text-leather-900 font-bold">Rs. {{ number_format($shippingCost) }}</span>
                             @endif
                         </div>
+
+                        @if(isset($discount) && $discount > 0)
+                            <div class="flex justify-between items-center text-sm pb-3 border-b border-neutral-200 text-green-600">
+                                <span class="font-medium">Discount ({{ session('coupon.code') }})</span>
+                                <span class="font-bold">- Rs. {{ number_format($discount) }}</span>
+                            </div>
+                        @endif
 
                         <div class="flex justify-between items-end pt-1">
                             <span class="text-base font-bold text-leather-900">Total</span>

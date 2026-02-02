@@ -16,15 +16,28 @@ class CheckoutController extends Controller
         }
 
         $subtotal = 0;
+        $originalTotal = 0;
         foreach ($cart as $item) {
             $subtotal += $item['price'] * $item['quantity'];
+            $originalTotal += ($item['original_price'] ?? $item['price']) * $item['quantity'];
         }
 
         // Calculate shipping
         $shippingCost = \App\Models\ShippingRule::getShippingCost($subtotal);
         $total = $subtotal + $shippingCost;
 
-        return view('checkout.index', compact('cart', 'subtotal', 'shippingCost', 'total'));
+        // Calculate discount for display (subtotal is passed to view, logic handles display)
+        [$discount, $newSubtotal] = $this->calculateDiscount($subtotal);
+        // Note: The controller logic calculates $total = $subtotal + $shipping.
+        // But wait, if discount exists, $total should be discounted total + shipping.
+        // In `store` method: $total = $newSubtotal + $shippingCost;
+        // In `index` current logic: $total = $subtotal + $shippingCost; 
+        // This seems inconsistent if I want to show the final discounted total.
+        // Let's match `store` logic mostly.
+
+        $total = $newSubtotal + $shippingCost;
+
+        return view('checkout.index', compact('cart', 'subtotal', 'originalTotal', 'shippingCost', 'total', 'discount'));
     }
 
     public function store(Request $request)
@@ -57,9 +70,11 @@ class CheckoutController extends Controller
             $subtotal += $item['price'] * $item['quantity'];
         }
 
-        // Calculate shipping
+        // Calculate shipping and discount
         $shippingCost = \App\Models\ShippingRule::getShippingCost($subtotal);
-        $total = $subtotal + $shippingCost;
+        [$discount, $newSubtotal] = $this->calculateDiscount($subtotal);
+
+        $total = $newSubtotal + $shippingCost;
 
         $order = \App\Models\Order::create([
             'order_number' => 'ORD-' . strtoupper(uniqid()),
@@ -70,6 +85,8 @@ class CheckoutController extends Controller
             'city' => $request->city,
             'postal_code' => '00000', // Hardcoded value since field is not used
             'subtotal' => $subtotal,
+            'discount_amount' => $discount,
+            'coupon_code' => session('coupon.code'),
             'shipping_cost' => $shippingCost,
             'total' => $total,
             'status' => 'pending',
@@ -174,6 +191,7 @@ class CheckoutController extends Controller
         }
 
         session()->forget('cart');
+        session()->forget('coupon');
 
         // Load items relationship and dispatch email job
         $order->load('items.product');
@@ -193,5 +211,22 @@ class CheckoutController extends Controller
     {
         $order = \App\Models\Order::where('order_number', $order_number)->firstOrFail();
         return view('checkout.success', compact('order'));
+    }
+
+    private function calculateDiscount($total)
+    {
+        $couponData = session()->get('coupon');
+        $discount = 0;
+
+        if ($couponData) {
+            $coupon = \App\Models\Coupon::where('code', $couponData['code'])->first();
+            if ($coupon && $coupon->isValid()) {
+                $discount = $coupon->calculateDiscount($total);
+            } else {
+                session()->forget('coupon'); // Remove invalid coupon from session
+            }
+        }
+
+        return [$discount, max(0, $total - $discount)];
     }
 }

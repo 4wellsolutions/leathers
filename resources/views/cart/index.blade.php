@@ -64,7 +64,16 @@
                                                             @endif
                                                         @endif
                                                     </div>
-                                                    <div class="text-sm text-neutral-500">Rs. {{ number_format($details['price']) }}
+                                                    <div class="flex flex-col">
+                                                        @if(isset($details['original_price']) && $details['original_price'] > $details['price'])
+                                                            <span class="text-sm font-bold text-red-600">Rs. {{ number_format($details['price']) }}</span>
+                                                            <div class="flex items-center gap-2">
+                                                                <span class="text-xs text-neutral-400 line-through">Rs. {{ number_format($details['original_price']) }}</span>
+                                                                <span class="text-xs font-bold text-white bg-red-600 px-1.5 py-0.5 rounded">-{{ round((($details['original_price'] - $details['price']) / $details['original_price']) * 100) }}%</span>
+                                                            </div>
+                                                        @else
+                                                            <span class="text-sm text-neutral-500">Rs. {{ number_format($details['price']) }}</span>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
@@ -151,9 +160,17 @@
                                         @if(isset($details['type']) && $details['type'] == 'combo')
                                             <p class="text-xs text-gold-600">Bundle Deal</p>
                                         @endif
-                                        <p class="text-sm font-bold text-leather-900 mt-1">Rs.
-                                            {{ number_format($details['price']) }}
-                                        </p>
+                                        <div class="mt-1">
+                                            @if(isset($details['original_price']) && $details['original_price'] > $details['price'])
+                                                <span class="text-sm font-bold text-red-600">Rs. {{ number_format($details['price']) }}</span>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-xs text-neutral-400 line-through">Rs. {{ number_format($details['original_price']) }}</span>
+                                                    <span class="text-xs font-bold text-white bg-red-600 px-1.5 py-0.5 rounded">-{{ round((($details['original_price'] - $details['price']) / $details['original_price']) * 100) }}%</span>
+                                                </div>
+                                            @else
+                                                <span class="text-sm font-bold text-leather-900">Rs. {{ number_format($details['price']) }}</span>
+                                            @endif
+                                        </div>
                                     </div>
 
                                     <div class="flex justify-between items-end mt-2">
@@ -219,6 +236,100 @@
                                 <span id="cart-shipping">Rs. {{ number_format($shipping) }}</span>
                             </div>
 
+                            <div class="flex justify-between text-green-600 {{ isset($discount) && $discount > 0 ? '' : 'hidden' }}" id="cart-discount-row">
+                                <span>Discount</span>
+                                <span id="cart-discount">- Rs. {{ isset($discount) ? number_format($discount) : '0' }}</span>
+                            </div>
+
+                            <!-- Coupon Code Section -->
+                            <div class="pt-6 mt-6 border-t border-neutral-200">
+                                @if(session('coupon'))
+                                    <div id="coupon-applied-container" class="bg-gold-50/50 border border-gold-200 rounded-xl p-4 flex justify-between items-center relative overflow-hidden group transition-all hover:bg-gold-50">
+                                        <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-white/40 to-transparent transform rotate-45 translate-x-8 -translate-y-8 pointer-events-none"></div>
+                                        <div class="flex items-center z-10">
+                                            <div class="w-10 h-10 rounded-full bg-white border border-gold-100 flex items-center justify-center mr-3 text-gold-600 shadow-sm">
+                                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-[10px] text-gold-800 uppercase font-bold tracking-wider mb-0.5">Coupon Applied</p>
+                                                <p class="font-mono font-bold text-leather-900 text-lg leading-none">{{ session('coupon.code') }}</p>
+                                            </div>
+                                        </div>
+                                        <button type="button" id="remove-coupon-btn" class="text-neutral-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-white/80 z-10 focus:outline-none" title="Remove Coupon">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div class="hidden mt-4" id="coupon-input-container">
+                                        <label for="coupon-code" class="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Discount Code</label>
+                                        <div class="relative flex items-center group">
+                                            <input type="text" id="coupon-code" 
+                                                class="w-full pl-4 pr-24 py-3 rounded-xl border border-neutral-300 focus:border-gold-500 focus:ring-4 focus:ring-gold-500/10 text-sm font-medium placeholder-neutral-400 transition-all shadow-sm uppercase" 
+                                                placeholder="Enter Code">
+                                            <button type="button" id="apply-coupon-btn" 
+                                                class="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-leather-900 hover:bg-leather-800 text-white text-xs font-bold rounded-lg transition-all hover:shadow-md uppercase tracking-wide flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed">
+                                                Apply
+                                            </button>
+                                        </div>
+                                        <p class="text-xs text-red-500 mt-2 font-medium hidden flex items-center gap-1" id="coupon-error">
+                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> 
+                                            <span></span>
+                                        </p>
+                                    </div>
+                                @else
+                                    <div id="coupon-applied-container" class="hidden bg-gold-50/50 border border-gold-200 rounded-xl p-4 flex justify-between items-center relative overflow-hidden group transition-all hover:bg-gold-50">
+                                        <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-white/40 to-transparent transform rotate-45 translate-x-8 -translate-y-8 pointer-events-none"></div>
+                                        <div class="flex items-center z-10">
+                                            <div class="w-10 h-10 rounded-full bg-white border border-gold-100 flex items-center justify-center mr-3 text-gold-600 shadow-sm">
+                                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-[10px] text-gold-800 uppercase font-bold tracking-wider mb-0.5">Coupon Applied</p>
+                                                <p class="font-mono font-bold text-leather-900 text-lg leading-none" id="applied-coupon-code"></p>
+                                            </div>
+                                        </div>
+                                        <button type="button" id="remove-coupon-btn" class="text-neutral-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-white/80 z-10 focus:outline-none" title="Remove Coupon">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div class="mt-4" id="coupon-input-container">
+                                        <label for="coupon-code" class="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">Discount Code</label>
+                                        <div class="relative flex items-center group">
+                                            <input type="text" id="coupon-code" 
+                                                class="w-full pl-4 pr-24 py-3 rounded-xl border border-neutral-300 focus:border-gold-500 focus:ring-4 focus:ring-gold-500/10 text-sm font-medium placeholder-neutral-400 transition-all shadow-sm uppercase" 
+                                                placeholder="Enter Code">
+                                            <button type="button" id="apply-coupon-btn" 
+                                                class="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-leather-900 hover:bg-leather-800 text-white text-xs font-bold rounded-lg transition-all hover:shadow-md uppercase tracking-wide flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed">
+                                                Apply
+                                            </button>
+                                        </div>
+                                        <p class="text-xs text-red-500 mt-2 font-medium hidden flex items-center gap-1" id="coupon-error">
+                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> 
+                                            <span></span>
+                                        </p>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div id="original-total-row" class="flex justify-between text-sm text-neutral-500 mb-2 {{ (!isset($originalTotal) || $originalTotal == $total) ? 'hidden' : '' }}">
+                                <span>Original Price</span>
+                                <span class="line-through" id="cart-original-total">Rs. {{ isset($originalTotal) ? number_format($originalTotal) : '' }}</span>
+                            </div>
+                            
+                            <div id="savings-row" class="flex justify-between text-sm text-green-600 font-bold mb-4 {{ (!isset($originalTotal) || $originalTotal == $total) ? 'hidden' : '' }}">
+                                <span>Your Savings</span>
+                                <span id="cart-savings">Rs. {{ isset($originalTotal) ? number_format(($originalTotal - $total) + ($discount ?? 0)) : '' }}</span>
+                            </div>
+
                             <div
                                 class="flex justify-between text-lg font-bold text-leather-900 pt-4 border-t border-neutral-200">
                                 <span>Total</span>
@@ -235,7 +346,7 @@
                             <div class="flex justify-center space-x-2 opacity-50">
                                 <svg class="h-6" viewBox="0 0 24 24" fill="currentColor"><!-- Visa icon placeholder --></svg>
                                 <svg class="h-6" viewBox="0 0 24 24"
-                                    fill="currentColor"><!-- Mastercard icon placeholder --></svg>
+                    fill="currentColor"><!-- Mastercard icon placeholder --></svg>
                             </div>
                         </div>
                     </div>
@@ -352,14 +463,167 @@
                     });
             }
 
+            // Coupon Logic
+            const applyCouponBtn = document.getElementById('apply-coupon-btn');
+            
+            // Re-selecting remove buttons as duplication in blade logic
+            document.body.addEventListener('click', function(e) {
+                const btn = e.target.closest('#remove-coupon-btn');
+                if (btn) {
+                    fetch('{{ route('cart.remove-coupon') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Reset UI
+                            document.getElementById('coupon-input-container').classList.remove('hidden');
+                            document.getElementById('coupon-applied-container').classList.add('hidden');
+                            document.getElementById('coupon-code').value = '';
+                            const errorEl = document.getElementById('coupon-error');
+                            errorEl.querySelector('span').innerText = '';
+                            errorEl.classList.add('hidden');
+                            
+                            updateTotals(data);
+                        }
+                    });
+                }
+            });
+
+            if(applyCouponBtn) {
+                applyCouponBtn.addEventListener('click', function() {
+                    const code = document.getElementById('coupon-code').value;
+                    const errorEl = document.getElementById('coupon-error');
+                    
+                    if(!code) {
+                        errorEl.querySelector('span').innerText = 'Please enter a coupon code';
+                        errorEl.classList.remove('hidden');
+                        return;
+                    }
+                    
+                    fetch('{{ route('cart.apply-coupon') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ coupon_code: code })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('coupon-input-container').classList.add('hidden');
+                            const appliedContainer = document.getElementById('coupon-applied-container');
+                            appliedContainer.classList.remove('hidden');
+                            // If first block (blade if session) is present, text is already there. If not (else), need to set it.
+                            if(document.getElementById('applied-coupon-code')) {
+                                document.getElementById('applied-coupon-code').innerText = code.toUpperCase();
+                            } else {
+                                location.reload();
+                            }
+                            
+                            updateTotals(data);
+                            errorEl.classList.add('hidden');
+                        } else {
+                            errorEl.querySelector('span').innerText = data.message;
+                            errorEl.classList.remove('hidden');
+                        }
+                    });
+                });
+            }
+
             function updateTotals(data) {
                 // Update all instances of total display
                 if (document.getElementById('cart-total')) {
-                    document.getElementById('cart-total').innerText = 'Rs. ' + data.total;
+                    document.getElementById('cart-total').innerText = 'Rs. ' + data.total; 
                 }
                 if (document.getElementById('cart-shipping')) {
                     document.getElementById('cart-shipping').innerText = 'Rs. ' + data.shipping_cost;
                 }
+                
+                const discountRow = document.getElementById('cart-discount-row');
+                const discountVal = document.getElementById('cart-discount');
+                if (data.discount && data.discount !== '0' && data.discount !== 0) {
+                    if(discountRow) discountRow.classList.remove('hidden');
+                    if(discountVal) discountVal.innerText = '- Rs. ' + data.discount;
+                } else {
+                    if(discountRow) discountRow.classList.add('hidden');
+                    if(discountVal) discountVal.innerText = '- Rs. 0';
+                }
+
+                // New Original Total and Savings Logic
+                const originalTotalRow = document.getElementById('original-total-row');
+                const originalTotalVal = document.getElementById('cart-original-total');
+                const savingsRow = document.getElementById('savings-row');
+                const savingsVal = document.getElementById('cart-savings');
+
+                if (data.original_total) {
+                    const originalTotal = parseFloat(data.original_total.replace(/,/g, ''));
+                    const grandTotal = parseFloat(data.grand_total.replace(/,/g, ''));
+                    
+                    // Only show if original total is meaningfully larger than grand total (accounting for potential float issues if any, though strings here)
+                    // Logic: If user has items on sale OR applied a coupon, original total > grand total (plus shipping differences potentially)
+                    // Simplest check: compare original total vs grand total. Wait, grand total includes shipping.
+                    // Should compare Original Total vs (Total + Discount). 
+                    // Better: Check if any difference exists between original price sum and final price sum.
+                    
+                    // Let's use the provided strings directly if possible, but we need numeric comparison.
+                    // The blade logic was: (!isset($originalTotal) || $originalTotal == $total). $total there was subtotal.
+                    // Here data.total is subtotal. data.original_total is original subtotal.
+                    
+                    const subtotal = parseFloat(data.total.replace(/,/g, ''));
+                    
+                    if (originalTotal > subtotal) {
+                        if(originalTotalRow) originalTotalRow.classList.remove('hidden');
+                        if(originalTotalVal) originalTotalVal.innerText = 'Rs. ' + data.original_total;
+                        
+                        if(savingsRow) savingsRow.classList.remove('hidden');
+                        // Savings = Original Total - Grand Total? No, Savings = Original Total - Subtotal + Discount?
+                        // Savings is simply Original Total - (Grand Total - Shipping) = Original Total - Subtotal + Discount?
+                        // Or just Original Total - Subtotal. Wait, coupon discount is separate.
+                        // Total Savings = (Original Total - Subtotal) + Coupon Discount.
+                        // Or simpler: Original Total - (Grand Total - Shipping).
+                        // Let's do: Savings = Original Subtotal - Final Subtotal (which is effectively what the user pays for items).
+                        // Wait, data.total IS the discounted subtotal after coupon? No, check controller.
+                        // Controller: total is sum of price*qty. AND we apply coupon discount separately.
+                        // So data.total is "current selling price subtotal".
+                        // data.original_total is "original list price subtotal".
+                        // Coupon discount is subtracted from data.total to get newTotal.
+                        
+                        // So Total Savings = (Original Total - Subtotal) + Coupon Discount.
+                        // Let's calculate from strings:
+                        const discount = data.discount ? parseFloat(data.discount.replace(/,/g, '')) : 0;
+                        const totalSavings = (originalTotal - subtotal) + discount;
+                        
+                        if(savingsVal) savingsVal.innerText = 'Rs. ' + new Intl.NumberFormat().format(totalSavings);
+                    } else {
+                         // Even if no product sale, if coupon is applied, we might want to show savings?
+                         // If coupon discount > 0, we have savings.
+                         const discount = data.discount ? parseFloat(data.discount.replace(/,/g, '')) : 0;
+                         if (discount > 0) {
+                             // Original total same as subtotal, but we have coupon savings.
+                             // Show savings row but maybe not original price row if they are same?
+                             // User asked for "Original Total" so probably yes.
+                             if(originalTotalRow) originalTotalRow.classList.remove('hidden'); // Show original even if same as base subtotal, to show structure? Or maybe hide if same?
+                             // If same, showing original crossed out same as current looks weird.
+                             
+                             // Let's stick to: Hide Original Total row if Original Total == Subtotal.
+                             if(originalTotalRow) originalTotalRow.classList.add('hidden');
+                             
+                             // But show Savings row?
+                             if(savingsRow) savingsRow.classList.remove('hidden');
+                             if(savingsVal) savingsVal.innerText = 'Rs. ' + data.discount;
+                         } else {
+                             if(originalTotalRow) originalTotalRow.classList.add('hidden');
+                             if(savingsRow) savingsRow.classList.add('hidden');
+                         }
+                    }
+                }
+
                 if (document.getElementById('cart-grand-total')) {
                     document.getElementById('cart-grand-total').innerText = 'Rs. ' + data.grand_total;
                 }

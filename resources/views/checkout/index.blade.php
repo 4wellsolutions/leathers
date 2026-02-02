@@ -493,8 +493,15 @@
                                         class="w-full h-full object-contain p-1">
                                 </div>
                                 <div class="flex-grow min-w-0">
-                                    <h4 class="text-sm font-bold text-leather-900 truncate">{{ $details['name'] }}</h4>
-                                    <p class="text-xs text-neutral-500">Qty: {{ $details['quantity'] }}</p>
+                                    <h4 class="text-sm font-bold text-leather-900 truncate">{{ $details['base_name'] ?? $details['name'] }}</h4>
+                                    @if(isset($details['color']) || isset($details['size']))
+                                        <p class="text-xs text-neutral-500">
+                                            @if(isset($details['color']) && $details['color']) {{ $details['color'] }} @endif
+                                            @if(isset($details['color']) && $details['color'] && isset($details['size']) && $details['size']) / @endif
+                                            @if(isset($details['size']) && $details['size']) {{ $details['size'] }} @endif
+                                        </p>
+                                    @endif
+                                    <p class="text-xs text-neutral-500 mt-1">Qty: {{ $details['quantity'] }}</p>
                                     <p class="text-sm font-semibold text-gold-600">Rs.
                                         {{ number_format($details['price'] * $details['quantity']) }}
                                     </p>

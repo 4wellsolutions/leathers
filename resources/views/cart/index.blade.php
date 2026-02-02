@@ -54,7 +54,14 @@
                                                             <p class="text-xs text-gold-600 mt-1">Bundle Deal</p>
                                                         @else
                                                             <a href="{{ route('products.show', $details['slug']) }}"
-                                                                class="hover:text-gold-600">{{ $details['name'] }}</a>
+                                                                class="hover:text-gold-600">{{ $details['base_name'] ?? $details['name'] }}</a>
+                                                            @if(isset($details['color']) || isset($details['size']))
+                                                                <p class="text-xs text-neutral-500 mt-1 font-normal">
+                                                                    @if(isset($details['color']) && $details['color']) {{ $details['color'] }} @endif
+                                                                    @if(isset($details['color']) && $details['color'] && isset($details['size']) && $details['size']) / @endif
+                                                                    @if(isset($details['size']) && $details['size']) {{ $details['size'] }} @endif
+                                                                </p>
+                                                            @endif
                                                         @endif
                                                     </div>
                                                     <div class="text-sm text-neutral-500">Rs. {{ number_format($details['price']) }}
@@ -123,7 +130,7 @@
                                                 @if(isset($details['type']) && $details['type'] == 'combo')
                                                     <a href="{{ route('combos.show', $details['slug']) }}">{{ $details['name'] }}</a>
                                                 @else
-                                                    <a href="{{ route('products.show', $details['slug']) }}">{{ $details['name'] }}</a>
+                                                    <a href="{{ route('products.show', $details['slug']) }}">{{ $details['base_name'] ?? $details['name'] }}</a>
                                                 @endif
                                             </h3>
                                             <button class="text-neutral-400 hover:text-red-500 remove-from-cart ml-2"
@@ -134,6 +141,13 @@
                                                 </svg>
                                             </button>
                                         </div>
+                                        @if(isset($details['type']) != 'combo' && (isset($details['color']) || isset($details['size'])))
+                                            <p class="text-xs text-neutral-500 mt-1">
+                                                @if(isset($details['color']) && $details['color']) {{ $details['color'] }} @endif
+                                                @if(isset($details['color']) && $details['color'] && isset($details['size']) && $details['size']) / @endif
+                                                @if(isset($details['size']) && $details['size']) {{ $details['size'] }} @endif
+                                            </p>
+                                        @endif
                                         @if(isset($details['type']) && $details['type'] == 'combo')
                                             <p class="text-xs text-gold-600">Bundle Deal</p>
                                         @endif

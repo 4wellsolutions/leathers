@@ -53,6 +53,9 @@ class CartController extends Controller
                 $image = ($variant->color && $variant->color->image_url) ? $variant->color->image_url : ($variant->image ?? $image);
                 $name = $product->name . ' - ' . $variant->name;
                 $maxStock = $variant->stock;
+
+                $colorName = $variant->color ? $variant->color->name : null;
+                $sizeName = $variant->size;
             }
         }
 
@@ -66,10 +69,13 @@ class CartController extends Controller
                 "product_id" => $product->id,
                 "variant_id" => $variantId,
                 "name" => $name,
+                "base_name" => $product->name,
                 "quantity" => $quantity,
                 "price" => $price,
                 "image" => $image,
-                "slug" => $product->slug
+                "slug" => $product->slug,
+                "color" => $colorName ?? null,
+                "size" => $sizeName ?? null
             ];
         }
 

@@ -11,15 +11,21 @@ return new class extends Migration {
     public function up(): void
     {
         // Rename main table
-        Schema::rename('combos', 'deals');
+        if (Schema::hasTable('combos') && !Schema::hasTable('deals')) {
+            Schema::rename('combos', 'deals');
+        }
 
         // Rename items table
-        Schema::rename('combo_items', 'deal_items');
+        if (Schema::hasTable('combo_items') && !Schema::hasTable('deal_items')) {
+            Schema::rename('combo_items', 'deal_items');
+        }
 
         // Rename foreign key column
-        Schema::table('deal_items', function (Blueprint $table) {
-            $table->renameColumn('combo_id', 'deal_id');
-        });
+        if (Schema::hasTable('deal_items') && !Schema::hasColumn('deal_items', 'deal_id') && Schema::hasColumn('deal_items', 'combo_id')) {
+            Schema::table('deal_items', function (Blueprint $table) {
+                $table->renameColumn('combo_id', 'deal_id');
+            });
+        }
     }
 
     /**

@@ -57,6 +57,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Email Templates
     Route::resource('email-templates', \App\Http\Controllers\Admin\EmailTemplateController::class);
 
+    // Reviews
+    Route::resource('reviews', \App\Http\Controllers\Admin\ReviewController::class);
+
     // Shipping Rules
     Route::resource('shipping-rules', \App\Http\Controllers\Admin\ShippingRuleController::class);
 

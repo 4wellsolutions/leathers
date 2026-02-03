@@ -43,6 +43,14 @@
                         </a>
                     </div>
 
+                    <!-- Nav Item - Reviews -->
+                    <li class="nav-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('admin.reviews.index') }}">
+                            <i class="fas fa-fw fa-star"></i>
+                            <span>Reviews</span></a>
+                    </li>
+
+                    <!-- Nav Item - Users -->
                     {{-- Validation Errors --}}
                     @if ($errors->any())
                         <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 mt-4">

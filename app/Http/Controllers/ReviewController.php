@@ -55,10 +55,18 @@ class ReviewController extends Controller
             'images' => !empty($images) ? $images : null,
             'video' => $video,
             'is_anonymous' => $request->boolean('is_anonymous'),
-            'is_approved' => true, // Auto-approve for now
+            'is_approved' => false, // Pending approval
         ]);
 
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Thank you! Your review has been submitted and is pending approval.',
+                'redirect_url' => route('products.show', $product->slug)
+            ]);
+        }
+
         return redirect()->route('products.show', $product->slug)
-            ->with('success', 'Thank you for your review!');
+            ->with('success', 'Thank you! Your review has been submitted and is pending approval.');
     }
 }

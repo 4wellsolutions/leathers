@@ -65,10 +65,6 @@
                                     <table width="100%" cellpadding="0" cellspacing="0">
                                         <tr>
                                             <td align="right">
-                                                <a href="mailto:hello@leathers.pk?subject=Return/Refund Order #{{ $order->order_number }}&body=I would like to return/refund item: {{ $item->product_name }}"
-                                                    style="display: inline-block; padding: 8px 16px; border: 1px solid #d1d5db; border-radius: 6px; color: #374151; text-decoration: none; font-size: 13px; margin-right: 8px; font-weight: 500;">
-                                                    Return/Refund
-                                                </a>
                                                 @if($item->product)
                                                     <a href="{{ route('reviews.create-for-order', ['order_number' => $order->order_number]) }}"
                                                         style="display: inline-block; padding: 8px 16px; border: 1px solid #e11d48; border-radius: 6px; color: #e11d48; text-decoration: none; font-size: 13px; font-weight: 500;">

@@ -50,99 +50,35 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #2D1B14 0%, #4A2C21 100%);
-            padding: 50px 40px;
+            background-color: #111111;
+            padding: 40px 20px;
             text-align: center;
         }
 
-        .logo {
-            width: 180px;
-            margin: 0 auto 15px;
-        }
-
         .logo-text {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 700;
             color: #C5A359;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             text-transform: uppercase;
             margin-bottom: 5px;
+            font-family: 'Playfair Display', serif;
         }
 
         .header-tagline {
-            color: #FDFCFB;
-            font-size: 13px;
-            font-weight: 300;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 400;
             letter-spacing: 2px;
             text-transform: uppercase;
             opacity: 0.8;
         }
 
-        .content {
-            padding: 50px 40px;
-        }
-
-        .h1 {
-            font-size: 28px;
-            font-weight: 700;
-            color: #2D1B14;
-            margin: 0 0 20px;
-            line-height: 1.3;
-        }
-
-        .p {
-            font-size: 16px;
-            color: #5C4A42;
-            margin: 0 0 25px;
-        }
-
-        .btn-container {
-            text-align: center;
-            margin: 35px 0;
-        }
-
-        .btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #C5A359 0%, #A6853A 100%);
-            color: #ffffff !important;
-            text-decoration: none;
-            padding: 16px 45px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 16px;
-            letter-spacing: 1px;
-            box-shadow: 0 8px 20px rgba(197, 163, 89, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .info-card {
-            background-color: #F8F5F2;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 30px;
-            border-left: 4px solid #C5A359;
-        }
-
-        .info-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: #C5A359;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .info-value {
-            font-size: 15px;
-            font-weight: 600;
-            color: #2D1B14;
-        }
-
         .footer {
-            padding: 40px;
+            padding: 40px 20px;
             text-align: center;
-            background-color: #2D1B14;
-            color: #FDFCFB;
+            background-color: #111111;
+            color: #C5A359;
         }
 
         .footer-logo {
@@ -151,45 +87,29 @@
             color: #C5A359;
             letter-spacing: 2px;
             margin-bottom: 20px;
-        }
-
-        .footer-links {
-            margin-bottom: 25px;
+            font-family: 'Playfair Display', serif;
         }
 
         .footer-link {
-            color: #FDFCFB;
+            color: #C5A359;
             text-decoration: none;
             font-size: 13px;
             margin: 0 10px;
-            opacity: 0.7;
+            opacity: 0.8;
+        }
+
+        .footer-link:hover {
+            opacity: 1;
+            text-decoration: underline;
         }
 
         .footer-text {
             font-size: 12px;
-            opacity: 0.5;
-            font-weight: 300;
+            color: #999999;
+            margin-top: 20px;
         }
 
-        .divider {
-            border: 0;
-            border-top: 1px solid #EAE2D8;
-            margin: 40px 0;
-        }
-
-        @media screen and (max-width: 600px) {
-            .content {
-                padding: 40px 25px;
-            }
-
-            .h1 {
-                font-size: 24px;
-            }
-
-            .header {
-                padding: 40px 25px;
-            }
-        }
+        /* ... existing styles ... */
     </style>
     @yield('styles')
 </head>
@@ -198,9 +118,9 @@
     <div class="wrapper">
         <div class="container">
             <!-- Header -->
-            <div class="header" style="padding: 0; background: none;">
-                <img src="{{ $message->embed(public_path('images/email-header.png')) }}" alt="LEATHERS.PK"
-                    style="width: 100%; height: auto; display: block; border-top-left-radius: 16px; border-top-right-radius: 16px;">
+            <div class="header">
+                <div class="logo-text">LEATHERS.PK</div>
+                <div class="header-tagline">Premium Leather Goods</div>
             </div>
 
             <!-- Content Area -->

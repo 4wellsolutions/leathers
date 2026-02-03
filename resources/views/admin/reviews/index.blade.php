@@ -93,7 +93,7 @@
     </div>
 
     <!-- Reviews Table -->
-    <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+    <div x-data="{ editingReview: null }" class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-neutral-200">
                 <thead class="bg-neutral-50">
@@ -111,15 +111,15 @@
                     @forelse($reviews as $review)
                         <tr class="hover:bg-neutral-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
+                                <a href="{{ route('admin.products.edit', $review->product) }}" target="_blank" class="flex items-center group">
                                     <div class="flex-shrink-0 h-10 w-10">
-                                        <img class="h-10 w-10 rounded-lg object-cover border border-neutral-200" src="{{ $review->product->image_url }}" alt="">
+                                        <img class="h-10 w-10 rounded-lg object-cover border border-neutral-200 group-hover:border-gold-500 transition-colors" src="{{ $review->product->image_url }}" alt="">
                                     </div>
                                     <div class="ml-4">
-                                        <div class="text-sm font-bold text-leather-900 truncate max-w-[150px]">{{ $review->product->name }}</div>
+                                        <div class="text-sm font-bold text-leather-900 truncate max-w-[150px] group-hover:text-gold-600 transition-colors">{{ $review->product->name }}</div>
                                         <div class="text-xs text-neutral-500">{{ $review->product->category->name ?? 'Category' }}</div>
                                     </div>
-                                </div>
+                                </a>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($review->is_anonymous)
@@ -184,6 +184,16 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex items-center justify-end space-x-2">
+                                    <button 
+                                        type="button" 
+                                        @click="editingReview = { id: {{ $review->id }}, comment: '{{ addslashes($review->comment) }}', is_approved: {{ $review->is_approved ? 'true' : 'false' }} }"
+                                        class="inline-flex items-center px-3 py-1.5 border border-neutral-300 text-xs font-medium rounded-md text-neutral-700 bg-white hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500">
+                                        <svg class="w-3.5 h-3.5 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                        Edit
+                                    </button>
+
                                     @if(!$review->is_approved)
                                         <form action="{{ route('admin.reviews.update', $review) }}" method="POST" class="inline-block">
                                             @csrf
@@ -240,6 +250,61 @@
         
         <div class="bg-white px-4 py-3 border-t border-neutral-200 sm:px-6">
             {{ $reviews->withQueryString()->links() }}
+        </div>
+
+        <!-- Edit Modal -->
+        <div x-show="editingReview" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div x-show="editingReview" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 transition-opacity" aria-hidden="true">
+                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                </div>
+
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <div x-show="editingReview" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-leather-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-leather-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                                Edit Review
+                            </h3>
+                            <div class="mt-2">
+                                <form :action="`/admin/reviews/${editingReview?.id}`" method="POST" id="editReviewForm">
+                                    @csrf
+                                    @method('PUT')
+                                    
+                                    <div class="mb-4">
+                                        <label for="comment" class="block text-sm font-medium text-gray-700">Comment</label>
+                                        <div class="mt-1">
+                                            <textarea id="comment" name="comment" rows="4" class="shadow-sm focus:ring-gold-500 focus:border-gold-500 block w-full sm:text-sm border-gray-300 rounded-md" x-model="editingReview.comment"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center">
+                                        <input id="is_approved" name="is_approved" type="checkbox" value="1" x-model="editingReview.is_approved" class="h-4 w-4 text-gold-600 focus:ring-gold-500 border-gray-300 rounded">
+                                        <label for="is_approved" class="ml-2 block text-sm text-gray-900">
+                                            Approve this review
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+                                        <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-leather-900 text-base font-medium text-white hover:bg-leather-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-leather-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                            Save Changes
+                                        </button>
+                                        <button type="button" @click="editingReview = null" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

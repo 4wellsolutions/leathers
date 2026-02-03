@@ -27,11 +27,14 @@ class ReviewController extends Controller
 
     public function update(Request $request, Review $review)
     {
-        $review->update([
-            'is_approved' => $request->boolean('is_approved'),
+        $request->validate([
+            'is_approved' => 'sometimes|boolean',
+            'comment' => 'sometimes|string|max:1000',
         ]);
 
-        return back()->with('success', 'Review status updated successfully.');
+        $review->update($request->only(['is_approved', 'comment']));
+
+        return back()->with('success', 'Review updated successfully.');
     }
 
     public function destroy(Review $review)

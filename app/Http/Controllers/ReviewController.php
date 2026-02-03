@@ -13,6 +13,12 @@ class ReviewController extends Controller
         return view('reviews.create', compact('product'));
     }
 
+    public function createForOrder(\App\Models\Order $order)
+    {
+        $order->load(['items.product']);
+        return view('reviews.order', compact('order'));
+    }
+
     public function store(Request $request, Product $product)
     {
         $request->validate([
@@ -22,7 +28,7 @@ class ReviewController extends Controller
 
         // In a real app, you'd check if the user actually purchased the item
         // For now, we'll allow guest reviews or authenticated user reviews
-        
+
         Review::create([
             'user_id' => auth()->id(), // Nullable for guests
             'product_id' => $product->id,

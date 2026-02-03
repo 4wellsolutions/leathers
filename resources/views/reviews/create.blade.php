@@ -22,12 +22,16 @@
                         <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
                     </div>
                     <div>
-                        <h2 class="text-xs font-semibold text-gray-900 line-clamp-2 leading-tight mb-1">{{ $product->name }}</h2>
-                        <div class="text-[10px] text-gray-500">Color: {{ $product->variants->first()->color->name ?? 'Default' }}</div>
+                        <h2 class="text-xs font-semibold text-gray-900 line-clamp-2 leading-tight mb-1">{{ $product->name }}
+                        </h2>
+                        <div class="text-[10px] text-gray-500">Color:
+                            {{ $product->variants->first()->color->name ?? 'Default' }}
+                        </div>
                     </div>
                 </div>
 
-                <form action="{{ route('reviews.store', $product) }}" method="POST" enctype="multipart/form-data" class="space-y-4 p-4" id="review-form">
+                <form action="{{ route('reviews.store', $product) }}" method="POST" enctype="multipart/form-data"
+                    class="space-y-4 p-4" id="review-form">
                     @csrf
 
                     {{-- Rating --}}
@@ -35,38 +39,51 @@
                         <label class="text-sm font-bold text-gray-900">Overall Rating</label>
                         <div class="flex flex-row-reverse space-x-reverse space-x-1 group">
                             @for($i = 5; $i >= 1; $i--)
-                                <input type="radio" name="rating" id="rating-{{ $i }}" value="{{ $i }}" class="peer sr-only" required>
-                                <label for="rating-{{ $i }}" class="cursor-pointer text-gray-200 peer-checked:text-gold-500 hover:text-gold-500 peer-hover:text-gold-500 text-2xl">★</label>
+                                <input type="radio" name="rating" id="rating-{{ $i }}" value="{{ $i }}" class="peer sr-only"
+                                    required>
+                                <label for="rating-{{ $i }}"
+                                    class="cursor-pointer text-gray-200 peer-checked:text-gold-500 hover:text-gold-500 peer-hover:text-gold-500 text-2xl">★</label>
                             @endfor
                         </div>
                     </div>
 
                     {{-- Comment --}}
                     <div>
-                        <textarea name="comment" rows="4" class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm placeholder-gray-400 focus:ring-1 focus:ring-gold-500 focus:border-gold-500 resize-none" placeholder="What do you think of the quality and appearance?"></textarea>
+                        <textarea name="comment" rows="4"
+                            class="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm placeholder-gray-400 focus:ring-1 focus:ring-gold-500 focus:border-gold-500 resize-none"
+                            placeholder="What do you think of the quality and appearance?"></textarea>
                     </div>
 
                     {{-- Media Upload --}}
                     <div>
-                        <label class="w-20 h-20 bg-gray-50 flex flex-col items-center justify-center border border-dashed border-gray-300 rounded-lg cursor-pointer text-gray-400 hover:bg-gray-100 transition">
-                            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                            <span class="text-[10px] text-center leading-tight">Upload</span>
-                            <input type="file" name="media[]" multiple accept="image/*,video/*" class="hidden">
-                        </label>
+                        <div class="flex flex-wrap gap-2 mb-2" id="preview-container">
+                            <label
+                                class="w-20 h-20 bg-gray-50 flex flex-col items-center justify-center border border-dashed border-gray-300 rounded-lg cursor-pointer text-gray-400 hover:bg-gray-100 transition flex-shrink-0">
+                                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
+                                    </path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <span class="text-[10px] text-center leading-tight">Upload</span>
+                                <input type="file" name="media[]" id="media-input" multiple accept="image/*,video/*"
+                                    class="hidden">
+                            </label>
+                        </div>
                     </div>
 
                     {{-- Anonymous Checkbox --}}
                     <div class="flex items-center">
-                        <input type="checkbox" name="is_anonymous" id="is_anonymous" value="1" class="w-4 h-4 border-gray-300 rounded text-gold-600 focus:ring-gold-500">
+                        <input type="checkbox" name="is_anonymous" id="is_anonymous" value="1"
+                            class="w-4 h-4 border-gray-300 rounded text-gold-600 focus:ring-gold-500">
                         <label for="is_anonymous" class="ml-2 text-sm text-gray-700">Review Anonymously</label>
                     </div>
 
                     {{-- Submit Button --}}
                     <div class="pt-2 pb-6">
-                        <button type="submit" class="w-full bg-gradient-to-r from-pink-600 to-pink-700 text-white font-bold py-3.5 rounded-xl shadow-lg hover:from-pink-700 hover:to-pink-800 transition transform active:scale-95">
+                        <button type="submit"
+                            class="w-full bg-gradient-to-r from-pink-600 to-pink-700 text-white font-bold py-3.5 rounded-xl shadow-lg hover:from-pink-700 hover:to-pink-800 transition transform active:scale-95">
                             Submit Review
                         </button>
                     </div>
@@ -77,6 +94,51 @@
 
     @push('scripts')
         <script>
+            // Image Preview Logic
+            document.getElementById('media-input').addEventListener('change', function (e) {
+                const container = document.getElementById('preview-container');
+                const uploadLabel = container.querySelector('label');
+
+                // Clear existing previews (optional: if you want to replace instead of append)
+                // For now, let's keep the label and remove old previews if selection changes completely (default input behavior)
+                // To append, we'd need a DataTransfer object or array to manage files manually. 
+                // Given the simple input, changing selection replaces files.
+
+                // Remove all elements except the upload label
+                Array.from(container.children).forEach(child => {
+                    if (child !== uploadLabel) {
+                        child.remove();
+                    }
+                });
+
+                if (this.files) {
+                    Array.from(this.files).forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            const div = document.createElement('div');
+                            div.className = 'w-20 h-20 rounded-lg overflow-hidden border border-gray-200 relative flex-shrink-0';
+
+                            if (file.type.startsWith('video/')) {
+                                div.innerHTML = `
+                                            <div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
+                                                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                        `;
+                            } else {
+                                div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                            }
+
+                            // Insert before the upload label to keep upload button at end, or start. 
+                            // Let's put previews BEFORE the upload button
+                            container.insertBefore(div, uploadLabel);
+                        }
+                        reader.readAsDataURL(file);
+                    });
+                }
+            });
+
             document.getElementById('review-form').addEventListener('submit', function (e) {
                 e.preventDefault();
 
@@ -107,21 +169,21 @@
                         if (data.success) {
                             // Show success message
                             const successHtml = `
-                                        <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-                                            <div class="bg-white rounded-xl p-8 max-w-sm w-full text-center shadow-2xl transform transition-all scale-100">
-                                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                    </svg>
-                                                </div>
-                                                <h3 class="text-xl font-bold text-gray-900 mb-2">Review Submitted!</h3>
-                                                <p class="text-gray-600 mb-6">${data.message}</p>
-                                                <button onclick="window.location.href='${data.redirect_url}'" class="w-full py-3 bg-gold-600 text-white rounded-lg font-bold hover:bg-gold-700 transition">
-                                                    Continue
-                                                </button>
-                                            </div>
-                                        </div>
-                                    `;
+                                                        <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                                                            <div class="bg-white rounded-xl p-8 max-w-sm w-full text-center shadow-2xl transform transition-all scale-100">
+                                                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                    </svg>
+                                                                </div>
+                                                                <h3 class="text-xl font-bold text-gray-900 mb-2">Review Submitted!</h3>
+                                                                <p class="text-gray-600 mb-6">${data.message}</p>
+                                                                <button onclick="window.location.href='${data.redirect_url}'" class="w-full py-3 bg-gold-600 text-white rounded-lg font-bold hover:bg-gold-700 transition">
+                                                                    Continue
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    `;
                             document.body.insertAdjacentHTML('beforeend', successHtml);
                         } else {
                             // Handle validation errors if returned in specific format (Laravel default is 422)

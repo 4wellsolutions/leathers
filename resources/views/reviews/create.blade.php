@@ -107,7 +107,7 @@
             // Image Preview Logic
             document.getElementById('media-input').addEventListener('change', function (e) {
                 const thumbnailsContainer = document.getElementById('thumbnails');
-
+                
                 // Clear existing previews
                 thumbnailsContainer.innerHTML = '';
 
@@ -116,16 +116,16 @@
                         const reader = new FileReader();
                         reader.onload = function (event) {
                             const div = document.createElement('div');
-                            div.className = 'w-20 h-20 rounded-lg overflow-hidden border border-gray-200 relative flex-shrink-0';
+                            div.className = 'w-20 h-20 rounded-lg overflow-hidden border border-gray-200 relative flex-shrink-0 bg-white';
 
                             if (file.type.startsWith('video/')) {
                                 div.innerHTML = `
-                                                    <div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
-                                                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                                        </svg>
-                                                    </div>
-                                                `;
+                                    <div class="w-full h-full bg-gray-50 flex items-center justify-center text-gray-400">
+                                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                `;
                             } else {
                                 div.innerHTML = `<img src="${event.target.result}" class="w-full h-full object-cover">`;
                             }
@@ -142,11 +142,11 @@
 
                 const form = this;
                 const submitBtn = form.querySelector('button[type="submit"]');
-                const originalBtnText = submitBtn.innerHTML;
+                const originalBtnHtml = submitBtn.innerHTML;
                 const formData = new FormData(form);
 
                 // Clear previous errors
-                document.querySelectorAll('.error-message').forEach(el => el.remove());
+                form.querySelectorAll('.error-message').forEach(el => el.remove());
                 form.querySelectorAll('.border-red-500').forEach(el => el.classList.remove('border-red-500'));
 
                 // Disable button
@@ -157,81 +157,74 @@
                     method: 'POST',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        'Accept': 'application/json'
+                        // Do NOT set Content-Type, FormData handles it with boundary
                     },
                     body: formData
                 })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // Show success message
-                            const successHtml = `
-                                                                                <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-                                                                                    <div class="bg-white rounded-xl p-8 max-w-sm w-full text-center shadow-2xl transform transition-all scale-100">
-                                                                                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                                                                            <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                                                            </svg>
-                                                                                        </div>
-                                                                                        <h3 class="text-xl font-bold text-gray-900 mb-2">Review Submitted!</h3>
-                                                                                        <p class="text-gray-600 mb-6">${data.message}</p>
-                                                                                        <button onclick="window.location.href='${data.redirect_url}'" class="w-full py-3 bg-gold-600 text-white rounded-lg font-bold hover:bg-gold-700 transition">
-                                                                                            Continue
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            `;
-                            document.body.insertAdjacentHTML('beforeend', successHtml);
-                        } else {
-                            // Handle validation errors if returned in specific format (Laravel default is 422)
-                            throw new Error(data.message || 'Something went wrong');
-                        }
-                    })
-                    .catch(error => {
+                .then(async response => {
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        // Success
+                        const successHtml = `
+                            <div class="fixed inset-0 flex items-center justify-center z-[100] bg-black/60 backdrop-blur-sm p-4">
+                                <div class="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl transform transition-all scale-100">
+                                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-gray-900 mb-2">Review Submitted!</h3>
+                                    <p class="text-gray-600 mb-6">${data.message || 'Thank you for your feedback!'}</p>
+                                    <button onclick="window.location.href='${data.redirect_url}'" class="w-full py-4 bg-gradient-to-r from-pink-600 to-pink-700 text-white rounded-xl font-bold hover:from-pink-700 hover:to-pink-800 transition shadow-lg">
+                                        Continue
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        document.body.insertAdjacentHTML('beforeend', successHtml);
+                    } else if (response.status === 422) {
+                        // Validation Failed
                         submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalBtnText;
-
-                        if (error.response && error.response.status === 422) {
-                            // This part depends on how fetch handles non-200. Fetch doesn't throw on 4xx.
-                            // We need to check response.ok in the first .then block actually.
-                        } else {
-                            // console.error(error); // Keep silent or generic alert
-                        }
-                    });
-            });
-
-            // Better Fetch Handling for 422
-            const originalFetch = window.fetch;
-            window.fetch = function () {
-                return originalFetch.apply(this, arguments).then(async response => {
-                    if (response.status === 422) {
-                        const data = await response.json();
-                        const form = document.getElementById('review-form');
-                        const submitBtn = form.querySelector('button[type="submit"]');
-
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = submitBtn.getAttribute('data-original-text') || 'Submit Review'; // Fallback
+                        submitBtn.innerHTML = originalBtnHtml;
 
                         Object.keys(data.errors).forEach(key => {
-                            // Handle array inputs like media.0
                             const fieldName = key.split('.')[0];
-                            const input = form.querySelector(`[name="${fieldName}"]`) || form.querySelector(`[name="${fieldName}[]"]`);
+                            const input = form.querySelector(`[name="${fieldName}"]`) || 
+                                          form.querySelector(`[name="${fieldName}[]"]`) ||
+                                          form.querySelector(`[name="${key}"]`);
 
                             if (input) {
                                 input.classList.add('border-red-500');
                                 const errorDiv = document.createElement('p');
-                                errorDiv.className = 'text-red-500 text-xs mt-1 error-message';
+                                errorDiv.className = 'text-red-500 text-xs mt-1 error-message font-medium';
                                 errorDiv.innerText = data.errors[key][0];
-                                input.closest('div').appendChild(errorDiv);
+                                
+                                // Append error after the closest parent container to handle radio groups or custom layouts
+                                if (input.type === 'radio') {
+                                    input.closest('div').parentElement.appendChild(errorDiv);
+                                } else {
+                                    input.parentElement.appendChild(errorDiv);
+                                }
                             }
                         });
-
-                        throw new Error('Validation Failed'); // Stop promise chain
+                        
+                        // Scroll to first error
+                        const firstError = form.querySelector('.error-message');
+                        if (firstError) {
+                            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    } else {
+                        throw new Error(data.message || 'Something went wrong. Please try again.');
                     }
-                    return response;
+                })
+                .catch(error => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                    alert(error.message || 'Connection lost. Please try again.');
                 });
-            };
+            });
         </script>
     @endpush
 @endsection

@@ -25,6 +25,11 @@ class ReviewController extends Controller
         return view('admin.reviews.index', compact('reviews'));
     }
 
+    public function edit(Review $review)
+    {
+        return view('admin.reviews.edit', compact('review'));
+    }
+
     public function update(Request $request, Review $review)
     {
         $request->validate([
@@ -34,7 +39,7 @@ class ReviewController extends Controller
 
         $review->update($request->only(['is_approved', 'comment']));
 
-        return back()->with('success', 'Review updated successfully.');
+        return redirect()->route('admin.reviews.index')->with('success', 'Review updated successfully.');
     }
 
     public function destroy(Review $review)

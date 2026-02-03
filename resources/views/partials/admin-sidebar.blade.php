@@ -16,6 +16,17 @@
                 Dashboard
             </a>
 
+            <!-- Reviews -->
+            <a href="{{ route('admin.reviews.index') }}"
+                class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.reviews.*') ? 'bg-leather-800 text-white' : 'text-neutral-300 hover:bg-leather-700 hover:text-white' }}">
+                <svg class="mr-3 flex-shrink-0 h-6 w-6 {{ request()->routeIs('admin.reviews.*') ? 'text-gold-500' : 'text-neutral-400 group-hover:text-gold-500' }}"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+                Reviews
+            </a>
+
             <!-- Products Dropdown -->
             <div>
                 <button @click="open = open === 'products' ? null : 'products'"

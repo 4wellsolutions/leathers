@@ -52,10 +52,17 @@
                             </td>
                             <td class="px-6 py-4 text-center">
                                 @if ($item->product)
-                                    <a href="{{ route('reviews.create', $item->product) }}"
-                                        class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-xs font-bold uppercase tracking-wider rounded-md text-white bg-gold-600 hover:bg-gold-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 transition-colors">
-                                        Write Review
-                                    </a>
+                                    @if(in_array($item->product->id, $reviewedProductIds ?? []))
+                                        <button disabled
+                                            class="inline-flex items-center justify-center px-4 py-2 border border-neutral-200 text-xs font-bold uppercase tracking-wider rounded-md text-neutral-400 bg-neutral-100 cursor-not-allowed">
+                                            Reviewed
+                                        </button>
+                                    @else
+                                        <a href="{{ route('reviews.write-for-order', ['order_number' => $order->order_number, 'product' => $item->product]) }}"
+                                            class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-xs font-bold uppercase tracking-wider rounded-md text-white bg-gold-600 hover:bg-gold-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 transition-colors">
+                                            Write Review
+                                        </a>
+                                    @endif
                                 @else
                                     <span class="text-xs text-neutral-400 italic">Unavailable</span>
                                 @endif
@@ -98,13 +105,20 @@
 
                         <div class="mt-3">
                             @if ($item->product)
-                                <a href="{{ route('reviews.create', $item->product) }}"
-                                    class="block w-full text-center px-4 py-2.5 bg-gold-600 text-white text-xs font-bold uppercase tracking-wide rounded-lg hover:bg-gold-700 transition-colors shadow-sm">
-                                    <svg class="w-3 h-3 inline-block mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                    </svg>
-                                    Write a Review
-                                </a>
+                                @if(in_array($item->product->id, $reviewedProductIds ?? []))
+                                    <button disabled
+                                        class="block w-full text-center px-4 py-2.5 bg-neutral-100 text-neutral-400 text-xs font-bold uppercase tracking-wide rounded-lg cursor-not-allowed border border-neutral-200">
+                                        Reviewed
+                                    </button>
+                                @else
+                                    <a href="{{ route('reviews.write-for-order', ['order_number' => $order->order_number, 'product' => $item->product]) }}"
+                                        class="block w-full text-center px-4 py-2.5 bg-gold-600 text-white text-xs font-bold uppercase tracking-wide rounded-lg hover:bg-gold-700 transition-colors shadow-sm">
+                                        <svg class="w-3 h-3 inline-block mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                        Write a Review
+                                    </a>
+                                @endif
                             @else
                                 <span class="block w-full text-center py-2 text-xs text-neutral-400 bg-neutral-50 rounded-lg border border-neutral-100 italic">
                                     Unavailable

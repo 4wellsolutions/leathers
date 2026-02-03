@@ -39,6 +39,19 @@ class ProductController extends Controller
             $query->where('featured', $request->featured === 'yes');
         }
 
+        // Sale Status filter
+        if ($request->filled('sale_status')) {
+            if ($request->sale_status === 'on_sale') {
+                $query->where(function ($q) {
+                    $q->whereNotNull('sale_price')->where('sale_price', '>', 0);
+                });
+            } elseif ($request->sale_status === 'regular') {
+                $query->where(function ($q) {
+                    $q->whereNull('sale_price')->orWhere('sale_price', '<=', 0);
+                });
+            }
+        }
+
         // Price range filter
         if ($request->filled('price_min')) {
             $query->where('price', '>=', $request->price_min);

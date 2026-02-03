@@ -56,7 +56,12 @@
 
                     {{-- Media Upload --}}
                     <div>
-                        <div class="flex flex-wrap gap-2 mb-2" id="preview-container">
+                        <label class="block text-sm font-bold text-gray-900 mb-2">Add Photos/Video</label>
+                        <div class="flex flex-wrap gap-2">
+                            {{-- Previews Container --}}
+                            <div id="thumbnails" class="flex flex-wrap gap-2"></div>
+
+                            {{-- Upload Button --}}
                             <label
                                 class="w-20 h-20 bg-gray-50 flex flex-col items-center justify-center border border-dashed border-gray-300 rounded-lg cursor-pointer text-gray-400 hover:bg-gray-100 transition flex-shrink-0">
                                 <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,12 +125,12 @@
 
                             if (file.type.startsWith('video/')) {
                                 div.innerHTML = `
-                                            <div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
-                                                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                                </svg>
-                                            </div>
-                                        `;
+                                                    <div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
+                                                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                        </svg>
+                                                    </div>
+                                                `;
                             } else {
                                 div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
                             }
@@ -169,21 +174,21 @@
                         if (data.success) {
                             // Show success message
                             const successHtml = `
-                                                        <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-                                                            <div class="bg-white rounded-xl p-8 max-w-sm w-full text-center shadow-2xl transform transition-all scale-100">
-                                                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                                                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                                    </svg>
+                                                                <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                                                                    <div class="bg-white rounded-xl p-8 max-w-sm w-full text-center shadow-2xl transform transition-all scale-100">
+                                                                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                                            <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                            </svg>
+                                                                        </div>
+                                                                        <h3 class="text-xl font-bold text-gray-900 mb-2">Review Submitted!</h3>
+                                                                        <p class="text-gray-600 mb-6">${data.message}</p>
+                                                                        <button onclick="window.location.href='${data.redirect_url}'" class="w-full py-3 bg-gold-600 text-white rounded-lg font-bold hover:bg-gold-700 transition">
+                                                                            Continue
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
-                                                                <h3 class="text-xl font-bold text-gray-900 mb-2">Review Submitted!</h3>
-                                                                <p class="text-gray-600 mb-6">${data.message}</p>
-                                                                <button onclick="window.location.href='${data.redirect_url}'" class="w-full py-3 bg-gold-600 text-white rounded-lg font-bold hover:bg-gold-700 transition">
-                                                                    Continue
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    `;
+                                                            `;
                             document.body.insertAdjacentHTML('beforeend', successHtml);
                         } else {
                             // Handle validation errors if returned in specific format (Laravel default is 422)

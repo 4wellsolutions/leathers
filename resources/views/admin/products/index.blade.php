@@ -166,6 +166,17 @@
                 </div>
 
                 <div>
+                    <label for="sale_status" class="block text-sm font-medium text-neutral-700 mb-2">On Sale</label>
+                    <select name="sale_status" id="sale_status"
+                        class="block w-full rounded-lg border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 sm:text-sm">
+                        <option value="">All</option>
+                        <option value="on_sale" {{ request('sale_status') === 'on_sale' ? 'selected' : '' }}>On Sale</option>
+                        <option value="regular" {{ request('sale_status') === 'regular' ? 'selected' : '' }}>Regular Price
+                        </option>
+                    </select>
+                </div>
+
+                <div>
                     <label for="price_min" class="block text-sm font-medium text-neutral-700 mb-2">Min Price</label>
                     <input type="number" name="price_min" id="price_min" value="{{ request('price_min') }}"
                         class="block w-full rounded-lg border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 sm:text-sm"

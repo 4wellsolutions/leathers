@@ -17,7 +17,48 @@ class ReviewController extends Controller
     {
         $order = \App\Models\Order::where('order_number', $order_number)->firstOrFail();
         $order->load(['items.product']);
-        return view('reviews.order', compact('order'));
+
+        $reviewedProductIds = [];
+        if ($order->user_id) {
+            $reviewedProductIds = Review::where('user_id', $order->user_id)
+                ->whereIn('product_id', $order->items->pluck('product_id'))
+                ->pluck('product_id')
+                ->toArray();
+        }
+
+        return view('reviews.order', compact('order', 'reviewedProductIds'));
+    }
+
+    public function createFromOrder($order_number, Product $product)
+    {
+        // 1. Verify Order exists
+        $order = \App\Models\Order::where('order_number', $order_number)->firstOrFail();
+
+        // 2. Verify User owns order (if logged in) or simple check
+        if (auth()->check() && $order->user_id && $order->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized access to this order.');
+        }
+
+        // 3. Verify Product is in Order
+        $hasItem = $order->items()->where('product_id', $product->id)->exists();
+        if (!$hasItem) {
+            abort(404, 'Product not found in this order.');
+        }
+
+        // 4. Verify Not Already Reviewed
+        $existingReview = null;
+        if ($order->user_id) {
+            $existingReview = Review::where('user_id', $order->user_id)
+                ->where('product_id', $product->id)
+                ->first();
+        }
+
+        if ($existingReview) {
+            return redirect()->route('products.show', $product->slug)
+                ->with('error', 'You have already reviewed this product.');
+        }
+
+        return view('reviews.create', compact('product', 'order'));
     }
 
     public function store(Request $request, Product $product)

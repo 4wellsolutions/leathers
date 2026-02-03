@@ -13,12 +13,17 @@ class Review extends Model
         'comment',
         'is_approved',
         'image1',
-        'image2'
+        'image2',
+        'images',
+        'video',
+        'is_anonymous'
     ];
 
     protected $casts = [
         'rating' => 'integer',
         'is_approved' => 'boolean',
+        'images' => 'array',
+        'is_anonymous' => 'boolean',
     ];
 
     public function user()

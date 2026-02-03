@@ -22,22 +22,62 @@
         <table width="100%" cellpadding="0" cellspacing="0">
             @foreach($order->items as $item)
                 <tr>
-                    <td style="padding: 10px 0; border-bottom: 1px solid #eee;">
+                    <td style="padding: 15px 0; border-bottom: 1px solid #eee;">
                         <table width="100%" cellpadding="0" cellspacing="0">
                             <tr>
-                                <td width="60" valign="top" style="padding-bottom: 10px;">
-                                    <img src="{{ $item->image_url }}" alt="{{ $item->product_name }}" style="width: 50px; height: 50px; border-radius: 4px; object-fit: cover;">
+                                <td width="100" valign="top">
+                                    <img src="{{ $item->image_url }}" alt="{{ $item->product_name }}"
+                                        style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover; border: 1px solid #eee;">
                                 </td>
                                 <td valign="top" style="padding-left: 15px;">
-                                    <div style="font-weight: 600; font-size: 14px; color: #1a1a1a; margin-bottom: 4px;">{{ $item->product_name }}</div>
-                                    <div style="font-size: 13px; color: #666; margin-bottom: 8px;">
-                                        Qty: {{ $item->quantity }} | Price: <span style="font-weight: 600;">Rs. {{ number_format($item->price) }}</span>
+                                    {{-- Product Name --}}
+                                    <div
+                                        style="font-weight: 600; font-size: 15px; color: #1a1a1a; margin-bottom: 6px; line-height: 1.4;">
+                                        {{ $item->product_name }}
                                     </div>
-                                    @if($item->product)
-                                        <div style="margin-top: 5px;">
-                                            <a href="{{ route('reviews.create-for-order', $order) }}" class="btn btn-gold" style="padding: 8px 15px; font-size: 12px; white-space: nowrap; display: inline-block; text-decoration: none;">Write Review</a>
+
+                                    {{-- Variant Pill --}}
+                                    @if($item->variant && $item->variant->color)
+                                        <div style="margin-bottom: 8px;">
+                                            <span
+                                                style="background-color: #f3f4f6; color: #6b7280; padding: 4px 8px; border-radius: 4px; font-size: 12px; display: inline-block;">
+                                                Color family: {{ $item->variant->color->name }}
+                                            </span>
                                         </div>
                                     @endif
+
+                                    {{-- Price and Qty Row --}}
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="font-weight: 700; font-size: 15px; color: #1a1a1a;">
+                                                Rs. {{ number_format($item->price) }}
+                                            </td>
+                                            <td align="right" style="font-weight: 600; font-size: 14px; color: #1a1a1a;">
+                                                Qty: {{ $item->quantity }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            {{-- Buttons Row --}}
+                            <tr>
+                                <td colspan="2" style="padding-top: 15px;">
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td align="right">
+                                                <a href="mailto:hello@leathers.pk?subject=Return/Refund Order #{{ $order->order_number }}&body=I would like to return/refund item: {{ $item->product_name }}"
+                                                    style="display: inline-block; padding: 8px 16px; border: 1px solid #d1d5db; border-radius: 6px; color: #374151; text-decoration: none; font-size: 13px; margin-right: 8px; font-weight: 500;">
+                                                    Return/Refund
+                                                </a>
+                                                @if($item->product)
+                                                    <a href="{{ route('reviews.create-for-order', $order) }}"
+                                                        style="display: inline-block; padding: 8px 16px; border: 1px solid #e11d48; border-radius: 6px; color: #e11d48; text-decoration: none; font-size: 13px; font-weight: 500;">
+                                                        Write A Review
+                                                    </a>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
                             </tr>
                         </table>

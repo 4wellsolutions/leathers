@@ -24,16 +24,36 @@ class ReviewController extends Controller
         $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string|max:1000',
+            'media.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:20480',
+            'is_anonymous' => 'nullable|boolean',
         ]);
 
-        // In a real app, you'd check if the user actually purchased the item
-        // For now, we'll allow guest reviews or authenticated user reviews
+        $images = [];
+        $video = null;
+
+        if ($request->hasFile('media')) {
+            foreach ($request->file('media') as $file) {
+                // Store in public/reviews folder
+                $path = $file->store('reviews', 'public');
+                $mime = $file->getMimeType();
+
+                // Simple check for video MIME type
+                if (str_starts_with($mime, 'video/')) {
+                    $video = $path;
+                } else {
+                    $images[] = $path;
+                }
+            }
+        }
 
         Review::create([
             'user_id' => auth()->id(), // Nullable for guests
             'product_id' => $product->id,
             'rating' => $request->rating,
             'comment' => $request->comment,
+            'images' => !empty($images) ? $images : null,
+            'video' => $video,
+            'is_anonymous' => $request->boolean('is_anonymous'),
             'is_approved' => true, // Auto-approve for now
         ]);
 

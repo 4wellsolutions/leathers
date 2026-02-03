@@ -58,7 +58,7 @@
                                             Reviewed
                                         </button>
                                     @else
-                                        <a href="{{ route('reviews.write-for-order', ['order_number' => $order->order_number, 'product' => $item->product]) }}"
+                                        <a href="{{ route('reviews.write-for-order', ['order_number' => $order->order_number, 'product' => $item->product, 'variant' => $item->variant_id]) }}"
                                             class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-xs font-bold uppercase tracking-wider rounded-md text-white bg-gold-600 hover:bg-gold-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 transition-colors">
                                             Write Review
                                         </a>
@@ -111,7 +111,7 @@
                                         Reviewed
                                     </button>
                                 @else
-                                    <a href="{{ route('reviews.write-for-order', ['order_number' => $order->order_number, 'product' => $item->product]) }}"
+                                    <a href="{{ route('reviews.write-for-order', ['order_number' => $order->order_number, 'product' => $item->product, 'variant' => $item->variant_id]) }}"
                                         class="block w-full text-center px-4 py-2.5 bg-gold-600 text-white text-xs font-bold uppercase tracking-wide rounded-lg hover:bg-gold-700 transition-colors shadow-sm">
                                         <svg class="w-3 h-3 inline-block mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>

@@ -11,7 +11,7 @@ Route::get('/category/{slug}', [ProductController::class, 'category'])->name('ca
 Route::get('/products/{product}/review', [ReviewController::class, 'create'])->name('reviews.create');
 Route::post('/products/{product}/review', [ReviewController::class, 'store'])->name('reviews.store');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('products.show');
-Route::get('/orders/{order_number}/review/{product}', [ReviewController::class, 'createFromOrder'])->name('reviews.write-for-order');
+Route::get('/orders/{order_number}/review/{product}/{variant?}', [ReviewController::class, 'createFromOrder'])->name('reviews.write-for-order');
 Route::get('/orders/{order_number}/reviews', [ReviewController::class, 'createForOrder'])->name('reviews.create-for-order');
 
 // Blog Routes

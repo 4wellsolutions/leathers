@@ -29,7 +29,7 @@ class ReviewController extends Controller
         return view('reviews.order', compact('order', 'reviewedProductIds'));
     }
 
-    public function createFromOrder($order_number, Product $product)
+    public function createFromOrder($order_number, Product $product, $variant_id = null)
     {
         // 1. Verify Order exists
         $order = \App\Models\Order::where('order_number', $order_number)->firstOrFail();
@@ -39,10 +39,17 @@ class ReviewController extends Controller
             abort(403, 'Unauthorized access to this order.');
         }
 
-        // 3. Verify Product is in Order
-        $hasItem = $order->items()->where('product_id', $product->id)->exists();
-        if (!$hasItem) {
-            abort(404, 'Product not found in this order.');
+        // 3. Verify Product is in Order and get the specific item
+        $query = $order->items()->where('product_id', $product->id);
+
+        if ($variant_id) {
+            $query->where('variant_id', $variant_id);
+        }
+
+        $orderItem = $query->first();
+
+        if (!$orderItem) {
+            abort(404, 'Product variant not found in this order.');
         }
 
         // 4. Verify Not Already Reviewed
@@ -58,7 +65,7 @@ class ReviewController extends Controller
                 ->with('error', 'You have already reviewed this product.');
         }
 
-        return view('reviews.create', compact('product', 'order'));
+        return view('reviews.create', compact('product', 'order', 'orderItem'));
     }
 
     public function store(Request $request, Product $product)

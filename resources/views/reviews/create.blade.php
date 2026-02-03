@@ -19,13 +19,18 @@
                 {{-- Product Card --}}
                 <div class="p-3 flex items-start border-b border-gray-100 bg-white">
                     <div class="w-14 h-14 border border-gray-200 rounded-md overflow-hidden flex-shrink-0 mr-3">
-                        <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                        <img src="{{ isset($orderItem) ? $orderItem->image_url : $product->image_url }}"
+                            alt="{{ $product->name }}" class="w-full h-full object-cover">
                     </div>
                     <div>
                         <h2 class="text-xs font-semibold text-gray-900 line-clamp-2 leading-tight mb-1">{{ $product->name }}
                         </h2>
                         <div class="text-[10px] text-gray-500">Color:
-                            {{ $product->variants->first()->color->name ?? 'Default' }}
+                            @if(isset($orderItem) && $orderItem->variant && $orderItem->variant->color)
+                                {{ $orderItem->variant->color->name }}
+                            @else
+                                {{ $product->variants->first()->color->name ?? 'Default' }}
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -101,25 +106,15 @@
         <script>
             // Image Preview Logic
             document.getElementById('media-input').addEventListener('change', function (e) {
-                const container = document.getElementById('preview-container');
-                const uploadLabel = container.querySelector('label');
+                const thumbnailsContainer = document.getElementById('thumbnails');
 
-                // Clear existing previews (optional: if you want to replace instead of append)
-                // For now, let's keep the label and remove old previews if selection changes completely (default input behavior)
-                // To append, we'd need a DataTransfer object or array to manage files manually. 
-                // Given the simple input, changing selection replaces files.
-
-                // Remove all elements except the upload label
-                Array.from(container.children).forEach(child => {
-                    if (child !== uploadLabel) {
-                        child.remove();
-                    }
-                });
+                // Clear existing previews
+                thumbnailsContainer.innerHTML = '';
 
                 if (this.files) {
                     Array.from(this.files).forEach(file => {
                         const reader = new FileReader();
-                        reader.onload = function (e) {
+                        reader.onload = function (event) {
                             const div = document.createElement('div');
                             div.className = 'w-20 h-20 rounded-lg overflow-hidden border border-gray-200 relative flex-shrink-0';
 
@@ -132,12 +127,10 @@
                                                     </div>
                                                 `;
                             } else {
-                                div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                                div.innerHTML = `<img src="${event.target.result}" class="w-full h-full object-cover">`;
                             }
 
-                            // Insert before the upload label to keep upload button at end, or start. 
-                            // Let's put previews BEFORE the upload button
-                            container.insertBefore(div, uploadLabel);
+                            thumbnailsContainer.appendChild(div);
                         }
                         reader.readAsDataURL(file);
                     });
@@ -174,21 +167,21 @@
                         if (data.success) {
                             // Show success message
                             const successHtml = `
-                                                                <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-                                                                    <div class="bg-white rounded-xl p-8 max-w-sm w-full text-center shadow-2xl transform transition-all scale-100">
-                                                                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                                                            <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                                                            </svg>
-                                                                        </div>
-                                                                        <h3 class="text-xl font-bold text-gray-900 mb-2">Review Submitted!</h3>
-                                                                        <p class="text-gray-600 mb-6">${data.message}</p>
-                                                                        <button onclick="window.location.href='${data.redirect_url}'" class="w-full py-3 bg-gold-600 text-white rounded-lg font-bold hover:bg-gold-700 transition">
-                                                                            Continue
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            `;
+                                                                                <div class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                                                                                    <div class="bg-white rounded-xl p-8 max-w-sm w-full text-center shadow-2xl transform transition-all scale-100">
+                                                                                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                                                            <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                                                            </svg>
+                                                                                        </div>
+                                                                                        <h3 class="text-xl font-bold text-gray-900 mb-2">Review Submitted!</h3>
+                                                                                        <p class="text-gray-600 mb-6">${data.message}</p>
+                                                                                        <button onclick="window.location.href='${data.redirect_url}'" class="w-full py-3 bg-gold-600 text-white rounded-lg font-bold hover:bg-gold-700 transition">
+                                                                                            Continue
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            `;
                             document.body.insertAdjacentHTML('beforeend', successHtml);
                         } else {
                             // Handle validation errors if returned in specific format (Laravel default is 422)

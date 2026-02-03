@@ -3,69 +3,126 @@
 @section('meta_title', 'Review Your Order #' . $order->order_number)
 
 @section('content')
-    <div class="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-        {{-- Header --}}
-        <div class="max-w-7xl mx-auto text-center mb-12">
-            <h1 class="text-4xl font-serif font-bold text-leather-900 mb-3">Review Your Order</h1>
-            <p class="text-neutral-500 text-lg">
-                Order #{{ $order->order_number }} &bull; {{ $order->created_at->format('F d, Y') }}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="mb-8 text-center sm:text-left">
+            <h1 class="text-3xl font-serif font-bold text-leather-900 mb-2">Review Your Order</h1>
+            <p class="text-neutral-600">Order #{{ $order->order_number }} &bull; {{ $order->created_at->format('F d, Y') }}
             </p>
         </div>
 
-        {{-- Product Grid --}}
-        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            @foreach($order->items as $item)
-                <div
-                    class="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden flex flex-col items-center p-8 text-center transition hover:shadow-md">
+        {{-- Desktop Table View --}}
+        <div class="hidden md:block bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
+            <table class="w-full">
+                <thead class="bg-neutral-50 border-b border-neutral-200">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-wider">Product
+                        </th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-neutral-500 uppercase tracking-wider">
+                            Quantity</th>
+                        <th class="px-6 py-4 text-right text-xs font-bold text-neutral-500 uppercase tracking-wider">Price
+                        </th>
+                        <th class="px-6 py-4 text-center text-xs font-bold text-neutral-500 uppercase tracking-wider">Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-neutral-200">
+                    @foreach ($order->items as $item)
+                        <tr class="hover:bg-neutral-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-16 w-16 bg-neutral-100 rounded-md overflow-hidden">
+                                        <img class="h-16 w-16 object-contain p-2" src="{{ $item->image_url }}"
+                                            alt="{{ $item->product_name }}">
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-bold text-leather-900">{{ $item->product_name }}</div>
+                                        @if ($item->variant && $item->variant->color)
+                                        <p class="text-xs text-neutral-500 mt-1">
+                                            Color: {{ $item->variant->color->name }}
+                                        </p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-center text-sm text-leather-900">
+                                {{ $item->quantity }}
+                            </td>
+                            <td class="px-6 py-4 text-right text-sm font-bold text-leather-900">
+                                Rs. {{ number_format($item->price) }}
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                @if ($item->product)
+                                    <a href="{{ route('reviews.create', $item->product) }}"
+                                        class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-xs font-bold uppercase tracking-wider rounded-md text-white bg-gold-600 hover:bg-gold-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 transition-colors">
+                                        Write Review
+                                    </a>
+                                @else
+                                    <span class="text-xs text-neutral-400 italic">Unavailable</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Mobile List View --}}
+        <div class="md:hidden space-y-4">
+            @foreach ($order->items as $item)
+                <div class="bg-white rounded-xl shadow-sm p-4 flex gap-4 border border-neutral-100">
                     {{-- Image --}}
-                    <div class="w-48 h-48 bg-neutral-50 rounded-xl overflow-hidden mb-6 flex items-center justify-center">
-                        <img src="{{ $item->image_url }}" alt="{{ $item->product_name }}"
-                            class="w-full h-full object-contain p-2 mix-blend-multiply">
+                    <div class="flex-shrink-0 w-20 h-20 bg-neutral-100 rounded-lg overflow-hidden">
+                        <img class="w-full h-full object-contain p-2" src="{{ $item->image_url }}"
+                            alt="{{ $item->product_name }}">
                     </div>
 
-                    {{-- Product Details --}}
-                    <div class="mb-6 flex-grow">
-                        <h3 class="text-lg font-bold text-leather-900 mb-2 leading-tight px-4">
-                            {{ $item->product_name }}
-                        </h3>
-                        <p class="text-neutral-500">
-                            Qty: {{ $item->quantity }} &bull; Rs. {{ number_format($item->price) }}
-                        </p>
-                    </div>
+                    {{-- Content --}}
+                    <div class="flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-sm font-bold text-leather-900 line-clamp-2 leading-tight mb-1">
+                                {{ $item->product_name }}
+                            </h3>
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    @if ($item->variant && $item->variant->color)
+                                    <p class="text-xs text-neutral-500 mb-1">
+                                        Color: {{ $item->variant->color->name }}
+                                    </p>
+                                    @endif
+                                    <p class="text-xs text-neutral-500">
+                                        Qty: {{ $item->quantity }} &bull; Rs. {{ number_format($item->price) }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
 
-                    {{-- Action Button --}}
-                    <div class="w-full">
-                        @if($item->product)
-                            <a href="{{ route('reviews.create', $item->product) }}"
-                                class="inline-flex items-center justify-center w-full px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors shadow-sm">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                    </path>
-                                </svg>
-                                Write a Review
-                            </a>
-                        @else
-                            <span
-                                class="inline-block w-full py-3 text-neutral-400 bg-neutral-50 rounded-lg border border-neutral-200 cursor-not-allowed">
-                                Product Unavailable
-                            </span>
-                        @endif
+                        <div class="mt-3">
+                            @if ($item->product)
+                                <a href="{{ route('reviews.create', $item->product) }}"
+                                    class="block w-full text-center px-4 py-2.5 bg-gold-600 text-white text-xs font-bold uppercase tracking-wide rounded-lg hover:bg-gold-700 transition-colors shadow-sm">
+                                    <svg class="w-3 h-3 inline-block mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    Write a Review
+                                </a>
+                            @else
+                                <span class="block w-full text-center py-2 text-xs text-neutral-400 bg-neutral-50 rounded-lg border border-neutral-100 italic">
+                                    Unavailable
+                                </span>
+                            @endif
+                        </div>
                     </div>
                 </div>
             @endforeach
         </div>
 
-        {{-- Footer Link --}}
-        <div class="mt-12 text-center">
-            <a href="{{ route('home') }}"
-                class="text-yellow-600 hover:text-yellow-700 font-medium inline-flex items-center">
-                Return to Home
-            </a>
+        <div class="mt-8 text-center">
+            <a href="{{ route('home') }}" class="text-gold-600 hover:text-gold-700 font-medium text-sm">Return to
+                Home</a>
         </div>
     </div>
-
-    {{-- WhatsApp Floating Button (as seen in screenshot) --}}
+    
+    {{-- WhatsApp Floating Button --}}
     <a href="https://wa.me/923001234567" target="_blank"
         class="fixed bottom-6 right-6 z-50 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition transform hover:scale-110">
         <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">

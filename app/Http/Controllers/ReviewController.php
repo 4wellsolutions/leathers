@@ -13,8 +13,9 @@ class ReviewController extends Controller
         return view('reviews.create', compact('product'));
     }
 
-    public function createForOrder(\App\Models\Order $order)
+    public function createForOrder($order_number)
     {
+        $order = \App\Models\Order::where('order_number', $order_number)->firstOrFail();
         $order->load(['items.product']);
         return view('reviews.order', compact('order'));
     }

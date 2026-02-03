@@ -70,7 +70,7 @@
                                                     Return/Refund
                                                 </a>
                                                 @if($item->product)
-                                                    <a href="{{ route('reviews.create-for-order', $order) }}"
+                                                    <a href="{{ route('reviews.create-for-order', ['order_number' => $order->order_number]) }}"
                                                         style="display: inline-block; padding: 8px 16px; border: 1px solid #e11d48; border-radius: 6px; color: #e11d48; text-decoration: none; font-size: 13px; font-weight: 500;">
                                                         Write A Review
                                                     </a>

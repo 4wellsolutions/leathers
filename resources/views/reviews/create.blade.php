@@ -108,7 +108,10 @@
 
                         {{-- Media Upload --}}
                         <div>
-                            <label class="block text-sm font-bold text-gray-900 mb-2">Add Photos/Video</label>
+                            <label class="block text-sm font-bold text-gray-900 mb-2">
+                            Add Photos/Video
+                            <span class="text-xs font-normal text-gray-500 ml-1">(Max 2MB per file)</span>
+                        </label>
                             <div class="flex flex-wrap gap-2">
                                 {{-- Previews Container --}}
                                 <div id="thumbnails" class="flex flex-wrap gap-2"></div>
@@ -160,9 +163,15 @@
                     mediaInput.addEventListener('change', function (e) {
                         if (this.files && this.files.length > 0) {
                             Array.from(this.files).forEach(file => {
+                                // Validation: Max 2MB
+                                if (file.size > 2 * 1024 * 1024) {
+                                    showError(`File "${file.name}" is too large. Max size is 2MB.`);
+                                    return;
+                                }
+
                                 // Add to array
                                 selectedFiles.push(file);
-
+                                
                                 // Create preview
                                 renderPreview(file, selectedFiles.length - 1);
                             });

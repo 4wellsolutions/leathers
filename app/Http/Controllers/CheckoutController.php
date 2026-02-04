@@ -45,7 +45,7 @@ class CheckoutController extends Controller
         $request->validate([
             'full_name' => 'required|string|max:255',
             'email' => 'nullable|email:rfc,dns',
-            'phone' => ['required', 'regex:/^[0-9+\-\s()]{10,15}$/'],
+            'phone' => ['required', 'regex:/^(\+92|0|92)[ -]?3\d{2}[ -]?\d{7}$/'],
             'address' => 'required|string|max:500',
             'city' => 'required|string|max:255',
             'notes' => 'nullable|string|max:1000',
@@ -53,7 +53,7 @@ class CheckoutController extends Controller
             'full_name.required' => 'Full name is required',
             'email.email' => 'Please enter a valid email address',
             'phone.required' => 'Phone number is required',
-            'phone.regex' => 'Please enter a valid phone number (10-15 digits)',
+            'phone.regex' => 'Please enter a valid Pakistani phone number (e.g., 03001234567 or +923001234567)',
             'address.required' => 'Street address is required',
             'city.required' => 'City is required',
         ]);

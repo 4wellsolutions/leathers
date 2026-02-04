@@ -689,7 +689,7 @@
                         } else if (status === 422) {
                             // Validation errors
                             Object.keys(body.errors).forEach(key => {
-                                const input = document.getElementsByName(key)[0];
+                                const input = form.querySelector('[name="' + key + '"]');
                                 if (input) {
                                     input.classList.add('border-red-500');
 

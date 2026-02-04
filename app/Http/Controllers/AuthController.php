@@ -57,9 +57,11 @@ class AuthController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|unique:users,phone',
+            'phone' => ['required', 'string', 'unique:users,phone', 'regex:/^(\+92|0|92)[ -]?3\d{2}[ -]?\d{7}$/'],
             'email' => 'nullable|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+        ], [
+            'phone.regex' => 'Please enter a valid Pakistani phone number (e.g., 03001234567 or +923001234567)',
         ]);
 
         $user = User::create([

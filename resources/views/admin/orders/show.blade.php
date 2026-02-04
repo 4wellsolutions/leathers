@@ -60,7 +60,7 @@
                                             @if($item->product)
                                                 <a href="{{ route('products.show', $item->product->slug) }}" target="_blank"
                                                     class="text-sm font-semibold text-gold-600 hover:text-gold-900 transition-colors">
-                                                    {{ $item->product_name }}
+                                                    {{ $item->product->name }}
                                                 </a>
                                             @else
                                                 <h3 class="text-sm font-semibold text-leather-900">{{ $item->product_name }}</h3>

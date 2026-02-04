@@ -85,27 +85,27 @@
                 <!-- Sale Timer -->
                 @if($product->sale_price && $product->sale_ends_at && $product->sale_ends_at->isFuture() && (!$product->sale_starts_at || $product->sale_starts_at->isPast()))
                     <div class="mb-6 bg-red-50 border border-red-100 rounded-lg p-4 flex items-center justify-between" x-data="{
-                                                                                                end: new Date('{{ $product->sale_ends_at->toIso8601String() }}').getTime(),
-                                                                                                now: new Date().getTime(),
-                                                                                                time: { days: 0, hours: 0, minutes: 0, seconds: 0 },
-                                                                                                timer: null,
-                                                                                                update() {
-                                                                                                    this.now = new Date().getTime();
-                                                                                                    const distance = this.end - this.now;
-                                                                                                    if (distance < 0) {
-                                                                                                        clearInterval(this.timer);
-                                                                                                        return;
-                                                                                                    }
-                                                                                                    this.time.days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                                                                                                    this.time.hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                                                                                                    this.time.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                                                                                                    this.time.seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                                                                                                },
-                                                                                                init() {
-                                                                                                    this.update();
-                                                                                                    this.timer = setInterval(() => this.update(), 1000);
-                                                                                                }
-                                                                                            }">
+                                                                                                        end: new Date('{{ $product->sale_ends_at->toIso8601String() }}').getTime(),
+                                                                                                        now: new Date().getTime(),
+                                                                                                        time: { days: 0, hours: 0, minutes: 0, seconds: 0 },
+                                                                                                        timer: null,
+                                                                                                        update() {
+                                                                                                            this.now = new Date().getTime();
+                                                                                                            const distance = this.end - this.now;
+                                                                                                            if (distance < 0) {
+                                                                                                                clearInterval(this.timer);
+                                                                                                                return;
+                                                                                                            }
+                                                                                                            this.time.days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                                                                                            this.time.hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                                                                                            this.time.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                                                                                            this.time.seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                                                                                        },
+                                                                                                        init() {
+                                                                                                            this.update();
+                                                                                                            this.timer = setInterval(() => this.update(), 1000);
+                                                                                                        }
+                                                                                                    }">
                         <div class="flex items-center text-red-600">
                             <svg class="w-5 h-5 mr-2 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -377,8 +377,8 @@
                                         <div class="mt-3 flex gap-2" x-data="{ lightbox: null }">
                                             @foreach($review->images as $image)
                                                 <div class="w-20 h-20 rounded-md overflow-hidden border border-neutral-200 cursor-pointer hover:opacity-75 transition"
-                                                    @click="lightbox = '{{ asset('storage/' . $image) }}'">
-                                                    <img src="{{ asset('storage/' . $image) }}" alt="Review image"
+                                                    @click="lightbox = '{{ asset($image) }}'">
+                                                    <img src="{{ asset($image) }}" alt="Review image"
                                                         class="w-full h-full object-cover">
                                                 </div>
                                             @endforeach
@@ -540,77 +540,77 @@
 
     <!-- Product Schema -->
     <script type="application/ld+json">
-                                                                                {
-                                                                                  "@@context": "https://schema.org/",
-                                                                                  "@@type": "Product",
-                                                                                  "name": "{{ $product->name }}",
-                                                                                  "image": [
-                                                                                    "{{ $product->image_url }}"
-                                                                                    @if($product->images_urls)
-                                                                                        @foreach($product->images_urls as $imageUrl)
-                                                                                            ,"{{ $imageUrl }}"
+                                                                                    {
+                                                                                      "@@context": "https://schema.org/",
+                                                                                      "@@type": "Product",
+                                                                                      "name": "{{ $product->name }}",
+                                                                                      "image": [
+                                                                                        "{{ $product->image_url }}"
+                                                                                        @if($product->images_urls)
+                                                                                            @foreach($product->images_urls as $imageUrl)
+                                                                                                ,"{{ $imageUrl }}"
+                                                                                            @endforeach
+                                                                                        @endif
+                                                                                       ],
+                                                                                      "description": "{{ $product->description }}",
+                                                                                      "sku": "{{ $product->id }}",
+                                                                                      "brand": {
+                                                                                        "@@type": "Brand",
+                                                                                        "name": "Leathers.pk"
+                                                                                      },
+                                                                                      "aggregateRating": {
+                                                                                        "@@type": "AggregateRating",
+                                                                                        "ratingValue": "{{ $product->average_rating }}",
+                                                                                        "reviewCount": "{{ $product->review_count }}"
+                                                                                      },
+                                                                                      "review": [
+                                                                                        @foreach($product->reviews as $review)
+                                                                                            {
+                                                                                              "@@type": "Review",
+                                                                                              "author": {
+                                                                                                "@@type": "Person",
+                                                                                                "name": "{{ $review->user->name ?? 'Guest' }}"
+                                                                                              },
+                                                                                              "datePublished": "{{ $review->created_at->format('Y-m-d') }}",
+                                                                                              "reviewBody": "{{ $review->comment }}",
+                                                                                              "reviewRating": {
+                                                                                                "@@type": "Rating",
+                                                                                                "ratingValue": "{{ $review->rating }}"
+                                                                                              }
+                                                                                            }{{ !$loop->last ? ',' : '' }}
                                                                                         @endforeach
-                                                                                    @endif
-                                                                                   ],
-                                                                                  "description": "{{ $product->description }}",
-                                                                                  "sku": "{{ $product->id }}",
-                                                                                  "brand": {
-                                                                                    "@@type": "Brand",
-                                                                                    "name": "Leathers.pk"
-                                                                                  },
-                                                                                  "aggregateRating": {
-                                                                                    "@@type": "AggregateRating",
-                                                                                    "ratingValue": "{{ $product->average_rating }}",
-                                                                                    "reviewCount": "{{ $product->review_count }}"
-                                                                                  },
-                                                                                  "review": [
-                                                                                    @foreach($product->reviews as $review)
-                                                                                        {
-                                                                                          "@@type": "Review",
-                                                                                          "author": {
-                                                                                            "@@type": "Person",
-                                                                                            "name": "{{ $review->user->name ?? 'Guest' }}"
-                                                                                          },
-                                                                                          "datePublished": "{{ $review->created_at->format('Y-m-d') }}",
-                                                                                          "reviewBody": "{{ $review->comment }}",
-                                                                                          "reviewRating": {
-                                                                                            "@@type": "Rating",
-                                                                                            "ratingValue": "{{ $review->rating }}"
-                                                                                          }
-                                                                                        }{{ !$loop->last ? ',' : '' }}
-                                                                                    @endforeach
-                                                                                  ],
-                                                                                  "offers": {
-                                                                                    "@@type": "Offer",
-                                                                                    "url": "{{ route('products.show', $product->slug) }}",
-                                                                                    "priceCurrency": "PKR",
-                                                                                    "price": "{{ $product->sale_price ?? $product->price }}",
-                                                                                    "availability": "{{ $product->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
-                                                                                    "itemCondition": "https://schema.org/NewCondition"
-                                                                                  }
-                                                                                }
-                                                                                </script>
+                                                                                      ],
+                                                                                      "offers": {
+                                                                                        "@@type": "Offer",
+                                                                                        "url": "{{ route('products.show', $product->slug) }}",
+                                                                                        "priceCurrency": "PKR",
+                                                                                        "price": "{{ $product->sale_price ?? $product->price }}",
+                                                                                        "availability": "{{ $product->stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
+                                                                                        "itemCondition": "https://schema.org/NewCondition"
+                                                                                      }
+                                                                                    }
+                                                                                    </script>
 
     <!-- Breadcrumb Schema -->
     <script type="application/ld+json">
-                                                                                {
-                                                                                  "@@context": "https://schema.org",
-                                                                                  "@@type": "BreadcrumbList",
-                                                                                  "itemListElement": [{
-                                                                                    "@@type": "ListItem",
-                                                                                    "position": 1,
-                                                                                    "name": "Home",
-                                                                                    "item": "{{ route('home') }}"
-                                                                                  },{
-                                                                                    "@@type": "ListItem",
-                                                                                    "position": 2,
-                                                                                    "name": "{{ $product->category->name }}",
-                                                                                    "item": "{{ route('category.show', $product->category->slug) }}"
-                                                                                  },{
-                                                                                    "@@type": "ListItem",
-                                                                                    "position": 3,
-                                                                                    "name": "{{ $product->name }}"
-                                                                                  }]
-                                                                                }
-                                                                                </script>
+                                                                                    {
+                                                                                      "@@context": "https://schema.org",
+                                                                                      "@@type": "BreadcrumbList",
+                                                                                      "itemListElement": [{
+                                                                                        "@@type": "ListItem",
+                                                                                        "position": 1,
+                                                                                        "name": "Home",
+                                                                                        "item": "{{ route('home') }}"
+                                                                                      },{
+                                                                                        "@@type": "ListItem",
+                                                                                        "position": 2,
+                                                                                        "name": "{{ $product->category->name }}",
+                                                                                        "item": "{{ route('category.show', $product->category->slug) }}"
+                                                                                      },{
+                                                                                        "@@type": "ListItem",
+                                                                                        "position": 3,
+                                                                                        "name": "{{ $product->name }}"
+                                                                                      }]
+                                                                                    }
+                                                                                    </script>
 @endsection

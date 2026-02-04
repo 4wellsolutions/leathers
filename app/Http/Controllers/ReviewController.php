@@ -82,11 +82,14 @@ class ReviewController extends Controller
         if ($request->hasFile('media')) {
             foreach ($request->file('media') as $file) {
                 // Store in public/reviews folder
-                $path = $file->store('reviews', 'public');
-                $mime = $file->getMimeType();
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('reviews'), $filename);
 
-                // Simple check for video MIME type
-                if (str_starts_with($mime, 'video/')) {
+                $path = 'reviews/' . $filename;
+                $mime = $file->getClientMimeType();
+
+                // Simple check for video MIME type with fallback to extension
+                if (str_starts_with($mime, 'video/') || in_array(strtolower($file->getClientOriginalExtension()), ['mp4', 'mov', 'avi'])) {
                     $video = $path;
                 } else {
                     $images[] = $path;
@@ -94,7 +97,7 @@ class ReviewController extends Controller
             }
         }
 
-        Review::create([
+        $review = Review::create([
             'user_id' => auth()->id(), // Nullable for guests
             'product_id' => $product->id,
             'rating' => $request->rating,
@@ -104,6 +107,15 @@ class ReviewController extends Controller
             'is_anonymous' => $request->boolean('is_anonymous'),
             'is_approved' => false, // Pending approval
         ]);
+
+        // Send Email Notification to Admin
+        try {
+            $adminEmails = \App\Models\Setting::getNotificationEmails() ?? ['admin@leathers.pk'];
+            \Illuminate\Support\Facades\Mail::to($adminEmails)->send(new \App\Mail\ReviewSubmitted($review));
+        } catch (\Exception $e) {
+            // Log error but don't fail the request
+            \Illuminate\Support\Facades\Log::error('Failed to send review notification email: ' . $e->getMessage());
+        }
 
         if ($request->ajax()) {
             return response()->json([

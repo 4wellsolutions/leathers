@@ -54,8 +54,8 @@
                                     @if(!empty($review->images))
                                         @foreach($review->images as $img)
                                         <div class="group relative aspect-square rounded-lg overflow-hidden border border-neutral-200 bg-neutral-100">
-                                            <img src="{{ asset('storage/' . $img) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                                            <a href="{{ asset('storage/' . $img) }}" target="_blank" 
+                                            <img src="{{ asset($img) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                            <a href="{{ asset($img) }}" target="_blank" 
                                                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
                                                 <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -73,7 +73,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                             </svg>
                                         </div>
-                                        <a href="{{ asset('storage/' . $review->video) }}" target="_blank" 
+                                        <a href="{{ asset($review->video) }}" target="_blank" 
                                            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
                                             <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />

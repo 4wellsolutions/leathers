@@ -41,27 +41,18 @@
                         @foreach($order->items as $item)
                             <div class="p-6 flex items-center">
                                 <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50 p-2 cursor-pointer group relative"
-                                    @click="openModal('{{ asset($item->product && $item->product->image ? $item->product->image : 'images/placeholder.jpg') }}')">
-                                    @if($item->product && $item->product->image)
-                                        <img src="{{ asset($item->product->image) }}" alt="{{ $item->product_name }}"
-                                            class="h-full w-full object-contain object-center transform group-hover:scale-110 transition-transform">
-                                        <!-- Hover Overlay -->
-                                        <div
-                                            class="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <svg class="w-6 h-6 text-white drop-shadow-sm" fill="none" viewBox="0 0 24 24"
-                                                stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m-3-3h6" />
-                                            </svg>
-                                        </div>
-                                    @else
-                                        <div class="h-full w-full bg-neutral-100 flex items-center justify-center text-neutral-400">
-                                            <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                            </svg>
-                                        </div>
-                                    @endif
+                                    @click="openModal('{{ $item->image_url }}')">
+                                    <img src="{{ $item->image_url }}" alt="{{ $item->product_name }}"
+                                        class="h-full w-full object-contain object-center transform group-hover:scale-110 transition-transform">
+                                    <!-- Hover Overlay -->
+                                    <div
+                                        class="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <svg class="w-6 h-6 text-white drop-shadow-sm" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m-3-3h6" />
+                                        </svg>
+                                    </div>
                                 </div>
                                 <div class="ml-6 flex-1">
                                     <div class="flex items-center justify-between">
@@ -73,6 +64,23 @@
                                                 </a>
                                             @else
                                                 <h3 class="text-sm font-semibold text-leather-900">{{ $item->product_name }}</h3>
+                                            @endif
+
+                                            @if($item->variant)
+                                                <div class="text-xs text-neutral-500 mt-1 space-y-0.5">
+                                                    @if($item->variant->color)
+                                                        <div class="flex items-center">
+                                                            <span class="font-medium mr-1">Color:</span>
+                                                            {{ $item->variant->color->name }}
+                                                        </div>
+                                                    @endif
+                                                    @if($item->variant->size)
+                                                        <div class="flex items-center">
+                                                            <span class="font-medium mr-1">Size:</span>
+                                                            {{ $item->variant->size }}
+                                                        </div>
+                                                    @endif
+                                                </div>
                                             @endif
 
                                         </div>

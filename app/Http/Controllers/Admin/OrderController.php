@@ -79,11 +79,11 @@ class OrderController extends Controller
 
         // Dispatch appropriate email based on status change
         if ($request->status === 'processing' && $oldStatus !== 'processing') {
-            \App\Jobs\SendOrderConfirmedEmail::dispatch($order);
+            \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderConfirmed($order));
         } elseif ($request->status === 'shipped' && $oldStatus !== 'shipped') {
-            \App\Jobs\SendOrderShippedEmail::dispatch($order);
+            \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderShipped($order));
         } elseif ($request->status === 'delivered' && $oldStatus !== 'delivered') {
-            \App\Jobs\SendOrderDeliveredEmail::dispatch($order);
+            \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderDelivered($order));
         }
 
         if ($request->expectsJson()) {
@@ -107,27 +107,27 @@ class OrderController extends Controller
         try {
             switch ($request->type) {
                 case 'placed':
-                    \App\Jobs\SendOrderPlacedEmail::dispatch($order);
+                    \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderPlaced($order));
                     break;
                 case 'confirmed':
-                    \App\Jobs\SendOrderConfirmedEmail::dispatch($order);
+                    \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderConfirmed($order));
                     break;
                 case 'shipped':
-                    \App\Jobs\SendOrderShippedEmail::dispatch($order);
+                    \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderShipped($order));
                     break;
                 case 'delivered':
-                    \App\Jobs\SendOrderDeliveredEmail::dispatch($order);
+                    \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderDelivered($order));
                     break;
             }
 
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Email notification has been queued for sending.'
+                    'message' => 'Email notification has been sent.'
                 ]);
             }
 
-            return back()->with('success', 'Email has been queued for resending.');
+            return back()->with('success', 'Email has been sent.');
         } catch (\Exception $e) {
             if ($request->expectsJson()) {
                 return response()->json([

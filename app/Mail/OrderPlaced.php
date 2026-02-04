@@ -9,10 +9,11 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Order;
+use App\Models\Setting;
 
-class OrderPlaced extends Mailable
+class OrderPlaced extends Mailable implements ShouldQueue
 {
-    use SerializesModels;
+    use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
@@ -29,6 +30,7 @@ class OrderPlaced extends Mailable
     {
         return new Envelope(
             subject: 'Order Confirmation - ' . $this->order->order_number,
+            bcc: Setting::getNotificationEmails(),
         );
     }
 

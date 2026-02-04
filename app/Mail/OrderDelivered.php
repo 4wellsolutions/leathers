@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Order;
-use App\Services\EmailTemplateService;
+use App\Models\Setting;
 
 class OrderDelivered extends Mailable implements ShouldQueue
 {
@@ -30,6 +30,7 @@ class OrderDelivered extends Mailable implements ShouldQueue
     {
         return new Envelope(
             subject: 'Order Delivered - ' . $this->order->order_number,
+            bcc: Setting::getNotificationEmails(),
         );
     }
 

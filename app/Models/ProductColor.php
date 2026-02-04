@@ -45,13 +45,18 @@ class ProductColor extends Model
         }, $this->images);
     }
 
-    public function getImageUrlAttribute()
+    public function getRelativeImagePathAttribute()
     {
-        $imagePath = $this->image;
+        $imagePath = null;
 
-        // Fallback to first image from 'images' array if 'image' is empty
-        if (!$imagePath && $this->images && count($this->images) > 0) {
+        // PRIORITIZE 'images' array as per user request
+        if ($this->images && count($this->images) > 0) {
             $imagePath = $this->images[0];
+        }
+
+        // Fallback to 'image' field if array is empty
+        if (!$imagePath) {
+            $imagePath = $this->image;
         }
 
         if (!$imagePath) {
@@ -62,12 +67,40 @@ class ProductColor extends Model
             return $imagePath;
         }
 
-        // Remove 'storage/' prefix if it exists (for old database entries)
+        // Clean path (remove storage prefix)
         $cleanPath = str_starts_with($imagePath, 'storage/')
             ? substr($imagePath, 8)
             : $imagePath;
 
-        // Images are now stored directly in public folder
-        return asset($cleanPath);
+        // Check if file exists roughly where we expect it
+        // If it starts with products/colors, check if it exists there, if not check product-colors
+        if (str_starts_with($cleanPath, 'products/colors/')) {
+            if (file_exists(public_path($cleanPath))) {
+                return $cleanPath;
+            }
+            // Try swapping to product-colors
+            $altPath = str_replace('products/colors/', 'product-colors/', $cleanPath);
+            if (file_exists(public_path($altPath))) {
+                return $altPath;
+            }
+        }
+
+        // Use consistent formatting (root-relative) for browser
+        return str_starts_with($cleanPath, '/') ? $cleanPath : '/' . $cleanPath;
+    }
+
+    public function getImageUrlAttribute()
+    {
+        $relativePath = $this->relative_image_path;
+
+        if (!$relativePath) {
+            return asset('images/placeholder.jpg');
+        }
+
+        if (str_starts_with($relativePath, 'http')) {
+            return $relativePath;
+        }
+
+        return asset(ltrim($relativePath, '/'));
     }
 }

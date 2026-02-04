@@ -57,8 +57,10 @@ class CartController extends Controller
                 // Wait, if variant has NO price set, does it inherit product price? 
                 // Usually variants have prices. If not, we might be falling back to product logic above.
 
-                // Use the color-specific image if available
-                $image = ($variant->color && $variant->color->image_url) ? $variant->color->image_url : ($variant->image ?? $image);
+                // Use the color-specific image if available (Relative Path)
+                $image = ($variant->color && $variant->color->relative_image_path)
+                    ? $variant->color->relative_image_path
+                    : ($variant->image ?? $image);
                 $name = $product->name . ' - ' . $variant->name;
                 $maxStock = $variant->stock;
 

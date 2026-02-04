@@ -48,7 +48,11 @@
                                                             if (str_starts_with($imagePath, 'storage/')) {
                                                                 $imagePath = substr($imagePath, 8);
                                                             }
-                                                            $imagePath = asset($imagePath);
+                                                            if (str_starts_with($imagePath, 'storage/')) {
+                                                                $imagePath = substr($imagePath, 8);
+                                                            }
+                                                            // Use root-relative path to handle dynamic ports (e.g. localhost:9000)
+                                                            $imagePath = '/' . ltrim($imagePath, '/');
                                                         }
                                                     @endphp
                                                     <img class="h-16 w-16 object-contain p-2"
@@ -141,7 +145,11 @@
                                             if (str_starts_with($imagePath, 'storage/')) {
                                                 $imagePath = substr($imagePath, 8);
                                             }
-                                            $imagePath = asset($imagePath);
+                                            if (str_starts_with($imagePath, 'storage/')) {
+                                                $imagePath = substr($imagePath, 8);
+                                            }
+                                            // Use root-relative path to handle dynamic ports (e.g. localhost:9000)
+                                            $imagePath = '/' . ltrim($imagePath, '/');
                                         }
                                     @endphp
                                     <img class="w-full h-full object-contain p-2"

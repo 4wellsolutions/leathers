@@ -28,18 +28,52 @@
 
     <h3 class="email-title" style="font-size: 20px;">Order Details</h3>
 
-    <div class="product-items">
-        @foreach($order->items as $item)
-            <div class="product-item">
-                <img src="{{ $item->image_url }}" alt="{{ $item->product_name }}" class="product-image">
-                <div class="product-details">
-                    <span class="product-name">{{ $item->product_name }}</span>
-                    <div class="product-meta">Quantity: {{ $item->quantity }}</div>
-                    <div class="product-meta">Price: <span class="product-price">Rs. {{ number_format($item->price) }}</span>
-                    </div>
-                </div>
-            </div>
-        @endforeach
+    <div class="product-items" style="margin: 15px 0;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+            @foreach($order->items as $item)
+                <tr>
+                    <td style="padding: 15px 0; border-bottom: 1px solid #eee;">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td width="100" valign="top">
+                                    <img src="{{ $item->image_url }}" alt="{{ $item->product_name }}"
+                                        style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover; border: 1px solid #eee;">
+                                </td>
+                                <td valign="top" style="padding-left: 15px;">
+                                    {{-- Product Name --}}
+                                    <div
+                                        style="font-weight: 600; font-size: 15px; color: #1a1a1a; margin-bottom: 6px; line-height: 1.4;">
+                                        {{ $item->product_name }}
+                                    </div>
+
+                                    {{-- Variant Pill --}}
+                                    @if($item->variant && $item->variant->color)
+                                        <div style="margin-bottom: 8px;">
+                                            <span
+                                                style="background-color: #f3f4f6; color: #6b7280; padding: 4px 8px; border-radius: 4px; font-size: 12px; display: inline-block;">
+                                                Color family: {{ $item->variant->color->name }}
+                                            </span>
+                                        </div>
+                                    @endif
+
+                                    {{-- Price and Qty Row --}}
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="font-weight: 700; font-size: 15px; color: #1a1a1a;">
+                                                Rs. {{ number_format($item->price) }}
+                                            </td>
+                                            <td align="right" style="font-weight: 600; font-size: 14px; color: #1a1a1a;">
+                                                Qty: {{ $item->quantity }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            @endforeach
+        </table>
     </div>
 
     <div class="order-summary">

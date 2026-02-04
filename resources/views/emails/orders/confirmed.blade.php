@@ -36,30 +36,53 @@
     <div class="divider"></div>
 
     <h3 style="font-size: 18px; font-weight: 700; color: #2D1B14; margin-bottom: 20px;">Order Details</h3>
-    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
-        @foreach($order->items as $item)
-            <tr>
-                <td style="padding: 15px 0; border-bottom: 1px solid #F8F5F2;">
-                    <table width="100%" cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td width="60">
-                                <img src="{{ $item->image_url }}"
-                                    style="width: 50px; height: 50px; border-radius: 4px; object-fit: cover;"
-                                    alt="{{ $item->product_name }}">
-                            </td>
-                            <td style="text-align: left; padding-left: 15px;">
-                                <div style="font-size: 14px; font-weight: 600; color: #2D1B14;">{{ $item->product_name }}</div>
-                                <div style="font-size: 12px; color: #888;">Qty: {{ $item->quantity }}</div>
-                            </td>
-                            <td style="text-align: right; font-weight: 700; color: #C5A359;">
-                                Rs. {{ number_format($item->subtotal) }}
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        @endforeach
-    </table>
+    <div class="product-items" style="margin: 15px 0;">
+        <table width="100%" cellpadding="0" cellspacing="0">
+            @foreach($order->items as $item)
+                <tr>
+                    <td style="padding: 15px 0; border-bottom: 1px solid #eee;">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td width="100" valign="top">
+                                    <img src="{{ $item->image_url }}" alt="{{ $item->product_name }}"
+                                        style="width: 80px; height: 80px; border-radius: 8px; object-fit: cover; border: 1px solid #eee;">
+                                </td>
+                                <td valign="top" style="padding-left: 15px;">
+                                    {{-- Product Name --}}
+                                    <div
+                                        style="font-weight: 600; font-size: 15px; color: #1a1a1a; margin-bottom: 6px; line-height: 1.4;">
+                                        {{ $item->product_name }}
+                                    </div>
+
+                                    {{-- Variant Pill --}}
+                                    @if($item->variant && $item->variant->color)
+                                        <div style="margin-bottom: 8px;">
+                                            <span
+                                                style="background-color: #f3f4f6; color: #6b7280; padding: 4px 8px; border-radius: 4px; font-size: 12px; display: inline-block;">
+                                                Color family: {{ $item->variant->color->name }}
+                                            </span>
+                                        </div>
+                                    @endif
+
+                                    {{-- Price and Qty Row --}}
+                                    <table width="100%" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td style="font-weight: 700; font-size: 15px; color: #1a1a1a;">
+                                                Rs. {{ number_format($item->price) }}
+                                            </td>
+                                            <td align="right" style="font-weight: 600; font-size: 14px; color: #1a1a1a;">
+                                                Qty: {{ $item->quantity }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            @endforeach
+        </table>
+    </div>
 
     <p class="p" style="font-size: 14px; text-align: center; font-style: italic;">
         "Every piece of leather tells a story. We're honored to be part of yours."

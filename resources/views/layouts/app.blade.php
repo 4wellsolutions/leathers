@@ -102,6 +102,7 @@
         </svg>
     </a>
 
+    @stack('scripts')
 </body>
 
 </html>

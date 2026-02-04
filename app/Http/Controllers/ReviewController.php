@@ -61,8 +61,7 @@ class ReviewController extends Controller
         }
 
         if ($existingReview) {
-            return redirect()->route('products.show', $product->slug)
-                ->with('error', 'You have already reviewed this product.');
+            return view('reviews.create', compact('product', 'order', 'orderItem', 'existingReview'));
         }
 
         return view('reviews.create', compact('product', 'order', 'orderItem'));

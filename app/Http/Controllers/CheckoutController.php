@@ -202,9 +202,9 @@ class CheckoutController extends Controller
         session()->forget('cart');
         session()->forget('coupon');
 
-        // Load items relationship and dispatch email job
+        // Load items relationship and dispatch email
         $order->load('items.product');
-        SendOrderPlacedEmail::dispatch($order);
+        \Illuminate\Support\Facades\Mail::to($order->customer_email)->send(new \App\Mail\OrderPlaced($order));
 
         if ($request->wantsJson()) {
             return response()->json([

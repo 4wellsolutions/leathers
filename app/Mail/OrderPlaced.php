@@ -10,9 +10,9 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Order;
 
-class OrderPlaced extends Mailable implements ShouldQueue
+class OrderPlaced extends Mailable
 {
-    use Queueable, SerializesModels;
+    use SerializesModels;
 
     /**
      * Create a new message instance.

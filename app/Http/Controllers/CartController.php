@@ -45,17 +45,35 @@ class CartController extends Controller
         if ($variantId) {
             $variant = $product->variants()->with('color')->where('id', $variantId)->first();
             if ($variant) {
-                // Prioritize sale_price if available, otherwise use regular price
+                // Check if Global Sale is active (using same logic as Product::effective_price)
+                $isGlobalSaleActive = ($product->effective_price < $product->price);
+
+                // Variant Price Logic
                 if ($variant->sale_price && $variant->sale_price > 0) {
-                    $price = $variant->sale_price;
-                    $originalPrice = $variant->price; // Set original price to variant regular price
-                } elseif ($variant->price) {
-                    $price = $variant->price;
-                    $originalPrice = $variant->price;
+                    // Scenario 1: Variant has explicit sale price.
+                    // ONLY valid if global sale is also active (as per business rule: sale dates are global)
+                    if ($isGlobalSaleActive) {
+                        $price = $variant->sale_price;
+                    } else {
+                        $price = $variant->price ?? $product->price;
+                    }
+                    $originalPrice = $variant->price ?? $product->price;
+                } else {
+                    // Scenario 2: Variant has NO sale price.
+                    // Check for Inheritance
+                    if ($isGlobalSaleActive) {
+                        $price = $product->sale_price;
+                    } else {
+                        $price = $variant->price ?? $product->price;
+                    }
+                    $originalPrice = $variant->price ?? $product->price;
                 }
-                // If both are null, keep the product's effective_price/price. 
-                // Wait, if variant has NO price set, does it inherit product price? 
-                // Usually variants have prices. If not, we might be falling back to product logic above.
+
+                // Fallback ensure price is not null (unlikely but safe)
+                if (!$price)
+                    $price = $product->price;
+                if (!$originalPrice)
+                    $originalPrice = $product->price;
 
                 // Use the color-specific image if available (Relative Path)
                 $image = ($variant->color && $variant->color->relative_image_path)
@@ -63,7 +81,6 @@ class CartController extends Controller
                     : ($variant->image ?? $image);
                 $name = $product->name . ' - ' . $variant->name;
                 $maxStock = $variant->stock;
-
                 $colorName = $variant->color ? $variant->color->name : null;
                 $sizeName = $variant->size;
             }

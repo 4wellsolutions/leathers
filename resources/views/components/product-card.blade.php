@@ -161,6 +161,12 @@
                                 ->whereNotNull('sale_price')
                                 ->where('sale_price', '>', 0)
                                 ->min('sale_price');
+
+                            // Fallback: If no variant has a sale price, but the product does, use product sale price
+                            // This assumes "inheritance" as per Admin UI text
+                            if (is_null($lowestSalePrice) && $product->sale_price > 0 && $product->sale_price < $product->price) {
+                                $lowestSalePrice = $product->sale_price;
+                            }
                         }
                         $lowestPrice = $product->variants()->min('price');
                         $highestPrice = $product->variants()->max('price');

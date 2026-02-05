@@ -18,6 +18,11 @@
                 ->where('sale_price', '>', 0)
                 ->min('sale_price')
             : $product->sale_price;
+
+        // Fallback for variants: if 0 found, try product sale price
+        if ($hasVariants && is_null($salePrice) && $product->sale_price > 0) {
+            $salePrice = $product->sale_price;
+        }
     }
 
     // Final check: ensure found sale price is valid and less than base

@@ -1,16 +1,31 @@
 @php
     $hasVariants = $product->variants()->count() > 0;
 
-    // Base & sale prices
-    $basePrice = $hasVariants ? $product->variants()->min('price') : $product->price;
-    $salePrice = $hasVariants
-        ? $product->variants()
-            ->whereNotNull('sale_price')
-            ->where('sale_price', '>', 0)
-            ->min('sale_price')
-        : $product->sale_price;
+    // Check strict sale validity (dates) - matching Product Controller logic
+    $saleActive = (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
+        (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
 
-    $hasDiscount = $salePrice && $basePrice > $salePrice;
+    $basePrice = $hasVariants ? $product->variants()->min('price') : $product->price;
+
+    // Default to no sale
+    $salePrice = null;
+
+    // Only calculate sale price if sale is active
+    if ($saleActive) {
+        $salePrice = $hasVariants
+            ? $product->variants()
+                ->whereNotNull('sale_price')
+                ->where('sale_price', '>', 0)
+                ->min('sale_price')
+            : $product->sale_price;
+    }
+
+    // Final check: ensure found sale price is valid and less than base
+    if ($salePrice && $salePrice >= $basePrice) {
+        $salePrice = null;
+    }
+
+    $hasDiscount = $salePrice && $salePrice > 0;
 
     $discountPercent = $hasDiscount
         ? round((($basePrice - $salePrice) / $basePrice) * 100)

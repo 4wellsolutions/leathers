@@ -6,37 +6,47 @@
         </a>
 
         @php
-            // Check if product has any sale variants
+            // Strict Date Check matching Product Show & List Item logic
+            // Allows open-ended sales (null dates) but filters invalid ones
+            $saleActive = (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
+                (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
+
+            // Check if product has variants
             $hasVariants = $product->variants()->count() > 0;
             $variantHasSale = false;
 
-            // Check variant sales (if any)
-            if ($hasVariants) {
-                // For variants, we might need similar strict logic if they have their own dates, 
-                // but usually variants just override price. If your variants share the product's dates,
-                // we should check product dates too. 
-                // For now, let's assume if a variant has a specific sale price, it's valid if regular price logic holds.
-                // Or if we want strict logic everywhere:
+            // Check variant sales (if any) - ONLY if sale window is active
+            if ($hasVariants && $saleActive) {
                 $variantHasSale = $product->variants()
                     ->whereNotNull('sale_price')
                     ->where('sale_price', '>', 0)
                     ->exists();
             }
 
-            // STRICT SALE CHECK: Use the model accessor
-            $hasSale = $product->has_active_sale || $variantHasSale;
+            // Product sale check
+            $productHasSale = $saleActive && $product->sale_price && $product->sale_price > 0 && $product->sale_price < $product->price;
+
+            // Global Has Sale flag
+            $hasSale = $productHasSale || $variantHasSale;
 
             // Calculate discount percentage for badge
             $discountPercent = 0;
-            if ($variantHasSale) {
-                $lowestSalePrice = $product->variants()->whereNotNull('sale_price')->where('sale_price', '>', 0)->min('sale_price');
-                $lowestPrice = $product->variants()->min('price');
-                if ($lowestSalePrice && $lowestPrice > $lowestSalePrice) {
-                    $discountPercent = round((($lowestPrice - $lowestSalePrice) / $lowestPrice) * 100);
+            if ($hasSale) {
+                if ($variantHasSale) {
+                    // Get best discount from variants
+                    $v = $product->variants()
+                        ->whereNotNull('sale_price')
+                        ->where('sale_price', '>', 0)
+                        ->selectRaw('price, sale_price, ((price - sale_price) / price) * 100 as discount')
+                        ->orderByDesc('discount')
+                        ->first();
+
+                    if ($v) {
+                        $discountPercent = round($v->discount);
+                    }
+                } elseif ($productHasSale) {
+                    $discountPercent = round((($product->price - $product->sale_price) / $product->price) * 100);
                 }
-            } else if ($hasSale) {
-                // Use strict sale validated prices
-                $discountPercent = round((($product->price - $product->sale_price) / $product->price) * 100);
             }
         @endphp
 
@@ -137,19 +147,34 @@
         <div class="mt-auto">
             <div class="flex items-center gap-1.5 md:gap-2 mb-2 flex-wrap">
                 @php
-                    // Check if product has variants
+                    // Recalculate basic vars using logic from top (assuming $saleActive is availablescope)
+                    // If not availability, re-check:
+                    $saleActive = (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
+                        (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
+
                     $hasVariants = $product->variants()->count() > 0;
+                    $lowestSalePrice = null;
 
                     if ($hasVariants) {
-                        // Get lowest sale price from variants, or lowest regular price
-                        $lowestSalePrice = $product->variants()->whereNotNull('sale_price')->where('sale_price', '>', 0)->min('sale_price');
+                        if ($saleActive) {
+                            $lowestSalePrice = $product->variants()
+                                ->whereNotNull('sale_price')
+                                ->where('sale_price', '>', 0)
+                                ->min('sale_price');
+                        }
                         $lowestPrice = $product->variants()->min('price');
                         $highestPrice = $product->variants()->max('price');
                     } else {
-                        // Use product's own prices
-                        $lowestSalePrice = $product->sale_price;
+                        if ($saleActive && $product->sale_price > 0 && $product->sale_price < $product->price) {
+                            $lowestSalePrice = $product->sale_price;
+                        }
                         $lowestPrice = $product->price;
                         $highestPrice = $product->price;
+                    }
+
+                    // Final checks
+                    if ($lowestSalePrice && $lowestSalePrice >= $lowestPrice) {
+                        $lowestSalePrice = null; // Invalid sale
                     }
 
                     $displayPrice = $lowestSalePrice ?? $lowestPrice;

@@ -45,29 +45,9 @@ class CartController extends Controller
         if ($variantId) {
             $variant = $product->variants()->with('color')->where('id', $variantId)->first();
             if ($variant) {
-                // Check if Global Sale is active (using same logic as Product::effective_price)
-                $isGlobalSaleActive = ($product->effective_price < $product->price);
-
-                // Variant Price Logic
-                if ($variant->sale_price && $variant->sale_price > 0) {
-                    // Scenario 1: Variant has explicit sale price.
-                    // ONLY valid if global sale is also active (as per business rule: sale dates are global)
-                    if ($isGlobalSaleActive) {
-                        $price = $variant->sale_price;
-                    } else {
-                        $price = $variant->price ?? $product->price;
-                    }
-                    $originalPrice = $variant->price ?? $product->price;
-                } else {
-                    // Scenario 2: Variant has NO sale price.
-                    // Check for Inheritance
-                    if ($isGlobalSaleActive) {
-                        $price = $product->sale_price;
-                    } else {
-                        $price = $variant->price ?? $product->price;
-                    }
-                    $originalPrice = $variant->price ?? $product->price;
-                }
+                // Pricing Logic Simplified via Accessor (Strict Global Priority)
+                $price = $variant->effective_price;
+                $originalPrice = $variant->price ?? $product->price;
 
                 // Fallback ensure price is not null (unlikely but safe)
                 if (!$price)

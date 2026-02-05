@@ -457,8 +457,10 @@
                 selectedColor: null,
                 selectedVariantId: null,
                 availableSizes: [],
+                availableSizes: [],
                 currentStock: 0,
                 currentGallery: [],
+                saleActive: {{ $product->effective_price < $product->price ? 'true' : 'false' }},
 
                 init() {
                     // Auto-select first color if available
@@ -521,9 +523,23 @@
                         if (variant) {
                             stock = variant.stock;
                             price = variant.price || {{ $product->price }};
-                            // Fallback to global sale price if variant doesn't have specific sale price
-                            salePrice = variant.sale_price || salePrice;
-                            // Note: We use 'salePrice' from the let declaration above which contains the PHP-calculated global sale price
+                            
+                            // LOGIC UPDATE: Strict Global Sale Priority
+                            // "if product has active sale_price then this should be apply everywhere"
+                           
+                            if (this.saleActive) {
+                                // If Global Sale is active, it OVERRIDES everything.
+                                // We ignore variant specific sale price in this mode as per user request.
+                                // The global sale price (already in salePrice variable) is used.
+                                salePrice = {{ $product->sale_price ?? 'null' }};
+                            } else {
+                                // If Global Sale is NOT active, check variant specific sale
+                                if (variant.sale_price && variant.sale_price > 0) {
+                                    salePrice = variant.sale_price;
+                                } else {
+                                    salePrice = null;
+                                }
+                            }
                         }
                     }
 

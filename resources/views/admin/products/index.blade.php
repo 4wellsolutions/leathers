@@ -255,11 +255,32 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-bold text-leather-900">Rs. {{ number_format($product->price) }}</div>
-                                @if($product->sale_price)
-                                    <div
-                                        class="text-[11px] font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-100 mt-1 inline-block">
-                                        Sale: Rs. {{ number_format($product->sale_price) }}
+                                @php
+                                    $isSale = $product->sale_price && $product->sale_price > 0 &&
+                                        (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
+                                        (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
+                                @endphp
+
+                                @if($isSale)
+                                    <div>
+                                        <div class="flex items-baseline gap-1.5">
+                                            <span class="text-sm font-bold text-leather-900">
+                                                Rs. {{ number_format($product->sale_price) }}
+                                            </span>
+                                            <span class="text-xs text-neutral-400 line-through">
+                                                Rs. {{ number_format($product->price) }}
+                                            </span>
+                                        </div>
+                                        <div class="mt-1">
+                                            <span
+                                                class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-600 text-white shadow-sm">
+                                                -{{ round((($product->price - $product->sale_price) / $product->price) * 100) }}%
+                                            </span>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="text-sm font-bold text-leather-900">
+                                        Rs. {{ number_format($product->price) }}
                                     </div>
                                 @endif
                             </td>

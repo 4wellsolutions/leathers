@@ -51,34 +51,34 @@
             {{-- Badges --}}
             @if($showSaleBadge && $product->sale_ends_at && $product->sale_ends_at->isFuture())
                 <div x-data="{
-                            endTime: new Date('{{ $product->sale_ends_at->toIso8601String() }}').getTime(),
-                            now: new Date().getTime(),
-                            timeLeft: '',
-                            update() {
-                                this.now = new Date().getTime();
-                                let distance = this.endTime - this.now;
-                                if (distance < 0) {
-                                    this.timeLeft = 'Expired';
-                                    return;
-                                }
-                                let days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                                let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                                let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                                let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                endTime: new Date('{{ $product->sale_ends_at->toIso8601String() }}').getTime(),
+                                now: new Date().getTime(),
+                                timeLeft: '',
+                                update() {
+                                    this.now = new Date().getTime();
+                                    let distance = this.endTime - this.now;
+                                    if (distance < 0) {
+                                        this.timeLeft = 'Expired';
+                                        return;
+                                    }
+                                    let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                    let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                    let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                    let seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-                                if (days > 0) {
-                                    this.timeLeft = `${days}d ${hours}h ${minutes}m`;
-                                } else {
-                                    this.timeLeft = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                                    if (days > 0) {
+                                        this.timeLeft = `${days}d ${hours}h ${minutes}m`;
+                                    } else {
+                                        this.timeLeft = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                                    }
+                                },
+                                init() {
+                                    this.update();
+                                    setInterval(() => this.update(), 1000);
                                 }
-                            },
-                            init() {
-                                this.update();
-                                setInterval(() => this.update(), 1000);
-                            }
-                        }" class="absolute top-0 left-0 w-full z-10">
+                            }" class="absolute top-0 left-0 w-full z-10">
                     <div
-                        class="bg-gradient-to-r from-rose-600 to-red-600 text-white text-[10px] uppercase font-bold py-1 px-3 shadow-md flex items-center justify-between w-full opacity-95">
+                        class="bg-neutral-900 text-white text-[10px] uppercase font-bold py-1 px-3 shadow-md flex items-center justify-between w-full opacity-95">
                         <span class="tracking-wide">Sale Ends In:</span>
                         <div class="flex items-center gap-1.5">
                             <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -13,6 +13,13 @@
             </div>
             
             <div class="flex space-x-2">
+                <a href="{{ route('admin.reviews.create') }}"
+                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium bg-gold-600 text-white shadow-sm hover:bg-gold-700 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add Review
+                </a>
                 <a href="{{ route('admin.reviews.index') }}"
                     class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium {{ !request('status') ? 'bg-leather-900 text-white shadow-sm' : 'bg-white text-neutral-700 border-neutral-300 hover:bg-neutral-50' }}">
                     All

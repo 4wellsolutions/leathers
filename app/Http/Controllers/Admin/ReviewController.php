@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Models\Review;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ReviewController extends Controller
 {
@@ -23,6 +25,41 @@ class ReviewController extends Controller
         $reviews = $query->latest()->paginate(20);
 
         return view('admin.reviews.index', compact('reviews'));
+    }
+
+    public function create()
+    {
+        $products = Product::select('id', 'name', 'image')->orderBy('name')->get();
+        return view('admin.reviews.create', compact('products'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'required|string|max:1000',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_anonymous' => 'sometimes|boolean',
+            'is_approved' => 'sometimes|boolean',
+        ]);
+
+        $data = $request->only(['product_id', 'rating', 'comment', 'is_anonymous', 'is_approved']);
+        $data['user_id'] = null; // Admin created reviews are not linked to a user by default, or could link to admin
+        $data['is_approved'] = $request->has('is_approved'); // Default to true if checked
+        $data['is_anonymous'] = $request->has('is_anonymous');
+
+        if ($request->hasFile('images')) {
+            $images = [];
+            foreach ($request->file('images') as $image) {
+                $images[] = $image->store('reviews', 'public');
+            }
+            $data['images'] = $images;
+        }
+
+        Review::create($data);
+
+        return redirect()->route('admin.reviews.index')->with('success', 'Review created successfully.');
     }
 
     public function edit(Review $review)

@@ -49,7 +49,44 @@
 
             {{-- Badges --}}
             {{-- Badges --}}
-            @if($showSaleBadge)
+            @if($showSaleBadge && $product->sale_ends_at && $product->sale_ends_at->isFuture())
+                <div x-data="{
+                            endTime: new Date('{{ $product->sale_ends_at->toIso8601String() }}').getTime(),
+                            now: new Date().getTime(),
+                            timeLeft: '',
+                            update() {
+                                this.now = new Date().getTime();
+                                let distance = this.endTime - this.now;
+                                if (distance < 0) {
+                                    this.timeLeft = 'Expired';
+                                    return;
+                                }
+                                let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                                if (days > 0) {
+                                    this.timeLeft = `${days}d ${hours}h ${minutes}m`;
+                                } else {
+                                    this.timeLeft = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                                }
+                            },
+                            init() {
+                                this.update();
+                                setInterval(() => this.update(), 1000);
+                            }
+                        }" class="absolute top-2 left-2 md:top-4 md:left-4 z-10">
+                    <div
+                        class="bg-gradient-to-r from-rose-600 to-red-600 text-white text-[10px] md:text-xs font-bold px-2 py-1 md:px-3 md:py-1 rounded-full shadow-lg border border-white/20 backdrop-blur-sm flex items-center gap-1.5 animate-pulse">
+                        <svg class="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span x-text="timeLeft" class="font-mono tracking-tight"></span>
+                    </div>
+                </div>
+            @elseif($showSaleBadge)
                 <div
                     class="absolute top-2 left-2 md:top-4 md:left-4 bg-emerald-600 text-white text-[10px] md:text-xs font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full uppercase tracking-wide">
                     Sale

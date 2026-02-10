@@ -133,7 +133,7 @@ class ProductController extends Controller
                 break;
         }
 
-        $products = $query->paginate(12)->appends($request->query());
+        $products = $query->paginate(15)->appends($request->query());
         $categories = \App\Models\Category::all();
 
         return view('products.index', compact('products', 'categories', 'currentCategory'));

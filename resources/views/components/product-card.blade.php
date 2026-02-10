@@ -10,33 +10,39 @@
             $hasVariants = $product->variants()->count() > 0;
             $basePrice = $product->price;
 
-            // Tier 1: Timed sale (requires dates)
+            // Tier 1: Timed sale (requires dates + product base price set)
             $timedSaleActive = ($product->sale_starts_at || $product->sale_ends_at) &&
                 (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
                 (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
-            $productHasTimedSale = $timedSaleActive && $product->sale_price > 0 && $product->sale_price < $basePrice;
+            $productHasTimedSale = $timedSaleActive && $basePrice > 0 && $product->sale_price > 0 && $product->sale_price < $basePrice;
 
-            // Tier 2: Variant sale prices (no dates needed, just sale_price < base price)
+            // Tier 2: Variant sale prices (compare sale_price vs variant's own price)
             $variantHasDiscount = false;
             $lowestVariantSalePrice = null;
-            if ($hasVariants) {
-                $lowestVariantSalePrice = $product->variants()
+            $variantBasePrice = null;
+            if ($hasVariants && !$productHasTimedSale) {
+                $discountVariant = $product->variants()
                     ->whereNotNull('sale_price')
                     ->where('sale_price', '>', 0)
-                    ->whereRaw('sale_price < ?', [$basePrice])
-                    ->min('sale_price');
-                $variantHasDiscount = !is_null($lowestVariantSalePrice);
+                    ->whereRaw('sale_price < price')
+                    ->orderBy('sale_price')
+                    ->first();
+                if ($discountVariant) {
+                    $variantHasDiscount = true;
+                    $lowestVariantSalePrice = $discountVariant->sale_price;
+                    $variantBasePrice = $discountVariant->price;
+                }
             }
 
             // "Sale" badge: only for timed sales
             $showSaleBadge = $productHasTimedSale;
 
-            // Discount: timed sale takes priority, then variant sale_price
+            // Discount calculation
             $discountPercent = 0;
             if ($productHasTimedSale) {
                 $discountPercent = round((($basePrice - $product->sale_price) / $basePrice) * 100);
-            } elseif ($variantHasDiscount) {
-                $discountPercent = round((($basePrice - $lowestVariantSalePrice) / $basePrice) * 100);
+            } elseif ($variantHasDiscount && $variantBasePrice > 0) {
+                $discountPercent = round((($variantBasePrice - $lowestVariantSalePrice) / $variantBasePrice) * 100);
             }
         @endphp
 
@@ -145,26 +151,34 @@
                     $hasVariants = $product->variants()->count() > 0;
                     $basePrice = $product->price;
                     $lowestSalePrice = null;
+                    $strikethroughPrice = $basePrice;
 
                     if ($hasVariants) {
                         $lowestPrice = $product->variants()->min('price');
                         $highestPrice = $product->variants()->max('price');
 
                         // Priority 1: Timed product-level sale
-                        if ($timedSaleActive && $product->sale_price > 0 && $product->sale_price < $basePrice) {
+                        if ($timedSaleActive && $basePrice > 0 && $product->sale_price > 0 && $product->sale_price < $basePrice) {
                             $lowestSalePrice = $product->sale_price;
+                            $strikethroughPrice = $basePrice;
                         } else {
-                            // Priority 2: Variant sale prices (no dates needed)
-                            $lowestSalePrice = $product->variants()
+                            // Priority 2: Variant sale prices (compare sale_price vs variant's own price)
+                            $discountVariant = $product->variants()
                                 ->whereNotNull('sale_price')
                                 ->where('sale_price', '>', 0)
-                                ->whereRaw('sale_price < ?', [$basePrice])
-                                ->min('sale_price');
+                                ->whereRaw('sale_price < price')
+                                ->orderBy('sale_price')
+                                ->first();
+                            if ($discountVariant) {
+                                $lowestSalePrice = $discountVariant->sale_price;
+                                $strikethroughPrice = $discountVariant->price;
+                            }
                         }
                     } else {
                         // Non-variant product: only timed sale applies
-                        if ($timedSaleActive && $product->sale_price > 0 && $product->sale_price < $basePrice) {
+                        if ($timedSaleActive && $basePrice > 0 && $product->sale_price > 0 && $product->sale_price < $basePrice) {
                             $lowestSalePrice = $product->sale_price;
+                            $strikethroughPrice = $basePrice;
                         }
                         $lowestPrice = $basePrice;
                         $highestPrice = $basePrice;
@@ -172,16 +186,13 @@
 
                     $displayPrice = $lowestSalePrice ?? $lowestPrice;
                     $hasDiscount = !is_null($lowestSalePrice);
-                    $priceDiscountPercent = $hasDiscount
-                        ? round((($basePrice - $lowestSalePrice) / $basePrice) * 100)
-                        : 0;
                 @endphp
 
                 @if($hasDiscount)
                     <span class="text-lg md:text-2xl font-bold text-leather-900 whitespace-nowrap">Rs.
                         {{ number_format($displayPrice) }}</span>
                     <span class="text-xs md:text-base text-neutral-400 line-through whitespace-nowrap">Rs.
-                        {{ number_format($basePrice) }}</span>
+                        {{ number_format($strikethroughPrice) }}</span>
                 @else
                     @if($hasVariants && $lowestPrice != $highestPrice)
                         <span class="text-lg md:text-2xl font-bold text-leather-900">Rs. {{ number_format($lowestPrice) }} - Rs.

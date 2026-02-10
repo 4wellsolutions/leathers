@@ -2,31 +2,38 @@
     $hasVariants = $product->variants()->count() > 0;
     $basePrice = $product->price;
 
-    // Tier 1: Timed sale (requires dates)
+    // Tier 1: Timed sale (requires dates + product base price set)
     $timedSaleActive = ($product->sale_starts_at || $product->sale_ends_at) &&
         (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
         (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
 
     $salePrice = null;
     $showSaleBadge = false;
+    $strikethroughPrice = $basePrice;
 
     // Priority 1: Timed product-level sale
-    if ($timedSaleActive && $product->sale_price > 0 && $product->sale_price < $basePrice) {
+    if ($timedSaleActive && $basePrice > 0 && $product->sale_price > 0 && $product->sale_price < $basePrice) {
         $salePrice = $product->sale_price;
         $showSaleBadge = true;
+        $strikethroughPrice = $basePrice;
     } elseif ($hasVariants) {
-        // Priority 2: Variant sale prices (no dates needed)
-        $salePrice = $product->variants()
+        // Priority 2: Variant sale prices (compare sale_price vs variant's own price)
+        $discountVariant = $product->variants()
             ->whereNotNull('sale_price')
             ->where('sale_price', '>', 0)
-            ->whereRaw('sale_price < ?', [$basePrice])
-            ->min('sale_price');
+            ->whereRaw('sale_price < price')
+            ->orderBy('sale_price')
+            ->first();
+        if ($discountVariant) {
+            $salePrice = $discountVariant->sale_price;
+            $strikethroughPrice = $discountVariant->price;
+        }
     }
 
     $hasDiscount = !is_null($salePrice);
 
-    $discountPercent = $hasDiscount
-        ? round((($basePrice - $salePrice) / $basePrice) * 100)
+    $discountPercent = $hasDiscount && $strikethroughPrice > 0
+        ? round((($strikethroughPrice - $salePrice) / $strikethroughPrice) * 100)
         : 0;
 
     $displayPrice = $salePrice ?? ($hasVariants ? $product->variants()->min('price') : $basePrice);
@@ -111,7 +118,7 @@
                         </span>
                         @if($hasDiscount)
                             <span class="text-sm text-neutral-400 line-through">
-                                Rs. {{ number_format($basePrice) }}
+                                Rs. {{ number_format($strikethroughPrice) }}
                             </span>
                         @endif
                     </div>

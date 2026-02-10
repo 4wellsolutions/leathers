@@ -1,8 +1,9 @@
 @php
     $hasVariants = $product->variants()->count() > 0;
 
-    // Check strict sale validity (dates) - matching Product Controller logic
-    $saleActive = (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
+    // Check strict sale validity - at least one sale date must be set
+    $saleActive = ($product->sale_starts_at || $product->sale_ends_at) &&
+        (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
         (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
 
     $basePrice = $product->price; // Always use product base price for comparison/strikethrough

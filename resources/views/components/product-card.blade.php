@@ -6,9 +6,9 @@
         </a>
 
         @php
-            // Strict Date Check matching Product Show & List Item logic
-            // Allows open-ended sales (null dates) but filters invalid ones
-            $saleActive = (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
+            // Strict Date Check: at least one sale date must be set for sale to be active
+            $saleActive = ($product->sale_starts_at || $product->sale_ends_at) &&
+                (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
                 (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
 
             // Check if product has variants
@@ -148,7 +148,8 @@
         <div class="mt-auto">
             <div class="flex items-center gap-1.5 md:gap-2 mb-2 flex-wrap">
                 @php
-                    $saleActive = (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
+                    $saleActive = ($product->sale_starts_at || $product->sale_ends_at) &&
+                        (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
                         (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
 
                     $hasVariants = $product->variants()->count() > 0;

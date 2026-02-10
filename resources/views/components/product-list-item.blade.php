@@ -1,36 +1,29 @@
 @php
     $hasVariants = $product->variants()->count() > 0;
+    $basePrice = $product->price;
 
-    // Check strict sale validity - at least one sale date must be set
-    $saleActive = ($product->sale_starts_at || $product->sale_ends_at) &&
+    // Tier 1: Timed sale (requires dates)
+    $timedSaleActive = ($product->sale_starts_at || $product->sale_ends_at) &&
         (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
         (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
 
-    $basePrice = $product->price; // Always use product base price for comparison/strikethrough
-
-    // Default to no sale
     $salePrice = null;
+    $showSaleBadge = false;
 
-    // Only calculate sale price if sale is active
-    if ($saleActive) {
-        // Product-level sale price takes priority (global sale)
-        if ($product->sale_price > 0 && $product->sale_price < $basePrice) {
-            $salePrice = $product->sale_price;
-        } elseif ($hasVariants) {
-            // Fallback to variant-level sale prices
-            $salePrice = $product->variants()
-                ->whereNotNull('sale_price')
-                ->where('sale_price', '>', 0)
-                ->min('sale_price');
-        }
+    // Priority 1: Timed product-level sale
+    if ($timedSaleActive && $product->sale_price > 0 && $product->sale_price < $basePrice) {
+        $salePrice = $product->sale_price;
+        $showSaleBadge = true;
+    } elseif ($hasVariants) {
+        // Priority 2: Variant sale prices (no dates needed)
+        $salePrice = $product->variants()
+            ->whereNotNull('sale_price')
+            ->where('sale_price', '>', 0)
+            ->whereRaw('sale_price < ?', [$basePrice])
+            ->min('sale_price');
     }
 
-    // Final check: ensure found sale price is valid and less than base
-    if ($salePrice && $salePrice >= $basePrice) {
-        $salePrice = null;
-    }
-
-    $hasDiscount = $salePrice && $salePrice > 0;
+    $hasDiscount = !is_null($salePrice);
 
     $discountPercent = $hasDiscount
         ? round((($basePrice - $salePrice) / $basePrice) * 100)
@@ -49,11 +42,13 @@
 
             {{-- Badges --}}
             {{-- Badges --}}
-            @if($hasDiscount)
+            @if($showSaleBadge)
                 <div
                     class="absolute top-2 left-2 md:top-4 md:left-4 bg-emerald-600 text-white text-[10px] md:text-xs font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full uppercase tracking-wide">
                     Sale
                 </div>
+            @endif
+            @if($hasDiscount && $discountPercent > 0)
                 <div
                     class="absolute top-2 right-2 md:top-4 md:right-4 bg-red-600 text-white text-[10px] md:text-xs font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full">
                     -{{ $discountPercent }}%

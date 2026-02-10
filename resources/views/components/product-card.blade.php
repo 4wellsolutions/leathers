@@ -6,52 +6,41 @@
         </a>
 
         @php
-            // Strict Date Check: at least one sale date must be set for sale to be active
-            $saleActive = ($product->sale_starts_at || $product->sale_ends_at) &&
-                (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
-                (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
-
             // Check if product has variants
             $hasVariants = $product->variants()->count() > 0;
-            $variantHasSale = false;
+            $basePrice = $product->price;
 
-            // Check variant sales (if any) - ONLY if sale window is active
-            if ($hasVariants && $saleActive) {
-                $variantHasSale = $product->variants()
+            // Tier 1: Timed sale (requires dates)
+            $timedSaleActive = ($product->sale_starts_at || $product->sale_ends_at) &&
+                (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
+                (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
+            $productHasTimedSale = $timedSaleActive && $product->sale_price > 0 && $product->sale_price < $basePrice;
+
+            // Tier 2: Variant sale prices (no dates needed, just sale_price < base price)
+            $variantHasDiscount = false;
+            $lowestVariantSalePrice = null;
+            if ($hasVariants) {
+                $lowestVariantSalePrice = $product->variants()
                     ->whereNotNull('sale_price')
                     ->where('sale_price', '>', 0)
-                    ->exists();
+                    ->whereRaw('sale_price < ?', [$basePrice])
+                    ->min('sale_price');
+                $variantHasDiscount = !is_null($lowestVariantSalePrice);
             }
 
-            // Product sale check
-            $productHasSale = $saleActive && $product->sale_price && $product->sale_price > 0 && $product->sale_price < $product->price;
+            // "Sale" badge: only for timed sales
+            $showSaleBadge = $productHasTimedSale;
 
-            // Global Has Sale flag
-            $hasSale = $productHasSale || $variantHasSale;
-
-            // Calculate discount percentage for badge
+            // Discount: timed sale takes priority, then variant sale_price
             $discountPercent = 0;
-            if ($hasSale) {
-                // Product-level sale takes priority
-                if ($productHasSale) {
-                    $discountPercent = round((($product->price - $product->sale_price) / $product->price) * 100);
-                } elseif ($variantHasSale) {
-                    // Get best discount from variants
-                    $v = $product->variants()
-                        ->whereNotNull('sale_price')
-                        ->where('sale_price', '>', 0)
-                        ->selectRaw('price, sale_price, ((price - sale_price) / price) * 100 as discount')
-                        ->orderByDesc('discount')
-                        ->first();
-
-                    if ($v) {
-                        $discountPercent = round($v->discount);
-                    }
-                }
+            if ($productHasTimedSale) {
+                $discountPercent = round((($basePrice - $product->sale_price) / $basePrice) * 100);
+            } elseif ($variantHasDiscount) {
+                $discountPercent = round((($basePrice - $lowestVariantSalePrice) / $basePrice) * 100);
             }
         @endphp
 
-        @if($hasSale)
+        @if($showSaleBadge)
             <div
                 class="absolute top-2 left-2 md:top-4 md:left-4 bg-emerald-600 text-white text-[10px] md:text-xs font-bold px-2 py-1 md:px-3 md:py-1.5 rounded-full uppercase tracking-wide shadow-lg animate-pulse z-10">
                 Sale
@@ -148,43 +137,44 @@
         <div class="mt-auto">
             <div class="flex items-center gap-1.5 md:gap-2 mb-2 flex-wrap">
                 @php
-                    $saleActive = ($product->sale_starts_at || $product->sale_ends_at) &&
+                    // Tier 1: Timed sale (requires dates)
+                    $timedSaleActive = ($product->sale_starts_at || $product->sale_ends_at) &&
                         (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
                         (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
 
                     $hasVariants = $product->variants()->count() > 0;
+                    $basePrice = $product->price;
                     $lowestSalePrice = null;
-                    $basePrice = $product->price; // Always use product base price for comparison
 
                     if ($hasVariants) {
                         $lowestPrice = $product->variants()->min('price');
                         $highestPrice = $product->variants()->max('price');
 
-                        if ($saleActive && $product->sale_price > 0 && $product->sale_price < $basePrice) {
-                            // Product-level sale price takes priority (global sale)
+                        // Priority 1: Timed product-level sale
+                        if ($timedSaleActive && $product->sale_price > 0 && $product->sale_price < $basePrice) {
                             $lowestSalePrice = $product->sale_price;
-                        } elseif ($saleActive) {
-                            // Fallback to variant-level sale prices
+                        } else {
+                            // Priority 2: Variant sale prices (no dates needed)
                             $lowestSalePrice = $product->variants()
                                 ->whereNotNull('sale_price')
                                 ->where('sale_price', '>', 0)
+                                ->whereRaw('sale_price < ?', [$basePrice])
                                 ->min('sale_price');
                         }
                     } else {
-                        if ($saleActive && $product->sale_price > 0 && $product->sale_price < $basePrice) {
+                        // Non-variant product: only timed sale applies
+                        if ($timedSaleActive && $product->sale_price > 0 && $product->sale_price < $basePrice) {
                             $lowestSalePrice = $product->sale_price;
                         }
-                        $lowestPrice = $product->price;
-                        $highestPrice = $product->price;
-                    }
-
-                    // Final check: sale price must be less than base price to be valid
-                    if ($lowestSalePrice && $lowestSalePrice >= $basePrice) {
-                        $lowestSalePrice = null;
+                        $lowestPrice = $basePrice;
+                        $highestPrice = $basePrice;
                     }
 
                     $displayPrice = $lowestSalePrice ?? $lowestPrice;
-                    $hasDiscount = $lowestSalePrice && $basePrice > $lowestSalePrice;
+                    $hasDiscount = !is_null($lowestSalePrice);
+                    $priceDiscountPercent = $hasDiscount
+                        ? round((($basePrice - $lowestSalePrice) / $basePrice) * 100)
+                        : 0;
                 @endphp
 
                 @if($hasDiscount)

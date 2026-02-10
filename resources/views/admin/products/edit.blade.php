@@ -108,7 +108,7 @@
                 </div>
 
                 <!-- Pricing & Discount Card -->
-                <div class="bg-red-50 rounded-xl shadow-sm border-2 border-red-500 overflow-hidden relative">
+                <div class="bg-white rounded-xl shadow-sm border-2 border-red-500 overflow-hidden relative">
                     <div
                         class="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg shadow-sm">
                         SALE SECTION
@@ -247,7 +247,7 @@
                 <!-- Product Variants Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden"
                     x-data="{
-                                                                                                                                    colors: {{ $product->colors->map(function ($c) {
+                                                                                                                                        colors: {{ $product->colors->map(function ($c) {
         return [
             'id' => $c->id,
             'name' => $c->name,
@@ -269,107 +269,107 @@
             })
         ];
     })->toJson() }},
-                                                                                                                                    addColor() {
-                                                                                                                                        this.colors.push({
-                                                                                                                                            id: null,
-                                                                                                                                            name: '',
-                                                                                                                                            color_code: '#000000',
-                                                                                                                                            remove_image: 0,
-                                                                                                                                            image_url: null,
-                                                                                                                                            images: [],
-                                                                                                                                            removed_images: [],
-                                                                                                                                            new_images: [],
-                                                                                                                                            sizes: []
-                                                                                                                                        });
-                                                                                                                                    },
-                                                                                                                                    removeColor(index) {
-                                                                                                                                        this.colors.splice(index, 1);
-                                                                                                                                    },
-                                                                                                                                    addSize(colorIndex) {
-                                                                                                                                        this.colors[colorIndex].sizes.push({
-                                                                                                                                            id: null,
-                                                                                                                                            name: '',
+                                                                                                                                        addColor() {
+                                                                                                                                            this.colors.push({
+                                                                                                                                                id: null,
+                                                                                                                                                name: '',
+                                                                                                                                                color_code: '#000000',
+                                                                                                                                                remove_image: 0,
+                                                                                                                                                image_url: null,
+                                                                                                                                                images: [],
+                                                                                                                                                removed_images: [],
+                                                                                                                                                new_images: [],
+                                                                                                                                                sizes: []
+                                                                                                                                            });
+                                                                                                                                        },
+                                                                                                                                        removeColor(index) {
+                                                                                                                                            this.colors.splice(index, 1);
+                                                                                                                                        },
+                                                                                                                                        addSize(colorIndex) {
+                                                                                                                                            this.colors[colorIndex].sizes.push({
+                                                                                                                                                id: null,
+                                                                                                                                                name: '',
+                                                                                                                                                stock: 0,
+                                                                                                                                                price: '',
+                                                                                                                                                sale_price: '',
+                                                                                                                                                sku: '',
                                                                                                                                             stock: 0,
                                                                                                                                             price: '',
                                                                                                                                             sale_price: '',
-                                                                                                                                            sku: '',
-                                                                                                                                        stock: 0,
-                                                                                                                                        price: '',
-                                                                                                                                        sale_price: '',
-                                                                                                                                        sku: ''
-                                                                                                                                    });
-                                                                                                                                    },
-                                                                                                                                    removeSize(colorIndex, sizeIndex) {
-                                                                                                                                        this.colors[colorIndex].sizes.splice(sizeIndex, 1);
-                                                                                                                                    },
+                                                                                                                                            sku: ''
+                                                                                                                                        });
+                                                                                                                                        },
+                                                                                                                                        removeSize(colorIndex, sizeIndex) {
+                                                                                                                                            this.colors[colorIndex].sizes.splice(sizeIndex, 1);
+                                                                                                                                        },
 
-                                                                                                                                handleFileSelect(event, colorIndex) {
-                                                                                                                                    const files = event.target.files;
-                                                                                                                                    if (!files.length) return;
+                                                                                                                                    handleFileSelect(event, colorIndex) {
+                                                                                                                                        const files = event.target.files;
+                                                                                                                                        if (!files.length) return;
 
-                                                                                                                                    // Initialize new_images if undefined
-                                                                                                                                    if (!this.colors[colorIndex].new_images) {
-                                                                                                                                        this.colors[colorIndex].new_images = [];
-                                                                                                                                    }
-
-                                                                                                                                    Array.from(files).forEach(file => {
-                                                                                                                                        const reader = new FileReader();
-                                                                                                                                        reader.onload = (e) => {
-                                                                                                                                            this.colors[colorIndex].new_images.push(e.target.result);
-                                                                                                                                        };
-                                                                                                                                        reader.readAsDataURL(file);
-                                                                                                                                    });
-                                                                                                                                },
-                                                                                                                                removeVariantImage(colorIndex, imageIndex, isExisting = true) {
-                                                                                                                                    if (isExisting) {
-                                                                                                                                        // Get the path (not URL) for removal tracking
-                                                                                                                                        const imagePath = this.colors[colorIndex].images[imageIndex];
-                                                                                                                                        if (!this.colors[colorIndex].removed_images) {
-                                                                                                                                            this.colors[colorIndex].removed_images = [];
+                                                                                                                                        // Initialize new_images if undefined
+                                                                                                                                        if (!this.colors[colorIndex].new_images) {
+                                                                                                                                            this.colors[colorIndex].new_images = [];
                                                                                                                                         }
-                                                                                                                                        this.colors[colorIndex].removed_images.push(imagePath);
 
-                                                                                                                                        // Remove from both arrays
-                                                                                                                                        this.colors[colorIndex].images.splice(imageIndex, 1);
-                                                                                                                                        this.colors[colorIndex].images_display.splice(imageIndex, 1);
+                                                                                                                                        Array.from(files).forEach(file => {
+                                                                                                                                            const reader = new FileReader();
+                                                                                                                                            reader.onload = (e) => {
+                                                                                                                                                this.colors[colorIndex].new_images.push(e.target.result);
+                                                                                                                                            };
+                                                                                                                                            reader.readAsDataURL(file);
+                                                                                                                                        });
+                                                                                                                                    },
+                                                                                                                                    removeVariantImage(colorIndex, imageIndex, isExisting = true) {
+                                                                                                                                        if (isExisting) {
+                                                                                                                                            // Get the path (not URL) for removal tracking
+                                                                                                                                            const imagePath = this.colors[colorIndex].images[imageIndex];
+                                                                                                                                            if (!this.colors[colorIndex].removed_images) {
+                                                                                                                                                this.colors[colorIndex].removed_images = [];
+                                                                                                                                            }
+                                                                                                                                            this.colors[colorIndex].removed_images.push(imagePath);
+
+                                                                                                                                            // Remove from both arrays
+                                                                                                                                            this.colors[colorIndex].images.splice(imageIndex, 1);
+                                                                                                                                            this.colors[colorIndex].images_display.splice(imageIndex, 1);
+                                                                                                                                        }
+                                                                                                                                    },
+                                                                                                                                    removeNewVariantImage(colorIndex, imageIndex) {
+                                                                                                                                        this.colors[colorIndex].new_images.splice(imageIndex, 1);
+                                                                                                                                    },
+                                                                                                                                    // Drag and drop for reordering
+                                                                                                                                    dragStart(event, colorIndex, imageIndex, isNew = false) {
+                                                                                                                                        event.dataTransfer.effectAllowed = 'move';
+                                                                                                                                        event.dataTransfer.setData('colorIndex', colorIndex);
+                                                                                                                                        event.dataTransfer.setData('imageIndex', imageIndex);
+                                                                                                                                        event.dataTransfer.setData('isNew', isNew);
+                                                                                                                                    },
+                                                                                                                                    dragOver(event) {
+                                                                                                                                        event.preventDefault();
+                                                                                                                                        event.dataTransfer.dropEffect = 'move';
+                                                                                                                                    },
+                                                                                                                                    drop(event, colorIndex, targetIndex, isNewTarget = false) {
+                                                                                                                                        event.preventDefault();
+                                                                                                                                        const sourceColorIndex = parseInt(event.dataTransfer.getData('colorIndex'));
+                                                                                                                                        const sourceIndex = parseInt(event.dataTransfer.getData('imageIndex'));
+                                                                                                                                        const isNew = event.dataTransfer.getData('isNew') === 'true';
+
+                                                                                                                                        // Only allow reordering within same color and same type (existing/new)
+                                                                                                                                        if (sourceColorIndex !== colorIndex || isNew !== isNewTarget) return;
+
+                                                                                                                                        if (isNew) {
+                                                                                                                                            // Reorder new images
+                                                                                                                                            const [movedItem] = this.colors[colorIndex].new_images.splice(sourceIndex, 1);
+                                                                                                                                            this.colors[colorIndex].new_images.splice(targetIndex, 0, movedItem);
+                                                                                                                                        } else {
+                                                                                                                                            // Reorder existing images (both arrays)
+                                                                                                                                            const [movedPath] = this.colors[colorIndex].images.splice(sourceIndex, 1);
+                                                                                                                                            const [movedUrl] = this.colors[colorIndex].images_display.splice(sourceIndex, 1);
+                                                                                                                                            this.colors[colorIndex].images.splice(targetIndex, 0, movedPath);
+                                                                                                                                            this.colors[colorIndex].images_display.splice(targetIndex, 0, movedUrl);
+                                                                                                                                        }
                                                                                                                                     }
-                                                                                                                                },
-                                                                                                                                removeNewVariantImage(colorIndex, imageIndex) {
-                                                                                                                                    this.colors[colorIndex].new_images.splice(imageIndex, 1);
-                                                                                                                                },
-                                                                                                                                // Drag and drop for reordering
-                                                                                                                                dragStart(event, colorIndex, imageIndex, isNew = false) {
-                                                                                                                                    event.dataTransfer.effectAllowed = 'move';
-                                                                                                                                    event.dataTransfer.setData('colorIndex', colorIndex);
-                                                                                                                                    event.dataTransfer.setData('imageIndex', imageIndex);
-                                                                                                                                    event.dataTransfer.setData('isNew', isNew);
-                                                                                                                                },
-                                                                                                                                dragOver(event) {
-                                                                                                                                    event.preventDefault();
-                                                                                                                                    event.dataTransfer.dropEffect = 'move';
-                                                                                                                                },
-                                                                                                                                drop(event, colorIndex, targetIndex, isNewTarget = false) {
-                                                                                                                                    event.preventDefault();
-                                                                                                                                    const sourceColorIndex = parseInt(event.dataTransfer.getData('colorIndex'));
-                                                                                                                                    const sourceIndex = parseInt(event.dataTransfer.getData('imageIndex'));
-                                                                                                                                    const isNew = event.dataTransfer.getData('isNew') === 'true';
-
-                                                                                                                                    // Only allow reordering within same color and same type (existing/new)
-                                                                                                                                    if (sourceColorIndex !== colorIndex || isNew !== isNewTarget) return;
-
-                                                                                                                                    if (isNew) {
-                                                                                                                                        // Reorder new images
-                                                                                                                                        const [movedItem] = this.colors[colorIndex].new_images.splice(sourceIndex, 1);
-                                                                                                                                        this.colors[colorIndex].new_images.splice(targetIndex, 0, movedItem);
-                                                                                                                                    } else {
-                                                                                                                                        // Reorder existing images (both arrays)
-                                                                                                                                        const [movedPath] = this.colors[colorIndex].images.splice(sourceIndex, 1);
-                                                                                                                                        const [movedUrl] = this.colors[colorIndex].images_display.splice(sourceIndex, 1);
-                                                                                                                                        this.colors[colorIndex].images.splice(targetIndex, 0, movedPath);
-                                                                                                                                        this.colors[colorIndex].images_display.splice(targetIndex, 0, movedUrl);
-                                                                                                                                    }
-                                                                                                                                }
-                                                                                                                            }">
+                                                                                                                                }">
                     <div class="p-6 md:p-8 space-y-6">
                         <div class="flex items-center justify-between border-b border-neutral-100 pb-4 mb-6">
                             <h2 class="text-lg font-semibold text-leather-900">Product Variants (Colors & Sizes)</h2>
@@ -857,13 +857,13 @@
                     const div = document.createElement('div');
                     div.className = 'relative group';
                     div.innerHTML = `
-                                                                                                                                         <img src="${e.target.result}" class="h-24 w-24 object-cover rounded-lg border border-neutral-200" title="${file.name}">
-                                                                                                                                         <button type="button" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity" onclick="removeNewGalleryImage('${file.name}', this)">
-                                                                                                                                            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                                                                                                                            </svg>
-                                                                                                                                        </button>
-                                                                                                                                    `;
+                                                                                                                                             <img src="${e.target.result}" class="h-24 w-24 object-cover rounded-lg border border-neutral-200" title="${file.name}">
+                                                                                                                                             <button type="button" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity" onclick="removeNewGalleryImage('${file.name}', this)">
+                                                                                                                                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                                                                                                                </svg>
+                                                                                                                                            </button>
+                                                                                                                                        `;
                     galleryPreviewsContainer.appendChild(div);
                     galleryPreviewsContainer.classList.remove('hidden');
                 };

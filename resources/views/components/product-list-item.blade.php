@@ -5,23 +5,22 @@
     $saleActive = (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
         (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
 
-    $basePrice = $hasVariants ? $product->variants()->min('price') : $product->price;
+    $basePrice = $product->price; // Always use product base price for comparison/strikethrough
 
     // Default to no sale
     $salePrice = null;
 
     // Only calculate sale price if sale is active
     if ($saleActive) {
-        $salePrice = $hasVariants
-            ? $product->variants()
+        // Product-level sale price takes priority (global sale)
+        if ($product->sale_price > 0 && $product->sale_price < $basePrice) {
+            $salePrice = $product->sale_price;
+        } elseif ($hasVariants) {
+            // Fallback to variant-level sale prices
+            $salePrice = $product->variants()
                 ->whereNotNull('sale_price')
                 ->where('sale_price', '>', 0)
-                ->min('sale_price')
-            : $product->sale_price;
-
-        // Fallback for variants: if 0 found, try product sale price
-        if ($hasVariants && is_null($salePrice) && $product->sale_price > 0) {
-            $salePrice = $product->sale_price;
+                ->min('sale_price');
         }
     }
 
@@ -36,7 +35,7 @@
         ? round((($basePrice - $salePrice) / $basePrice) * 100)
         : 0;
 
-    $displayPrice = $salePrice ?? $basePrice;
+    $displayPrice = $salePrice ?? ($hasVariants ? $product->variants()->min('price') : $basePrice);
 @endphp
 
 <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition mb-6 group">

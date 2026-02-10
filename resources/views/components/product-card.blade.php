@@ -32,7 +32,10 @@
             // Calculate discount percentage for badge
             $discountPercent = 0;
             if ($hasSale) {
-                if ($variantHasSale) {
+                // Product-level sale takes priority
+                if ($productHasSale) {
+                    $discountPercent = round((($product->price - $product->sale_price) / $product->price) * 100);
+                } elseif ($variantHasSale) {
                     // Get best discount from variants
                     $v = $product->variants()
                         ->whereNotNull('sale_price')
@@ -44,8 +47,6 @@
                     if ($v) {
                         $discountPercent = round($v->discount);
                     }
-                } elseif ($productHasSale) {
-                    $discountPercent = round((($product->price - $product->sale_price) / $product->price) * 100);
                 }
             }
         @endphp
@@ -147,51 +148,49 @@
         <div class="mt-auto">
             <div class="flex items-center gap-1.5 md:gap-2 mb-2 flex-wrap">
                 @php
-                    // Recalculate basic vars using logic from top (assuming $saleActive is availablescope)
-                    // If not availability, re-check:
                     $saleActive = (!$product->sale_starts_at || $product->sale_starts_at->isPast()) &&
                         (!$product->sale_ends_at || $product->sale_ends_at->isFuture());
 
                     $hasVariants = $product->variants()->count() > 0;
                     $lowestSalePrice = null;
+                    $basePrice = $product->price; // Always use product base price for comparison
 
                     if ($hasVariants) {
-                        if ($saleActive) {
+                        $lowestPrice = $product->variants()->min('price');
+                        $highestPrice = $product->variants()->max('price');
+
+                        if ($saleActive && $product->sale_price > 0 && $product->sale_price < $basePrice) {
+                            // Product-level sale price takes priority (global sale)
+                            $lowestSalePrice = $product->sale_price;
+                        } elseif ($saleActive) {
+                            // Fallback to variant-level sale prices
                             $lowestSalePrice = $product->variants()
                                 ->whereNotNull('sale_price')
                                 ->where('sale_price', '>', 0)
                                 ->min('sale_price');
-
-                            // Fallback: If no variant has a sale price, but the product does, use product sale price
-                            // This assumes "inheritance" as per Admin UI text
-                            if (is_null($lowestSalePrice) && $product->sale_price > 0 && $product->sale_price < $product->price) {
-                                $lowestSalePrice = $product->sale_price;
-                            }
                         }
-                        $lowestPrice = $product->variants()->min('price');
-                        $highestPrice = $product->variants()->max('price');
                     } else {
-                        if ($saleActive && $product->sale_price > 0 && $product->sale_price < $product->price) {
+                        if ($saleActive && $product->sale_price > 0 && $product->sale_price < $basePrice) {
                             $lowestSalePrice = $product->sale_price;
                         }
                         $lowestPrice = $product->price;
                         $highestPrice = $product->price;
                     }
 
-                    // Final checks
-                    if ($lowestSalePrice && $lowestSalePrice >= $lowestPrice) {
-                        $lowestSalePrice = null; // Invalid sale
+                    // Final check: sale price must be less than base price to be valid
+                    if ($lowestSalePrice && $lowestSalePrice >= $basePrice) {
+                        $lowestSalePrice = null;
                     }
 
                     $displayPrice = $lowestSalePrice ?? $lowestPrice;
-                    $hasDiscount = $lowestSalePrice && $lowestPrice > $lowestSalePrice;
+                    $hasDiscount = $lowestSalePrice && $basePrice > $lowestSalePrice;
                 @endphp
 
                 @if($hasDiscount)
                     <span class="text-lg md:text-2xl font-bold text-leather-900 whitespace-nowrap">Rs.
                         {{ number_format($displayPrice) }}</span>
                     <span class="text-xs md:text-base text-neutral-400 line-through whitespace-nowrap">Rs.
-                        {{ number_format($lowestPrice) }}</span>
+                        {{ number_format($basePrice) }}</span>
                 @else
                     @if($hasVariants && $lowestPrice != $highestPrice)
                         <span class="text-lg md:text-2xl font-bold text-leather-900">Rs. {{ number_format($lowestPrice) }} - Rs.

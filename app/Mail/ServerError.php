@@ -16,7 +16,7 @@ class ServerError extends Mailable implements ShouldQueue
     /**
      * Create a new message instance.
      */
-    public function __construct(public \Throwable $exception, public array $requestData)
+    public function __construct(public string $errorMessage, public string $stackTrace, public array $requestData)
     {
         //
     }
@@ -27,7 +27,7 @@ class ServerError extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: $this->exception->getMessage() ?: 'Server Error',
+            subject: substr($this->errorMessage, 0, 100) ?: 'Server Error',
         );
     }
 
@@ -39,8 +39,8 @@ class ServerError extends Mailable implements ShouldQueue
         return new Content(
             markdown: 'emails.server-error',
             with: [
-                'errorMessage' => $this->exception->getMessage(),
-                'stackTrace' => substr($this->exception->getTraceAsString(), 0, 5000), // Limit trace size
+                'errorMessage' => $this->errorMessage,
+                'stackTrace' => substr($this->stackTrace, 0, 5000), // Limit trace size
                 'url' => $this->requestData['url'] ?? 'N/A',
                 'method' => $this->requestData['method'] ?? 'N/A',
                 'ip' => $this->requestData['ip'] ?? 'N/A',

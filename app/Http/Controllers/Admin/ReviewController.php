@@ -42,6 +42,10 @@ class ReviewController extends Controller
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_anonymous' => 'sometimes|boolean',
             'is_approved' => 'sometimes|boolean',
+        ], [
+            'images.*.uploaded' => 'The image failed to upload. This usually happens if the file is larger than the server allows (check php.ini upload_max_filesize).',
+            'images.*.max' => 'The image must not be larger than 2MB.',
+            'images.*.image' => 'The file must be an image (jpg, jpeg, png, gif).',
         ]);
 
         $data = $request->only(['product_id', 'rating', 'comment', 'is_anonymous', 'is_approved']);
@@ -51,10 +55,23 @@ class ReviewController extends Controller
 
         if ($request->hasFile('images')) {
             $images = [];
+            $path = public_path('reviews');
+
+            try {
+                \Illuminate\Support\Facades\File::ensureDirectoryExists($path, 0755, true);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to ensure directory exists: ' . $path . ' Error: ' . $e->getMessage());
+            }
+
             foreach ($request->file('images') as $image) {
-                $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('reviews'), $filename);
-                $images[] = 'reviews/' . $filename;
+                try {
+                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    $image->move($path, $filename);
+                    $images[] = 'reviews/' . $filename;
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Failed to move uploaded review image to ' . $path . '. Error: ' . $e->getMessage());
+                    throw $e; // Re-throw to show error to user
+                }
             }
             $data['images'] = $images;
         }
@@ -87,6 +104,10 @@ class ReviewController extends Controller
             'comment' => 'sometimes|string|max:1000',
             'is_anonymous' => 'sometimes|boolean',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'images.*.uploaded' => 'The image failed to upload. This usually happens if the file is larger than the server allows (check php.ini upload_max_filesize).',
+            'images.*.max' => 'The image must not be larger than 2MB.',
+            'images.*.image' => 'The file must be an image (jpg, jpeg, png, gif).',
         ]);
 
         $data = $request->only(['product_id', 'rating', 'comment']);
@@ -95,10 +116,23 @@ class ReviewController extends Controller
 
         if ($request->hasFile('images')) {
             $images = $review->images ?? [];
+            $path = public_path('reviews');
+
+            try {
+                \Illuminate\Support\Facades\File::ensureDirectoryExists($path, 0755, true);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to ensure directory exists: ' . $path . ' Error: ' . $e->getMessage());
+            }
+
             foreach ($request->file('images') as $image) {
-                $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('reviews'), $filename);
-                $images[] = 'reviews/' . $filename;
+                try {
+                    $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    $image->move($path, $filename);
+                    $images[] = 'reviews/' . $filename;
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Failed to move uploaded review image to ' . $path . ' during update. Error: ' . $e->getMessage());
+                    throw $e;
+                }
             }
             $data['images'] = $images;
         }

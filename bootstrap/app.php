@@ -23,11 +23,15 @@ return Application::configure(basePath: dirname(__DIR__))
             if (app()->environment('production')) {
                 try {
                     \Illuminate\Support\Facades\Mail::to('4wellsolutions@gmail.com')
-                        ->send(new \App\Mail\ServerError($e, [
-                            'url' => request()->fullUrl(),
-                            'method' => request()->method(),
-                            'ip' => request()->ip(),
-                        ]));
+                        ->send(new \App\Mail\ServerError(
+                            $e->getMessage(),
+                            $e->getTraceAsString(),
+                            [
+                                'url' => request()->fullUrl(),
+                                'method' => request()->method(),
+                                'ip' => request()->ip(),
+                            ]
+                        ));
                 } catch (\Throwable $mailError) {
                     \Illuminate\Support\Facades\Log::error('Failed to send error email: ' . $mailError->getMessage());
                 }

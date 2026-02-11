@@ -220,7 +220,8 @@
                 @foreach($categories as $category)
                     <a href="{{ route('category.show', $category->slug) }}"
                         class="group relative h-96 overflow-hidden rounded-xl shadow-lg">
-                        <img src="{{ $category->image }}" alt="{{ $category->name }}"
+                        <img src="{{ str_starts_with($category->image, 'http') ? $category->image : asset($category->image) }}"
+                            alt="{{ $category->name }}"
                             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                         <div
                             class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity">
@@ -460,16 +461,16 @@
     </section>
     <!-- WebSite Schema -->
     <script type="application/ld+json">
-                            {
-                              "@@context": "https://schema.org",
-                              "@@type": "WebSite",
-                              "name": "Leathers.pk",
-                              "url": "{{ url('/') }}",
-                              "potentialAction": {
-                                "@@type": "SearchAction",
-                                "target": "{{ url('/shop') }}?search={search_term_string}",
-                                "query-input": "required name=search_term_string"
-                              }
-                            }
-                            </script>
+                                    {
+                                      "@@context": "https://schema.org",
+                                      "@@type": "WebSite",
+                                      "name": "Leathers.pk",
+                                      "url": "{{ url('/') }}",
+                                      "potentialAction": {
+                                        "@@type": "SearchAction",
+                                        "target": "{{ url('/shop') }}?search={search_term_string}",
+                                        "query-input": "required name=search_term_string"
+                                      }
+                                    }
+                                    </script>
 @endsection

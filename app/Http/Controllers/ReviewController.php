@@ -80,19 +80,32 @@ class ReviewController extends Controller
         $video = null;
 
         if ($request->hasFile('media')) {
+            $path = public_path('reviews');
+
+            try {
+                \Illuminate\Support\Facades\File::ensureDirectoryExists($path, 0755, true);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Failed to ensure directory exists (Frontend): ' . $path . ' Error: ' . $e->getMessage());
+            }
+
             foreach ($request->file('media') as $file) {
-                // Store in public/reviews folder
-                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('reviews'), $filename);
+                try {
+                    // Store in public/reviews folder
+                    $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $file->move($path, $filename);
 
-                $path = 'reviews/' . $filename;
-                $mime = $file->getClientMimeType();
+                    $storedPath = 'reviews/' . $filename;
+                    $mime = $file->getClientMimeType();
 
-                // Simple check for video MIME type with fallback to extension
-                if (str_starts_with($mime, 'video/') || in_array(strtolower($file->getClientOriginalExtension()), ['mp4', 'mov', 'avi'])) {
-                    $video = $path;
-                } else {
-                    $images[] = $path;
+                    // Simple check for video MIME type with fallback to extension
+                    if (str_starts_with($mime, 'video/') || in_array(strtolower($file->getClientOriginalExtension()), ['mp4', 'mov', 'avi'])) {
+                        $video = $storedPath;
+                    } else {
+                        $images[] = $storedPath;
+                    }
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Failed to move uploaded media to ' . $path . ' (Frontend). Error: ' . $e->getMessage());
+                    throw $e;
                 }
             }
         }

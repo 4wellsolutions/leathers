@@ -38,6 +38,7 @@ class DealController extends Controller
             ->take(20)
             ->get();
 
+        $products->each(fn($p) => $p->append('image_url'));
         return response()->json($products);
     }
 
@@ -49,6 +50,7 @@ class DealController extends Controller
             'slug' => 'nullable|string|max:255|unique:deals',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'is_active' => 'boolean',
@@ -66,11 +68,21 @@ class DealController extends Controller
         \Log::info('Deal Store - Name: ' . $validated['name']);
         \Log::info('Deal Store - Slug: ' . $slug);
 
+        // Handle image upload
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('deals'), $imageName);
+            $imagePath = 'deals/' . $imageName;
+        }
+
         $deal = Deal::create([
             'name' => $validated['name'],
             'slug' => $slug,
             'description' => $validated['description'],
             'price' => $validated['price'],
+            'image' => $imagePath,
             'start_date' => $validated['start_date'],
             'end_date' => $validated['end_date'],
             'is_active' => $request->has('is_active'),

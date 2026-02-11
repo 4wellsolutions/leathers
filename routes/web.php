@@ -54,7 +54,7 @@ Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wi
 
 
 Route::get('/deals', [DealController::class, 'index'])->name('deals.index');
-Route::get('/deal/{slug}', [DealController::class, 'show'])->name('deals.show');
+Route::get('/deals/{slug}', [DealController::class, 'show'])->name('deals.show');
 
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');

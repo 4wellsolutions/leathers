@@ -52,29 +52,66 @@ class ReviewController extends Controller
         if ($request->hasFile('images')) {
             $images = [];
             foreach ($request->file('images') as $image) {
-                $images[] = $image->store('reviews', 'public');
+                $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('reviews'), $filename);
+                $images[] = 'reviews/' . $filename;
             }
             $data['images'] = $images;
         }
 
-        Review::create($data);
+        $review = Review::create($data);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Review created successfully.',
+                'redirect_url' => route('admin.reviews.index'),
+            ]);
+        }
 
         return redirect()->route('admin.reviews.index')->with('success', 'Review created successfully.');
     }
 
     public function edit(Review $review)
     {
-        return view('admin.reviews.edit', compact('review'));
+        $products = Product::select('id', 'name', 'image')->orderBy('name')->get();
+        return view('admin.reviews.edit', compact('review', 'products'));
     }
 
     public function update(Request $request, Review $review)
     {
         $request->validate([
+            'product_id' => 'sometimes|exists:products,id',
+            'rating' => 'sometimes|integer|min:1|max:5',
             'is_approved' => 'sometimes|boolean',
             'comment' => 'sometimes|string|max:1000',
+            'is_anonymous' => 'sometimes|boolean',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $review->update($request->only(['is_approved', 'comment']));
+        $data = $request->only(['product_id', 'rating', 'comment']);
+        $data['is_approved'] = $request->has('is_approved');
+        $data['is_anonymous'] = $request->has('is_anonymous');
+
+        if ($request->hasFile('images')) {
+            $images = $review->images ?? [];
+            foreach ($request->file('images') as $image) {
+                $filename = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('reviews'), $filename);
+                $images[] = 'reviews/' . $filename;
+            }
+            $data['images'] = $images;
+        }
+
+        $review->update($data);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Review updated successfully.',
+                'redirect_url' => route('admin.reviews.index'),
+            ]);
+        }
 
         return redirect()->route('admin.reviews.index')->with('success', 'Review updated successfully.');
     }

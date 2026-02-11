@@ -44,7 +44,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Redirects
     Route::resource('redirects', \App\Http\Controllers\Admin\RedirectController::class);
 
-    Route::resource('deals', \App\Http\Controllers\Admin\DealController::class);
 
     // Users
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);

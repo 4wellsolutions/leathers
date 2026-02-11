@@ -159,13 +159,13 @@
                                     <div class="flex space-x-2">
                                         @if(!empty($review->images))
                                             @foreach($review->images as $img)
-                                                <a href="{{ asset('storage/' . $img) }}" target="_blank" class="block h-8 w-8 rounded overflow-hidden border border-neutral-200 hover:border-gold-500 transition-colors">
-                                                    <img src="{{ asset('storage/' . $img) }}" class="h-full w-full object-cover">
+                                                <a href="{{ asset($img) }}" target="_blank" class="block h-8 w-8 rounded overflow-hidden border border-neutral-200 hover:border-gold-500 transition-colors">
+                                                    <img src="{{ asset($img) }}" class="h-full w-full object-cover">
                                                 </a>
                                             @endforeach
                                         @endif
                                         @if($review->video)
-                                            <a href="{{ asset('storage/' . $review->video) }}" target="_blank" class="flex items-center justify-center h-8 w-8 rounded border border-neutral-200 bg-neutral-50 text-neutral-500 hover:text-gold-600 hover:border-gold-500 transition-colors">
+                                            <a href="{{ asset($review->video) }}" target="_blank" class="flex items-center justify-center h-8 w-8 rounded border border-neutral-200 bg-neutral-50 text-neutral-500 hover:text-gold-600 hover:border-gold-500 transition-colors">
                                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                                 </svg>

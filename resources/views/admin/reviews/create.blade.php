@@ -20,7 +20,12 @@
     </div>
 
     <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden max-w-3xl">
-        <form action="{{ route('admin.reviews.store') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
+        <!-- Success/Error Messages -->
+        <div id="form-message" class="hidden px-6 pt-4">
+            <div id="form-message-content" class="flex items-center px-4 py-3 rounded-lg text-sm font-medium"></div>
+        </div>
+
+        <form id="review-form" action="{{ route('admin.reviews.store') }}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
             @csrf
 
             <!-- Product Selection (Searchable with Image) -->
@@ -63,9 +68,7 @@
                     </div>
                 </div>
 
-                @error('product_id')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <p class="mt-1 text-sm text-red-600 hidden" id="error-product_id"></p>
             </div>
 
             <!-- Rating -->
@@ -79,9 +82,7 @@
                         </label>
                     @endfor
                 </div>
-                @error('rating')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <p class="mt-1 text-sm text-red-600 hidden" id="error-rating"></p>
             </div>
 
             <!-- Comment -->
@@ -90,9 +91,7 @@
                 <textarea id="comment" name="comment" rows="4" required
                     class="mt-1 block w-full border-neutral-300 rounded-md shadow-sm focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
                     placeholder="Write the review content here...">{{ old('comment') }}</textarea>
-                @error('comment')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <p class="mt-1 text-sm text-red-600 hidden" id="error-comment"></p>
             </div>
 
             <!-- Images -->
@@ -115,9 +114,7 @@
                 </div>
                 <!-- Image Previews -->
                 <div id="image-previews" class="mt-3 flex flex-wrap gap-3"></div>
-                @error('images.*')
-                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+                <p class="mt-1 text-sm text-red-600 hidden" id="error-images"></p>
             </div>
 
             <!-- Options -->
@@ -147,8 +144,12 @@
 
             <div class="pt-5 border-t border-neutral-200">
                 <div class="flex justify-end">
-                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-leather-600 hover:bg-leather-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500">
-                        Create Review
+                    <button type="submit" id="submit-btn" class="inline-flex justify-center items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-leather-600 hover:bg-leather-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold-500 transition-all">
+                        <svg id="submit-spinner" class="hidden animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span id="submit-text">Create Review</span>
                     </button>
                 </div>
             </div>
@@ -267,6 +268,111 @@
                     imageInput.files = dt.files;
                     renderPreviews();
                 }
+
+                // ===== AJAX Form Submission =====
+                const form = document.getElementById('review-form');
+                const submitBtn = document.getElementById('submit-btn');
+                const submitSpinner = document.getElementById('submit-spinner');
+                const submitText = document.getElementById('submit-text');
+                const formMessage = document.getElementById('form-message');
+                const formMessageContent = document.getElementById('form-message-content');
+
+                function clearErrors() {
+                    document.querySelectorAll('[id^="error-"]').forEach(el => {
+                        el.textContent = '';
+                        el.classList.add('hidden');
+                    });
+                }
+
+                function showErrors(errors) {
+                    for (const [field, messages] of Object.entries(errors)) {
+                        const key = field.replace('.', '_').replace(/\.\d+$/, '');
+                        const el = document.getElementById('error-' + key);
+                        if (el) {
+                            el.textContent = messages[0];
+                            el.classList.remove('hidden');
+                        }
+                    }
+                }
+
+                function showMessage(type, message) {
+                    formMessage.classList.remove('hidden');
+                    formMessageContent.className = 'flex items-center px-4 py-3 rounded-lg text-sm font-medium';
+                    if (type === 'success') {
+                        formMessageContent.classList.add('bg-green-50', 'text-green-800', 'border', 'border-green-200');
+                        formMessageContent.innerHTML = `
+                            <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            ${message}`;
+                    } else {
+                        formMessageContent.classList.add('bg-red-50', 'text-red-800', 'border', 'border-red-200');
+                        formMessageContent.innerHTML = `
+                            <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                            </svg>
+                            ${message}`;
+                    }
+                    formMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+
+                function setLoading(loading) {
+                    submitBtn.disabled = loading;
+                    submitSpinner.classList.toggle('hidden', !loading);
+                    submitText.textContent = loading ? 'Submitting...' : 'Create Review';
+                    submitBtn.classList.toggle('opacity-75', loading);
+                    submitBtn.classList.toggle('cursor-not-allowed', loading);
+                }
+
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    clearErrors();
+                    formMessage.classList.add('hidden');
+                    setLoading(true);
+
+                    const formData = new FormData(form);
+
+                    // Re-attach files from DataTransfer since FormData might not pick them up correctly
+                    formData.delete('images[]');
+                    Array.from(dt.files).forEach(file => {
+                        formData.append('images[]', file);
+                    });
+
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        }
+                    })
+                    .then(async response => {
+                        const data = await response.json();
+                        if (!response.ok) {
+                            if (response.status === 422 && data.errors) {
+                                showErrors(data.errors);
+                                showMessage('error', data.message || 'Please fix the errors below.');
+                            } else {
+                                showMessage('error', data.message || 'Something went wrong. Please try again.');
+                            }
+                            setLoading(false);
+                            return;
+                        }
+
+                        showMessage('success', data.message || 'Review created successfully! Redirecting...');
+                        setLoading(false);
+                        submitBtn.disabled = true;
+
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url || '{{ route("admin.reviews.index") }}';
+                        }, 1000);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showMessage('error', 'A network error occurred. Please try again.');
+                        setLoading(false);
+                    });
+                });
             });
         </script>
     @endpush

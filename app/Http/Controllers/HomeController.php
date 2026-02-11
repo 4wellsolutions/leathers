@@ -12,7 +12,20 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $categories = Category::all();
+        // Fetch categories that have active products
+        $categories = Category::whereHas('products', function ($query) {
+            $query->where('is_active', true);
+        })->get();
+
+        // Load limited products for each category to avoid N+1 and over-fetching
+        foreach ($categories as $category) {
+            $category->setRelation('products', $category->products()
+                ->where('is_active', true)
+                ->latest()
+                ->take(4)
+                ->get());
+        }
+
         $featuredProducts = Product::where('featured', true)
             ->where('is_active', true)
             ->with(['category', 'variants'])

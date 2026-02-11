@@ -238,6 +238,41 @@
         </div>
     </section>
 
+    <!-- Category Product Collections -->
+    @foreach($categories as $category)
+        @if($category->products->count() > 0)
+            <section class="py-16 bg-white border-t border-neutral-100">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-end mb-8">
+                        <div>
+                            <h2 class="text-3xl font-serif font-bold text-leather-900 mb-2">{{ $category->name }}</h2>
+                            <div class="w-16 h-1 bg-gold-500"></div>
+                        </div>
+                        <a href="{{ route('category.show', $category->slug) }}"
+                            class="hidden md:flex items-center text-leather-700 font-semibold hover:text-leather-900 transition-colors">
+                            View All
+                            <svg class="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        @foreach($category->products as $product)
+                            <x-product-card :product="$product" />
+                        @endforeach
+                    </div>
+
+                    <div class="mt-8 text-center md:hidden">
+                        <a href="{{ route('category.show', $category->slug) }}" class="btn-outline inline-block">View All
+                            {{ $category->name }}</a>
+                    </div>
+                </div>
+            </section>
+        @endif
+    @endforeach
+
     <!-- Featured Products -->
     <section class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -425,16 +460,16 @@
     </section>
     <!-- WebSite Schema -->
     <script type="application/ld+json">
-                        {
-                          "@@context": "https://schema.org",
-                          "@@type": "WebSite",
-                          "name": "Leathers.pk",
-                          "url": "{{ url('/') }}",
-                          "potentialAction": {
-                            "@@type": "SearchAction",
-                            "target": "{{ url('/shop') }}?search={search_term_string}",
-                            "query-input": "required name=search_term_string"
-                          }
-                        }
-                        </script>
+                            {
+                              "@@context": "https://schema.org",
+                              "@@type": "WebSite",
+                              "name": "Leathers.pk",
+                              "url": "{{ url('/') }}",
+                              "potentialAction": {
+                                "@@type": "SearchAction",
+                                "target": "{{ url('/shop') }}?search={search_term_string}",
+                                "query-input": "required name=search_term_string"
+                              }
+                            }
+                            </script>
 @endsection

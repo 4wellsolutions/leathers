@@ -2,6 +2,15 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17950154997"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'AW-17950154997');
+    </script>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -35,19 +44,66 @@
     <script type="application/ld+json">
     {
         "@@context": "https://schema.org",
-        "@@type": "Organization",
+        "@@type": "OnlineBusiness",
         "name": "Leathers.pk",
         "url": "{{ url('/') }}",
         "logo": "{{ asset('/images/hero/hero.png') }}",
-        "description": "Premium handcrafted leather goods including belts, wallets, and watches",
-        "address": {
-            "@@type": "PostalAddress",
-            "addressCountry": "PK"
+        "image": "{{ asset('/images/hero/hero.png') }}",
+        "description": "Premium handcrafted leather goods including belts, wallets, and watches. Online-only store delivering across Pakistan.",
+        "foundingDate": "2024",
+        "contactPoint": [
+            {
+                "@@type": "ContactPoint",
+                "telephone": "+92-311-1222741",
+                "contactType": "customer service",
+                "availableLanguage": ["English", "Urdu"],
+                "contactOption": "TollFree",
+                "areaServed": "PK"
+            }
+        ],
+        "areaServed": {
+            "@@type": "Country",
+            "name": "Pakistan"
         },
+        "serviceArea": {
+            "@@type": "Country",
+            "name": "Pakistan"
+        },
+        "priceRange": "$$",
+        "currenciesAccepted": "PKR",
+        "paymentAccepted": ["Cash on Delivery", "Bank Transfer", "JazzCash", "EasyPaisa"],
         "sameAs": [
             "https://facebook.com/leatherspk",
-            "https://instagram.com/leatherspk"
-        ]
+            "https://instagram.com/leatherspk",
+            "https://wa.me/923111222741"
+        ],
+        "potentialAction": {
+            "@@type": "SearchAction",
+            "target": "{{ url('/search') }}?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        },
+        "offers": {
+            "@@type": "OfferShippingDetails",
+            "shippingDestination": {
+                "@@type": "DefinedRegion",
+                "addressCountry": "PK"
+            },
+            "deliveryTime": {
+                "@@type": "ShippingDeliveryTime",
+                "handlingTime": {
+                    "@@type": "QuantitativeValue",
+                    "minValue": 1,
+                    "maxValue": 2,
+                    "unitCode": "DAY"
+                },
+                "transitTime": {
+                    "@@type": "QuantitativeValue",
+                    "minValue": 2,
+                    "maxValue": 5,
+                    "unitCode": "DAY"
+                }
+            }
+        }
     }
     </script>
 

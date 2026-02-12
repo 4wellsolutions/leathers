@@ -59,7 +59,7 @@
                                         class="text-xs font-bold text-neutral-500 uppercase tracking-wider">Collections</span>
                                 </div>
 
-                                @foreach(\App\Models\Category::all() as $category)
+                                @foreach(\App\Models\Category::has('products')->get() as $category)
                                     <a href="{{ route('category.show', $category->slug) }}"
                                         class="block px-6 py-3 text-sm font-medium text-leather-900 hover:bg-gold-50 hover:text-gold-700 hover:pl-8 transition-all duration-200 border-l-2 border-transparent hover:border-gold-500">
                                         {{ $category->name }}
@@ -442,7 +442,7 @@
 
                     <div x-show="shopOpen" x-collapse class="pl-4 mt-1 space-y-1 bg-leather-750">
 
-                        @foreach(\App\Models\Category::all() as $category)
+                        @foreach(\App\Models\Category::has('products')->get() as $category)
                             <a href="{{ route('category.show', $category->slug) }}"
                                 class="block px-3 py-2 text-sm font-medium text-neutral-300 hover:text-gold-400 hover:bg-leather-700 rounded-md">{{ $category->name }}</a>
                         @endforeach

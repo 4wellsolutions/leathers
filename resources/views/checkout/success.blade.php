@@ -74,4 +74,15 @@
             </a>
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            gtag('event', 'conversion', {
+                'send_to': 'AW-17950154997/{{ config("services.google_ads.conversion_label", "") }}',
+                'value': {{ $order->total }},
+                'currency': 'PKR',
+                'transaction_id': '{{ $order->order_number }}'
+            });
+        </script>
+    @endpush
 @endsection

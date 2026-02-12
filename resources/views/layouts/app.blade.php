@@ -9,6 +9,7 @@
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
         gtag('config', 'AW-17950154997');
+        gtag('config', 'G-FC07HY5793');
     </script>
 
     <meta charset="utf-8">

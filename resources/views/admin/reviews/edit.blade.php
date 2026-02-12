@@ -51,7 +51,8 @@
                                         </div>
                                         <div class="flex-1 min-w-0 pt-1">
                                             <p id="selected-product-name" class="text-sm font-semibold text-neutral-900">
-                                                {{ $review->product->name }}</p>
+                                                {{ $review->product->name }}
+                                            </p>
                                             <button type="button" id="change-product-btn"
                                                 class="mt-2 inline-flex items-center text-xs text-gold-600 hover:text-gold-700 font-medium">
                                                 <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor"
@@ -254,10 +255,11 @@
                             </div>
 
                             <div class="pt-4 mt-4 border-t border-neutral-100">
-                                <div class="flex justify-between items-center text-sm py-1">
-                                    <span class="text-neutral-500">Created</span>
-                                    <span
-                                        class="font-medium text-neutral-900">{{ $review->created_at->format('M d, Y') }}</span>
+                                <div class="space-y-2 py-1">
+                                    <label for="created_at" class="block text-sm text-neutral-500">Created Date</label>
+                                    <input type="datetime-local" name="created_at" id="created_at"
+                                        value="{{ old('created_at', $review->created_at->format('Y-m-d\TH:i')) }}"
+                                        class="block w-full rounded-lg border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 sm:text-sm py-2 px-3">
                                 </div>
                                 <div class="flex justify-between items-center text-sm py-1">
                                     <span class="text-neutral-500">Rating</span>
@@ -276,47 +278,21 @@
                     <!-- Customer Card -->
                     <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
                         <div class="p-6">
-                            <h3 class="text-sm font-medium text-neutral-500 uppercase tracking-wider mb-4">Customer</h3>
-                            <div class="flex items-center mb-4">
-                                <div
-                                    class="h-10 w-10 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-500 font-bold border border-neutral-200">
-                                    {{ substr($review->user ? $review->user->name : 'G', 0, 1) }}
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm font-medium text-gray-900">
-                                        {{ $review->user ? $review->user->name : 'Guest User' }}</p>
-                                    <p class="text-xs text-gray-500">{{ $review->user ? $review->user->email : 'No email' }}
-                                    </p>
-                                </div>
-                            </div>
+                            <h3 class="text-sm font-medium text-neutral-500 uppercase tracking-wider mb-4">Linked User</h3>
+                            <input type="number" name="user_id" id="user_id" value="{{ old('user_id', $review->user_id) }}"
+                                min="1"
+                                class="block w-full rounded-lg border-neutral-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 sm:text-sm py-2 px-3"
+                                placeholder="Enter user ID">
                             @if($review->is_anonymous)
                                 <span
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 text-neutral-800">
+                                    class="mt-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 text-neutral-800">
                                     Posted Anonymously
                                 </span>
                             @endif
                         </div>
                     </div>
 
-                    <!-- Danger Zone -->
-                    <div class="bg-white rounded-xl shadow-sm border border-red-200 overflow-hidden">
-                        <div class="p-6">
-                            <h3 class="text-sm font-medium text-red-600 uppercase tracking-wider mb-4">Danger Zone</h3>
-                            <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST"
-                                onsubmit="return confirm('Delete this review permanently?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="inline-flex items-center w-full justify-center px-4 py-2 border border-red-300 text-sm font-medium rounded-lg text-red-700 bg-red-50 hover:bg-red-100 transition-colors">
-                                    <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                    Delete Review
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </form>
@@ -347,11 +323,11 @@
                         dropdown.innerHTML = '<div class="px-3 py-4 text-sm text-neutral-400 text-center">No products found</div>';
                     } else {
                         dropdown.innerHTML = filtered.map(p => `
-                        <div class="flex items-center px-3 py-2 cursor-pointer hover:bg-gold-50 transition ${hiddenInput.value == p.id ? 'bg-gold-50 border-l-2 border-gold-500' : ''}" data-id="${p.id}" data-name="${p.name}" data-image="${p.image}">
-                            <img src="${p.image}" class="w-10 h-10 rounded object-cover mr-3 border border-neutral-200 flex-shrink-0" alt="" onerror="this.src='/images/placeholder.jpg'">
-                            <span class="text-sm text-neutral-800 truncate">${p.name}</span>
-                        </div>
-                    `).join('');
+                                                        <div class="flex items-center px-3 py-2 cursor-pointer hover:bg-gold-50 transition ${hiddenInput.value == p.id ? 'bg-gold-50 border-l-2 border-gold-500' : ''}" data-id="${p.id}" data-name="${p.name}" data-image="${p.image}">
+                                                            <img src="${p.image}" class="w-10 h-10 rounded object-cover mr-3 border border-neutral-200 flex-shrink-0" alt="" onerror="this.src='/images/placeholder.jpg'">
+                                                            <span class="text-sm text-neutral-800 truncate">${p.name}</span>
+                                                        </div>
+                                                    `).join('');
                     }
                     dropdown.classList.remove('hidden');
                 }
@@ -405,14 +381,14 @@
                             const div = document.createElement('div');
                             div.className = 'relative group';
                             div.innerHTML = `
-                            <div class="w-24 h-24 rounded-lg overflow-hidden border border-neutral-200 shadow-sm">
-                                <img src="${e.target.result}" class="w-full h-full object-cover" alt="Preview">
-                            </div>
-                            <button type="button" data-index="${index}"
-                                class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow opacity-0 group-hover:opacity-100 transition-opacity">
-                                &times;
-                            </button>
-                        `;
+                                                            <div class="w-24 h-24 rounded-lg overflow-hidden border border-neutral-200 shadow-sm">
+                                                                <img src="${e.target.result}" class="w-full h-full object-cover" alt="Preview">
+                                                            </div>
+                                                            <button type="button" data-index="${index}"
+                                                                class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                &times;
+                                                            </button>
+                                                        `;
                             div.querySelector('button').addEventListener('click', function () {
                                 removeFile(parseInt(this.dataset.index));
                             });
@@ -465,17 +441,17 @@
                     if (type === 'success') {
                         formMessageContent.classList.add('bg-green-50', 'text-green-800', 'border', 'border-green-200');
                         formMessageContent.innerHTML = `
-                        <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        ${message}`;
+                                                        <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        ${message}`;
                     } else {
                         formMessageContent.classList.add('bg-red-50', 'text-red-800', 'border', 'border-red-200');
                         formMessageContent.innerHTML = `
-                        <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                        </svg>
-                        ${message}`;
+                                                        <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        ${message}`;
                     }
                     formMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }

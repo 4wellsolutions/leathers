@@ -162,10 +162,13 @@
 }
 
 @keyframes cart-glow {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.6;
         transform: scale(1);
     }
+
     50% {
         opacity: 1;
         transform: scale(1.1);
@@ -174,10 +177,13 @@
 
 /* Additional pulse animation for the badge */
 @keyframes badge-pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1);
         box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
     }
+
     50% {
         transform: scale(1.05);
         box-shadow: 0 0 0 4px rgba(245, 158, 11, 0);
@@ -186,4 +192,186 @@
 
 .animate-bounce {
     animation: badge-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ==============================================
+   Admin Panel - Global Form Field Styles
+   ============================================== */
+
+/* Base input styles for all admin form fields */
+.admin-layout input[type="text"],
+.admin-layout input[type="email"],
+.admin-layout input[type="password"],
+.admin-layout input[type="number"],
+.admin-layout input[type="tel"],
+.admin-layout input[type="url"],
+.admin-layout input[type="search"],
+.admin-layout input[type="date"],
+.admin-layout input[type="datetime-local"],
+.admin-layout input[type="time"],
+.admin-layout select,
+.admin-layout textarea {
+    display: block;
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--color-leather-900);
+    background-color: #fff;
+    border: 1.5px solid var(--color-leather-200);
+    border-radius: 0.625rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* Placeholder styling */
+.admin-layout input::placeholder,
+.admin-layout textarea::placeholder {
+    color: var(--color-leather-400);
+    font-weight: 400;
+}
+
+/* Hover state */
+.admin-layout input[type="text"]:hover,
+.admin-layout input[type="email"]:hover,
+.admin-layout input[type="password"]:hover,
+.admin-layout input[type="number"]:hover,
+.admin-layout input[type="tel"]:hover,
+.admin-layout input[type="url"]:hover,
+.admin-layout input[type="search"]:hover,
+.admin-layout input[type="date"]:hover,
+.admin-layout input[type="datetime-local"]:hover,
+.admin-layout input[type="time"]:hover,
+.admin-layout select:hover,
+.admin-layout textarea:hover {
+    border-color: var(--color-leather-300);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Focus state with gold ring */
+.admin-layout input[type="text"]:focus,
+.admin-layout input[type="email"]:focus,
+.admin-layout input[type="password"]:focus,
+.admin-layout input[type="number"]:focus,
+.admin-layout input[type="tel"]:focus,
+.admin-layout input[type="url"]:focus,
+.admin-layout input[type="search"]:focus,
+.admin-layout input[type="date"]:focus,
+.admin-layout input[type="datetime-local"]:focus,
+.admin-layout input[type="time"]:focus,
+.admin-layout select:focus,
+.admin-layout textarea:focus {
+    border-color: var(--color-gold-500);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Select arrow override */
+.admin-layout select {
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23737373' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.25em 1.25em;
+}
+
+/* Textarea specific */
+.admin-layout textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* File input */
+.admin-layout input[type="file"] {
+    font-size: 0.875rem;
+    color: var(--color-leather-600);
+    padding: 0.5rem;
+    border: 1.5px dashed var(--color-leather-200);
+    border-radius: 0.625rem;
+    background-color: var(--color-leather-50);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-layout input[type="file"]:hover {
+    border-color: var(--color-gold-400);
+    background-color: var(--color-gold-50);
+}
+
+.admin-layout input[type="file"]::file-selector-button {
+    padding: 0.375rem 0.875rem;
+    margin-right: 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--color-gold-700);
+    background-color: var(--color-gold-50);
+    border: 1px solid var(--color-gold-200);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.admin-layout input[type="file"]::file-selector-button:hover {
+    background-color: var(--color-gold-100);
+    border-color: var(--color-gold-300);
+}
+
+/* Checkbox & Radio */
+.admin-layout input[type="checkbox"],
+.admin-layout input[type="radio"] {
+    width: 1.125rem;
+    height: 1.125rem;
+    color: var(--color-gold-500);
+    border: 1.5px solid var(--color-leather-300);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.admin-layout input[type="checkbox"] {
+    border-radius: 0.25rem;
+}
+
+.admin-layout input[type="radio"] {
+    border-radius: 50%;
+}
+
+.admin-layout input[type="checkbox"]:checked,
+.admin-layout input[type="radio"]:checked {
+    background-color: var(--color-gold-500);
+    border-color: var(--color-gold-500);
+}
+
+.admin-layout input[type="checkbox"]:focus,
+.admin-layout input[type="radio"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
+
+/* Labels - only style block-level form labels, not inline labels */
+.admin-layout label:not(.inline-flex):not(.sr-only):not([class*="cursor-pointer"]):not([class*="relative"]) {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-leather-700);
+    letter-spacing: 0.01em;
+}
+
+/* Error states */
+.admin-layout .is-invalid,
+.admin-layout input.border-red-300,
+.admin-layout select.border-red-300,
+.admin-layout textarea.border-red-300 {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Disabled state */
+.admin-layout input:disabled,
+.admin-layout select:disabled,
+.admin-layout textarea:disabled {
+    background-color: var(--color-leather-50);
+    color: var(--color-leather-400);
+    cursor: not-allowed;
+    opacity: 0.7;
 }

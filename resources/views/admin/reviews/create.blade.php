@@ -71,7 +71,14 @@
                 <p class="mt-1 text-sm text-red-600 hidden" id="error-product_id"></p>
             </div>
 
-            <!-- Rating -->
+            <!-- User (Optional) -->
+            <div>
+                <label for="user_id" class="block text-sm font-medium text-neutral-700">User ID <span class="text-neutral-400 font-normal">(optional)</span></label>
+                <input type="number" name="user_id" id="user_id" value="{{ old('user_id') }}" min="1"
+                    class="mt-1 block w-full border-neutral-300 rounded-md shadow-sm focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
+                    placeholder="Enter user ID to link this review">
+                <p class="mt-1 text-sm text-red-600 hidden" id="error-user_id"></p>
+            </div>
             <div>
                 <label class="block text-sm font-medium text-neutral-700">Rating</label>
                 <div class="mt-2 flex items-center space-x-4">
@@ -88,7 +95,7 @@
             <!-- Comment -->
             <div>
                 <label for="comment" class="block text-sm font-medium text-neutral-700">Review Comment</label>
-                <textarea id="comment" name="comment" rows="4" required
+                <textarea id="comment" name="comment" rows="4"
                     class="mt-1 block w-full border-neutral-300 rounded-md shadow-sm focus:ring-gold-500 focus:border-gold-500 sm:text-sm"
                     placeholder="Write the review content here...">{{ old('comment') }}</textarea>
                 <p class="mt-1 text-sm text-red-600 hidden" id="error-comment"></p>

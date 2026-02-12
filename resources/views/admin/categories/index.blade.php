@@ -118,9 +118,9 @@
             <table class="min-w-full divide-y divide-neutral-200">
                 <thead class="bg-neutral-50">
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Name</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Category</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Slug</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Products</th>
+                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-neutral-500 uppercase tracking-wider">Products</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">Description</th>
                         <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-neutral-500 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -129,24 +129,62 @@
                     @forelse($categories as $category)
                         <tr class="hover:bg-neutral-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-leather-900">{{ $category->name }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-neutral-500">{{ $category->slug }}</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-leather-100 text-leather-800">
-                                    {{ $category->products_count }} products
-                                </span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div class="text-sm text-neutral-500 max-w-xs truncate">
-                                    {{ $category->description ?? 'No description' }}
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-11 w-11">
+                                        @if($category->image)
+                                            <img class="h-11 w-11 rounded-lg object-cover border border-neutral-200 shadow-sm" src="{{ asset($category->image) }}" alt="{{ $category->name }}">
+                                        @else
+                                            <div class="h-11 w-11 rounded-lg bg-leather-100 border border-leather-200 flex items-center justify-center">
+                                                <svg class="h-5 w-5 text-leather-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                                </svg>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-semibold text-leather-900">{{ $category->name }}</div>
+                                    </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="{{ route('admin.categories.edit', $category->id) }}" class="text-gold-600 hover:text-gold-900 mr-3">Edit</a>
-                                <a href="{{ route('category.show', $category->slug) }}" target="_blank" class="text-neutral-600 hover:text-neutral-900">View</a>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <code class="text-xs bg-neutral-100 text-neutral-600 px-2 py-1 rounded font-mono">{{ $category->slug }}</code>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                @if($category->products_count > 0)
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
+                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        {{ $category->products_count }}
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-500">
+                                        0
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-neutral-500 max-w-xs truncate" title="{{ $category->description }}">
+                                    {{ $category->description ?? '—' }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                <div class="flex items-center justify-end space-x-2">
+                                    <a href="{{ route('admin.categories.edit', $category->id) }}"
+                                        class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md text-gold-700 bg-gold-50 hover:bg-gold-100 border border-gold-200 transition-colors">
+                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                        Edit
+                                    </a>
+                                    <a href="{{ route('category.show', $category->slug) }}" target="_blank"
+                                        class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-md text-neutral-600 bg-white hover:bg-neutral-50 border border-neutral-200 transition-colors">
+                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                        </svg>
+                                        View
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     @empty

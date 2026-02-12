@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\User;
 use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -30,15 +31,17 @@ class ReviewController extends Controller
     public function create()
     {
         $products = Product::select('id', 'name', 'image')->orderBy('name')->get();
-        return view('admin.reviews.create', compact('products'));
+        $users = User::select('id', 'name', 'email')->orderBy('name')->get();
+        return view('admin.reviews.create', compact('products', 'users'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
+            'user_id' => 'nullable|exists:users,id',
             'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'required|string|max:1000',
+            'comment' => 'nullable|string|max:1000',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_anonymous' => 'sometimes|boolean',
             'is_approved' => 'sometimes|boolean',
@@ -49,7 +52,7 @@ class ReviewController extends Controller
         ]);
 
         $data = $request->only(['product_id', 'rating', 'comment', 'is_anonymous', 'is_approved']);
-        $data['user_id'] = null; // Admin created reviews are not linked to a user by default, or could link to admin
+        $data['user_id'] = $request->user_id ?: null;
         $data['is_approved'] = $request->has('is_approved'); // Default to true if checked
         $data['is_anonymous'] = $request->has('is_anonymous');
 
@@ -92,17 +95,20 @@ class ReviewController extends Controller
     public function edit(Review $review)
     {
         $products = Product::select('id', 'name', 'image')->orderBy('name')->get();
-        return view('admin.reviews.edit', compact('review', 'products'));
+        $users = User::select('id', 'name', 'email')->orderBy('name')->get();
+        return view('admin.reviews.edit', compact('review', 'products', 'users'));
     }
 
     public function update(Request $request, Review $review)
     {
         $request->validate([
             'product_id' => 'sometimes|exists:products,id',
+            'user_id' => 'nullable|exists:users,id',
             'rating' => 'sometimes|integer|min:1|max:5',
             'is_approved' => 'sometimes|boolean',
-            'comment' => 'sometimes|string|max:1000',
+            'comment' => 'nullable|string|max:1000',
             'is_anonymous' => 'sometimes|boolean',
+            'created_at' => 'nullable|date',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ], [
             'images.*.uploaded' => 'The image failed to upload. This usually happens if the file is larger than the server allows (check php.ini upload_max_filesize).',
@@ -111,8 +117,13 @@ class ReviewController extends Controller
         ]);
 
         $data = $request->only(['product_id', 'rating', 'comment']);
+        $data['user_id'] = $request->user_id ?: null;
         $data['is_approved'] = $request->has('is_approved');
         $data['is_anonymous'] = $request->has('is_anonymous');
+
+        if ($request->filled('created_at')) {
+            $data['created_at'] = $request->created_at;
+        }
 
         if ($request->hasFile('images')) {
             $images = $review->images ?? [];

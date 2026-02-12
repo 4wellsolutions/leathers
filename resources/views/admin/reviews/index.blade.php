@@ -118,15 +118,15 @@
                     @forelse($reviews as $review)
                         <tr class="hover:bg-neutral-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="{{ route('admin.products.edit', $review->product) }}" target="_blank" class="flex items-center group">
+                                <div class="flex items-center">
                                     <div class="flex-shrink-0 h-10 w-10">
-                                        <img class="h-10 w-10 rounded-lg object-cover border border-neutral-200 group-hover:border-gold-500 transition-colors" src="{{ $review->product->image_url }}" alt="">
+                                        <img class="h-10 w-10 rounded-lg object-cover border border-neutral-200 hover:border-gold-500 transition-all cursor-zoom-in hover:shadow-md hover:scale-105" src="{{ $review->product->image_url }}" alt="{{ $review->product->name }}" onclick="openImageModal(this.src, this.alt)">
                                     </div>
                                     <div class="ml-4">
-                                        <div class="text-sm font-bold text-leather-900 truncate max-w-[150px] group-hover:text-gold-600 transition-colors">{{ $review->product->name }}</div>
+                                        <a href="{{ route('admin.products.edit', $review->product) }}" target="_blank" class="text-sm font-bold text-leather-900 truncate max-w-[150px] block hover:text-gold-600 transition-colors">{{ $review->product->name }}</a>
                                         <div class="text-xs text-neutral-500">{{ $review->product->category->name ?? 'Category' }}</div>
                                     </div>
-                                </a>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($review->is_anonymous)
@@ -159,9 +159,9 @@
                                     <div class="flex space-x-2">
                                         @if(!empty($review->images))
                                             @foreach($review->images as $img)
-                                                <a href="{{ asset($img) }}" target="_blank" class="block h-8 w-8 rounded overflow-hidden border border-neutral-200 hover:border-gold-500 transition-colors">
+                                                <div class="block h-8 w-8 rounded overflow-hidden border border-neutral-200 hover:border-gold-500 transition-all cursor-zoom-in hover:shadow-md hover:scale-110" onclick="openImageModal('{{ asset($img) }}', 'Review image')">
                                                     <img src="{{ asset($img) }}" class="h-full w-full object-cover">
-                                                </a>
+                                                </div>
                                             @endforeach
                                         @endif
                                         @if($review->video)
@@ -257,4 +257,42 @@
             {{ $reviews->withQueryString()->links() }}
         </div>
     </div>
+
+    <!-- Image Zoom Modal -->
+    <div id="image-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm" onclick="closeImageModal(event)">
+        <div class="relative max-w-4xl max-h-[90vh] mx-4">
+            <button onclick="closeImageModal(event, true)" class="absolute -top-10 right-0 text-white/80 hover:text-white transition-colors">
+                <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <img id="modal-image" src="" alt="" class="max-w-full max-h-[85vh] rounded-xl shadow-2xl object-contain bg-white">
+            <p id="modal-caption" class="text-center text-white/80 text-sm mt-3"></p>
+        </div>
+    </div>
 @endsection
+
+@push('scripts')
+<script>
+    function openImageModal(src, alt) {
+        const modal = document.getElementById('image-modal');
+        document.getElementById('modal-image').src = src;
+        document.getElementById('modal-image').alt = alt || '';
+        document.getElementById('modal-caption').textContent = alt || '';
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageModal(event, force) {
+        if (force || event.target === document.getElementById('image-modal')) {
+            const modal = document.getElementById('image-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeImageModal(e, true);
+    });
+</script>
+@endpush

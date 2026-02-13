@@ -147,6 +147,13 @@
                         <p class="text-neutral-500">Reviewer name will be hidden.</p>
                     </div>
                 </div>
+
+                <!-- Created Date -->
+                <div>
+                    <label for="created_at" class="block text-sm font-medium text-neutral-700">Created Date <span class="text-neutral-400 font-normal">(optional)</span></label>
+                    <input type="datetime-local" name="created_at" id="created_at" value="{{ old('created_at', now()->format('Y-m-d\TH:i')) }}"
+                        class="mt-1 block w-full border-neutral-300 rounded-md shadow-sm focus:ring-gold-500 focus:border-gold-500 sm:text-sm">
+                </div>
             </div>
 
             <div class="pt-5 border-t border-neutral-200">

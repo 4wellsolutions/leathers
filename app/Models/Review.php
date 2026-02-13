@@ -16,7 +16,8 @@ class Review extends Model
         'image2',
         'images',
         'video',
-        'is_anonymous'
+        'is_anonymous',
+        'created_at'
     ];
 
     protected $casts = [

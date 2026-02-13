@@ -45,6 +45,7 @@ class ReviewController extends Controller
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_anonymous' => 'sometimes|boolean',
             'is_approved' => 'sometimes|boolean',
+            'created_at' => 'nullable|date',
         ], [
             'images.*.uploaded' => 'The image failed to upload. This usually happens if the file is larger than the server allows (check php.ini upload_max_filesize).',
             'images.*.max' => 'The image must not be larger than 2MB.',
@@ -55,6 +56,10 @@ class ReviewController extends Controller
         $data['user_id'] = $request->user_id ?: null;
         $data['is_approved'] = $request->has('is_approved'); // Default to true if checked
         $data['is_anonymous'] = $request->has('is_anonymous');
+
+        if ($request->filled('created_at')) {
+            $data['created_at'] = $request->created_at;
+        }
 
         if ($request->hasFile('images')) {
             $images = [];

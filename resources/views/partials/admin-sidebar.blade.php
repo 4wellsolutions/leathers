@@ -16,6 +16,17 @@
                 Dashboard
             </a>
 
+            <!-- Redirects (Top Priority) -->
+            <a href="{{ route('admin.redirects.index') }}"
+                class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.redirects.*') ? 'bg-leather-800 text-white' : 'text-neutral-300 hover:bg-leather-700 hover:text-white' }}">
+                <svg class="mr-3 flex-shrink-0 h-6 w-6 {{ request()->routeIs('admin.redirects.*') ? 'text-gold-500' : 'text-neutral-400 group-hover:text-gold-500' }}"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+                Redirects
+            </a>
+
 
 
             <!-- Products Dropdown -->
@@ -404,7 +415,7 @@
                                 clip-rule="evenodd" />
                         </svg>
                     </button>
-                    <div x-show="open === 'settings' || '{{ request()->routeIs('admin.settings.*') || request()->routeIs('admin.email-templates.*') || request()->routeIs('admin.shipping-rules.*') || request()->routeIs('admin.sitemap.*') || request()->routeIs('admin.cache.*') || request()->routeIs('admin.redirects.*') }}'"
+                    <div x-show="open === 'settings' || '{{ request()->routeIs('admin.settings.*') || request()->routeIs('admin.email-templates.*') || request()->routeIs('admin.shipping-rules.*') || request()->routeIs('admin.sitemap.*') || request()->routeIs('admin.cache.*') }}'"
                         class="space-y-1 pl-11" x-collapse>
                         <a href="{{ route('admin.settings.index') }}"
                             class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.settings.index') ? 'text-gold-500' : 'text-neutral-400 hover:text-white' }}">
@@ -445,15 +456,7 @@
                             Sitemap
                         </a>
                         <!-- Redirects -->
-                        <a href="{{ route('admin.redirects.index') }}"
-                            class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.redirects.*') ? 'text-gold-500' : 'text-neutral-400 hover:text-white' }}">
-                            <svg class="mr-2 h-5 w-5 {{ request()->routeIs('admin.redirects.*') ? 'text-gold-500' : 'text-neutral-500 group-hover:text-white' }}"
-                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                            </svg>
-                            Redirects
-                        </a>
+
                         <a href="{{ route('admin.cache.index') }}"
                             class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.cache.*') ? 'text-gold-500' : 'text-neutral-400 hover:text-white' }}">
                             <svg class="mr-2 h-5 w-5 {{ request()->routeIs('admin.cache.*') ? 'text-gold-500' : 'text-neutral-500 group-hover:text-white' }}"

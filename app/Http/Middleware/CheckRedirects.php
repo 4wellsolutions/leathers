@@ -19,12 +19,15 @@ class CheckRedirects
     {
         $path = trim($request->path(), '/');
 
-        // Check if there is a redirect for this path
-        // Use cache to prevent DB hit on every request
+        // Skip admin, asset, and internal paths for performance
+        if (str_starts_with($path, 'admin') || str_starts_with($path, '_debugbar') || str_starts_with($path, 'livewire')) {
+            return $next($request);
+        }
+
+        // Check if there is a redirect for this path (cached to avoid DB hit per request)
         $redirect = Cache::remember("redirect_{$path}", 3600, function () use ($path) {
             $fromCol = Redirect::getFromColumn();
 
-            // Try matching with both leading slash and without
             $result = Redirect::where(function ($query) use ($fromCol, $path) {
                 $query->where($fromCol, $path)
                     ->orWhere($fromCol, '/' . $path)
@@ -34,22 +37,19 @@ class CheckRedirects
                 ->where('is_active', true)
                 ->first();
 
-            // Return a sentinel value when no redirect found so null is not cached ambiguously
             return $result ?? '__none__';
         });
 
         if ($redirect && $redirect !== '__none__') {
-            // Increment hit count (optional but helpful for debugging)
             try {
                 $redirect->increment('hit_count');
             } catch (\Throwable $e) {
-                // Ignore errors here to not break the redirect itself
+                // Ignore errors to not break the redirect
             }
 
             $toCol = Redirect::getToColumn();
             $target = $redirect->{$toCol};
 
-            // Use away() for full URLs, redirect() for paths
             if (str_starts_with($target, 'http://') || str_starts_with($target, 'https://')) {
                 return redirect()->away($target, $redirect->status_code);
             }
@@ -60,3 +60,4 @@ class CheckRedirects
         return $next($request);
     }
 }
+

@@ -69,7 +69,8 @@ class Redirect extends Model
     public function clearCache()
     {
         $fromCol = self::getFromColumn();
-        $path = trim($this->{$fromCol}, '/');
+        $rawPath = $this->{$fromCol} ?? '';
+        $path = trim($rawPath, '/');
         \Illuminate\Support\Facades\Cache::forget("redirect_{$path}");
     }
 

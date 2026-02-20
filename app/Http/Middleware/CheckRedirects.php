@@ -25,15 +25,20 @@ class CheckRedirects
             $fromCol = Redirect::getFromColumn();
 
             // Try matching with both leading slash and without
-            return Redirect::where(function ($query) use ($fromCol, $path) {
+            $result = Redirect::where(function ($query) use ($fromCol, $path) {
                 $query->where($fromCol, $path)
-                    ->orWhere($fromCol, '/' . $path);
+                    ->orWhere($fromCol, '/' . $path)
+                    ->orWhere($fromCol, $path . '/')
+                    ->orWhere($fromCol, '/' . $path . '/');
             })
                 ->where('is_active', true)
                 ->first();
+
+            // Return a sentinel value when no redirect found so null is not cached ambiguously
+            return $result ?? '__none__';
         });
 
-        if ($redirect) {
+        if ($redirect && $redirect !== '__none__') {
             // Increment hit count (optional but helpful for debugging)
             try {
                 $redirect->increment('hit_count');
@@ -41,7 +46,15 @@ class CheckRedirects
                 // Ignore errors here to not break the redirect itself
             }
 
-            return redirect($redirect->to_url, $redirect->status_code);
+            $toCol = Redirect::getToColumn();
+            $target = $redirect->{$toCol};
+
+            // Use away() for full URLs, redirect() for paths
+            if (str_starts_with($target, 'http://') || str_starts_with($target, 'https://')) {
+                return redirect()->away($target, $redirect->status_code);
+            }
+
+            return redirect($target, $redirect->status_code);
         }
 
         return $next($request);

@@ -1,8 +1,10 @@
 <header class="w-full z-50">
-    <!-- Top Bar -->
-    <div class="bg-gold-500 text-leather-900 py-2 text-center text-sm font-semibold tracking-wide">
-        <p>{{ \App\Models\Setting::get('topbar_text', 'FREE SHIPPING ON ALL ORDERS OVER RS. 5000') }}</p>
-    </div>
+    @if(\App\Models\Setting::get('topbar_text'))
+        <!-- Top Bar -->
+        <div class="bg-gold-500 text-leather-900 py-2 text-center text-sm font-semibold tracking-wide">
+            <p>{{ \App\Models\Setting::get('topbar_text') }}</p>
+        </div>
+    @endif
 
     <!-- Main Navigation -->
     <nav class="bg-leather-900 text-white shadow-lg relative">

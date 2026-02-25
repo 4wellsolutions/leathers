@@ -64,22 +64,6 @@
                     </div>
                 @endif
 
-                @if(session('success'))
-                    <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-lg shadow-sm">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-green-700">{{ session('success') }}</p>
-                            </div>
-                        </div>
-                    </div>
-                @endif
 
                 <!-- Brand Identity -->
                 <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
@@ -200,8 +184,8 @@
                                         </svg>
                                     </div>
                                     <input type="email" name="contact_email"
-                                        value="{{ $settings['contact_email'] ?? 'info@leathers.pk' }}"
-                                        class="focus:ring-gold-500 focus:border-gold-500 block w-full pl-14 sm:text-sm border-gray-300 rounded-lg h-11">
+                                        value="{{ $settings['contact_email'] ?? 'sales@leathers.pk' }}"
+                                        class="focus:ring-gold-500 focus:border-gold-500 block w-full pl-12 sm:text-sm border-gray-300 rounded-lg h-11">
                                 </div>
                             </div>
 
@@ -217,7 +201,7 @@
                                     </div>
                                     <input type="text" name="contact_phone"
                                         value="{{ $settings['contact_phone'] ?? '+92 300 1234567' }}"
-                                        class="focus:ring-gold-500 focus:border-gold-500 block w-full pl-14 sm:text-sm border-gray-300 rounded-lg h-11">
+                                        class="focus:ring-gold-500 focus:border-gold-500 block w-full pl-12 sm:text-sm border-gray-300 rounded-lg h-11">
                                 </div>
                             </div>
 
@@ -232,7 +216,7 @@
                                     </div>
                                     <input type="text" name="social_whatsapp"
                                         value="{{ $settings['social_whatsapp'] ?? '' }}"
-                                        class="focus:ring-gold-500 focus:border-gold-500 block w-full pl-14 sm:text-sm border-gray-300 rounded-lg h-11"
+                                        class="focus:ring-gold-500 focus:border-gold-500 block w-full pl-12 sm:text-sm border-gray-300 rounded-lg h-11"
                                         placeholder="+923001234567">
                                 </div>
                             </div>

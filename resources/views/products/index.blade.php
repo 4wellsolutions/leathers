@@ -260,39 +260,39 @@
     </div>
     <!-- CollectionPage Schema -->
     <script type="application/ld+json">
-                                        {
-                                          "@@context": "https://schema.org",
-                                          "@@type": "CollectionPage",
-                                          "name": "{{ $currentCategory ? $currentCategory->name : 'All Products' }}",
-                                          "description": "{{ $currentCategory ? $currentCategory->description : 'Browse our collection of premium leather goods.' }}",
-                                          "url": "{{ url()->current() }}",
-                                          "breadcrumb": {
-                                            "@@type": "BreadcrumbList",
-                                            "itemListElement": [
-                                              {
-                                                "@@type": "ListItem",
-                                                "position": 1,
-                                                "name": "Home",
-                                                "item": "{{ route('home') }}"
-                                              },
-                                              {
-                                                "@@type": "ListItem",
-                                                "position": 2,
-                                                "name": "Shop",
-                                                "item": "{{ route('home') }}"
-                                              }
-                                              @if($currentCategory)
-                                                  ,{
-                                                    "@@type": "ListItem",
-                                                    "position": 3,
-                                                    "name": "{{ $currentCategory->name }}",
-                                                    "item": "{{ route('category.show', $currentCategory->slug) }}"
-                                                  }
-                                              @endif
-                                            ]
-                                          }
-                                        }
-                                        </script>
+        {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "{{ $currentCategory ? $currentCategory->name : 'All Products' }}",
+            "description": "{{ Str::limit(strip_tags($currentCategory ? ($currentCategory->description ?? '') : 'Browse our collection of premium leather goods.'), 200) }}",
+            "url": "{{ url()->current() }}",
+            "breadcrumb": {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                    {
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "Home",
+                        "item": "{{ route('home') }}"
+                    },
+                    {
+                        "@type": "ListItem",
+                        "position": 2,
+                        "name": "Shop",
+                        "item": "{{ route('home') }}#categories"
+                    }
+                    @if($currentCategory)
+                        ,{
+                            "@type": "ListItem",
+                            "position": 3,
+                            "name": "{{ $currentCategory->name }}",
+                            "item": "{{ route('category.show', $currentCategory->slug) }}"
+                        }
+                    @endif
+                ]
+            }
+        }
+        </script>
 
     <script>
         // Price filter functionality

@@ -2,16 +2,6 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17950154997"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'AW-17950154997');
-        gtag('config', 'G-FC07HY5793');
-    </script>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -43,76 +33,48 @@
 
     <!-- JSON-LD Structured Data -->
     <script type="application/ld+json">
-    {
-        "@@context": "https://schema.org",
-        "@@type": "OnlineBusiness",
-        "name": "Leathers.pk",
-        "url": "{{ url('/') }}",
-        "logo": "{{ asset('/images/hero/hero.png') }}",
-        "image": "{{ asset('/images/hero/hero.png') }}",
-        "description": "Premium handcrafted leather goods including belts, wallets, and watches. Online-only store delivering across Pakistan.",
-        "foundingDate": "2024",
-        "contactPoint": [
-            {
-                "@@type": "ContactPoint",
+    [
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Leathers.pk",
+            "url": "{{ url('/') }}",
+            "logo": "{{ asset('/images/hero/hero.png') }}",
+            "contactPoint": {
+                "@type": "ContactPoint",
                 "telephone": "+92-311-1222741",
                 "contactType": "customer service",
-                "availableLanguage": ["English", "Urdu"],
-                "contactOption": "TollFree",
-                "areaServed": "PK"
-            }
-        ],
-        "areaServed": {
-            "@@type": "Country",
-            "name": "Pakistan"
-        },
-        "serviceArea": {
-            "@@type": "Country",
-            "name": "Pakistan"
-        },
-        "priceRange": "$$",
-        "currenciesAccepted": "PKR",
-        "paymentAccepted": ["Cash on Delivery", "Bank Transfer", "JazzCash", "EasyPaisa"],
-        "sameAs": [
-            "https://facebook.com/leatherspk",
-            "https://instagram.com/leatherspk",
-            "https://wa.me/923111222741"
-        ],
-        "potentialAction": {
-            "@@type": "SearchAction",
-            "target": "{{ url('/search') }}?q={search_term_string}",
-            "query-input": "required name=search_term_string"
-        },
-        "offers": {
-            "@@type": "OfferShippingDetails",
-            "shippingDestination": {
-                "@@type": "DefinedRegion",
-                "addressCountry": "PK"
+                "areaServed": "PK",
+                "availableLanguage": ["English", "Urdu"]
             },
-            "deliveryTime": {
-                "@@type": "ShippingDeliveryTime",
-                "handlingTime": {
-                    "@@type": "QuantitativeValue",
-                    "minValue": 1,
-                    "maxValue": 2,
-                    "unitCode": "DAY"
-                },
-                "transitTime": {
-                    "@@type": "QuantitativeValue",
-                    "minValue": 2,
-                    "maxValue": 5,
-                    "unitCode": "DAY"
-                }
+            "sameAs": [
+                "{{ \App\Models\Setting::get('facebook_url', 'https://facebook.com/leatherspk') }}",
+                "{{ \App\Models\Setting::get('instagram_url', 'https://instagram.com/leatherspk') }}",
+                "https://wa.me/923111222741"
+            ]
+        },
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Leathers.pk",
+            "url": "{{ url('/') }}",
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "{{ url('/search') }}?q={search_term_string}",
+                "query-input": "required name=search_term_string"
             }
         }
-    }
+    ]
     </script>
 
     <!-- Favicon -->
     @if(\App\Models\Setting::get('site_favicon'))
         <link rel="icon" type="image/x-icon" href="{{ \App\Models\Setting::get('site_favicon') }}">
+        <link rel="apple-touch-icon" href="{{ \App\Models\Setting::get('site_favicon') }}">
     @else
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+        <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
     @endif
 
     <!-- Fonts -->
@@ -127,25 +89,37 @@
     <!-- Custom Header Scripts -->
     {!! \App\Models\Setting::get('header_scripts') !!}
 
-    <!-- Meta Pixel Code -->
-    <script>
-        !function (f, b, e, v, n, t, s) {
-            if (f.fbq) return; n = f.fbq = function () {
-                n.callMethod ?
-                n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-            };
-            if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
-            n.queue = []; t = b.createElement(e); t.async = !0;
-            t.src = v; s = b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t, s)
-        }(window, document, 'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '818025517364350');
-        fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none"
-            src="https://www.facebook.com/tr?id=818025517364350&ev=PageView&noscript=1" /></noscript>
-    <!-- End Meta Pixel Code -->
+    @unless(request()->is('admin*') || (auth()->check() && auth()->user()->is_admin))
+        <!-- Meta Pixel Code -->
+        <script>
+            !function (f, b, e, v, n, t, s) {
+                if (f.fbq) return; n = f.fbq = function () {
+                    n.callMethod ?
+                        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+                };
+                if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+                n.queue = []; t = b.createElement(e); t.async = !0;
+                t.src = v; s = b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t, s)
+            }(window, document, 'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '818025517364350');
+            fbq('track', 'PageView');
+        </script>
+        <noscript><img height="1" width="1" style="display:none"
+                src="https://www.facebook.com/tr?id=818025517364350&ev=PageView&noscript=1" /></noscript>
+        <!-- End Meta Pixel Code -->
+
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17950154997"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('js', new Date());
+            gtag('config', 'AW-17950154997');
+            gtag('config', 'G-FC07HY5793');
+        </script>
+    @endunless
 </head>
 
 <body class="font-sans text-neutral-900 antialiased bg-neutral-50 flex flex-col min-h-screen">

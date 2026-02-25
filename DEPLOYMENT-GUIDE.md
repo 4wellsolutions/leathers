@@ -194,6 +194,27 @@ DB_USERNAME=your_database_user
 DB_PASSWORD=your_database_password
 ```
 
+## SEO & Google Search Engine Setup
+
+To ensure your products and brand appear correctly in Google (with stars, prices, and images), follow these steps:
+
+### 1. Verify Sitemaps
+Check your sitemap URLs in `public/sitemap.xml`. Ensure they use `https://leathers.pk` instead of `localhost`.
+
+### 2. Robots.txt
+Ensure `public/robots.txt` is uploaded. This tells Google which pages to crawl (products) and which to ignore (admin/cart).
+
+### 3. Google Search Console (Crucial)
+1. Log in to [Google Search Console](https://search.google.com/search-console).
+2. Add your domain `leathers.pk`.
+3. Submit your sitemap: `https://leathers.pk/sitemap.xml`.
+4. Use the **URL Inspection** tool to request indexing for your homepage and key products.
+
+### 4. Rich Results Validation
+Test any product page URL using [Google Rich Results Test](https://search.google.com/test/rich-results) to verify the structured data (stars, price, stock).
+
+---
+
 ## Final Checklist
 
 - [ ] `.htaccess` is in `public_html` root

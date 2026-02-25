@@ -459,18 +459,4 @@
             </form>
         </div>
     </section>
-    <!-- WebSite Schema -->
-    <script type="application/ld+json">
-                                    {
-                                      "@@context": "https://schema.org",
-                                      "@@type": "WebSite",
-                                      "name": "Leathers.pk",
-                                      "url": "{{ url('/') }}",
-                                      "potentialAction": {
-                                        "@@type": "SearchAction",
-                                        "target": "{{ url('/shop') }}?search={search_term_string}",
-                                        "query-input": "required name=search_term_string"
-                                      }
-                                    }
-                                    </script>
 @endsection
